@@ -1,0 +1,24 @@
+// .collapse-items {
+//     width: 10rem;
+//     display: flex;
+//     flex-direction: column;
+//     align-items: center;
+//     justify-content: flex-end;
+//     background-color: #000;
+//     button {
+//         background-color: #000;
+//         color: #fff;
+//     }
+// }
+.nav-group-collapse {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    width: 200px;
+}
+.text-btn {
+    text-align: left;
+    width: 10rem;
+    margin-left: 10px;
+}

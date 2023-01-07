@@ -1,0 +1,65 @@
+{
+    "name": "my-app",
+    "version": "0.1.0",
+    "private": true,
+    "dependencies": {
+        "@emotion/react": "^11.10.5",
+        "@emotion/styled": "^11.10.5",
+        "@fortawesome/fontawesome-svg-core": "^6.2.1",
+        "@mui/icons-material": "^5.10.17",
+        "@mui/lab": "^5.0.0-alpha.112",
+        "@mui/material": "^5.11.0",
+        "@mui/system": "^5.10.15",
+        "@testing-library/jest-dom": "^5.16.5",
+        "@testing-library/react": "^13.4.0",
+        "@testing-library/user-event": "^13.5.0",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-scripts": "5.0.1",
+        "web-vitals": "^2.1.4"
+    },
+    "scripts": {
+        "api": "json-server db.json -p 3001 --delay 1500",
+        "start": "react-app-rewired start",
+        "build": "react-app-rewired build",
+        "test": "react-app-rewired test",
+        "eject": "react-app-rewired eject"
+    },
+    "eslintConfig": {
+        "extends": [
+            "react-app",
+            "react-app/jest"
+        ]
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    },
+    "devDependencies": {
+        "@fortawesome/free-solid-svg-icons": "^6.2.1",
+        "@fortawesome/react-fontawesome": "^0.2.0",
+        "@mui/x-data-grid": "^5.17.14",
+        "@mui/x-data-grid-generator": "^5.17.15",
+        "@mui/x-date-pickers": "^5.0.11",
+        "@tippyjs/react": "^4.2.6",
+        "axios": "^1.2.1",
+        "babel-plugin-module-resolver": "^4.1.0",
+        "classnames": "^2.3.2",
+        "customize-cra": "^1.0.0",
+        "gh-pages": "^4.0.0",
+        "json-server": "^0.17.1",
+        "query-string": "^8.1.0",
+        "react-app-rewired": "^2.2.1",
+        "react-router-dom": "^6.4.5",
+        "react-smooth-collapse": "^2.1.2",
+        "sass": "^1.56.2"
+    }
+}

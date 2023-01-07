@@ -1,0 +1,28 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.line-form {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+.line-start {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 38px;
+}
+.root {
+    & .MuiOutlinedInput-input {
+        border: 0;
+        border-radius: 3px;
+        color: red;
+        font-size: 24px;
+    }
+}

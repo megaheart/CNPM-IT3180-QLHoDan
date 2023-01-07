@@ -1,0 +1,31 @@
+:root {
+    --bgc-account: #eff1f4;
+    --bgc-transparent: rgba(236, 227, 227, 0.5);
+}
+
+.account-setting {
+    background-color: var(--bgc-account);
+    width: 100%;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #eaeaea;
+    border-radius: 4px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    padding: 25px 20px 30px 20px;
+}
+
+.account-info {
+    position: relative;
+    // background-color: var(--bgc-transparent);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    width: 100%;
+    padding: 0 60px;
+    gap: 35px;
+}

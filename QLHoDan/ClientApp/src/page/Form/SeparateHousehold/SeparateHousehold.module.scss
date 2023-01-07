@@ -1,0 +1,45 @@
+.container {
+    width: 95%;
+    margin: 0 auto;
+    padding: 5px;
+    div {
+        margin: 5px 0;
+    }
+}
+
+.identification-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.line-form {
+    width: 100%;
+    padding: 1px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+h1 {
+    text-align: center;
+}
+
+h3 {
+    text-align: left;
+    padding-left: 5px;
+}
+.iden {
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding: 2px;
+    margin: 1px 4px;
+}
+
+.err-mes {
+    font-size: 15px;
+    color: red;
+    padding-left: 5px;
+}
