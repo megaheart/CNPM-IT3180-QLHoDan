@@ -7,40 +7,66 @@ import { NavLink } from "react-router-dom";
 import fuhua from '~/assets/avatars/fuhua.png';
 import Tippy from '@tippyjs/react/headless';
 import { Wrapper as PopperWrapper } from '~/components/Popper';
+import ActionItem from '~/components/component/Action';
 //services
 import accountService from '~/services/account';
 //icons
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import CircularProgress from '@mui/material/CircularProgress';
 import HomeIcon from '@mui/icons-material/Home';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMagnifyingGlass, faUser, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { faCircleXmark, faSpinner, faMagnifyingGlass, faUser, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { Avatar, Badge, Alert, Stack } from '@mui/material';
 import MailIcon from '@mui/icons-material/Mail';
-
+//search
+import { FormsAction, TableAction, filterByTitle } from '~/components/component/Action/SearchResult';
 const cx = classNames.bind(styles);
 
 
 function Header({ text }) {
     const { setAuth } = useContext(AuthContext);
-
+    //tippy for avatar button
     const tippy = useRef();
     const [tippyAvatar, setTippyAvatar] = useState(null);
     const turnOnTippy = (e) => {
         setTippyAvatar(true);
     }
-
+    //tippy for message button
     const tippyMessage = useRef();
     const [messageVisible, setMessageVisible] = useState(null);
     const turnOnTippyMessage = (e) => {
         setMessageVisible(true);
     }
-
+    //tippy and event for search bar
+    const tippySearch = useRef();
+    const searchBar = useRef();
+    const [search, setSearch] = useState('');
+    const [searchResult, setSearchResult] = useState([]);
+    const handleSearch = (e) => {
+        setSearch(e.target.value);
+    }
+    const clearSearch = () => {
+        setSearch('');
+    }
+    const handleSearchResult = () => {
+        if (search === '') {
+            setSearchResult([]);
+        }
+        else {
+            setSearchResult(filterByTitle(FormsAction, search));
+        }
+    }
+    useEffect(() => {
+        handleSearchResult();
+    }, [search]);
+    //logout
     const handleLogout = () => {
         accountService.logout(setAuth);
     }
-
+    //count number of message
     const [count, setCount] = useState(4);
-
+    //handle click outside tippy
     useEffect(() => {
         function handleClickOutside(event) {
             if (tippy.current && !tippy.current.contains(event.target)) {
@@ -48,6 +74,9 @@ function Header({ text }) {
             }
             if (tippyMessage.current && !tippyMessage.current.contains(event.target)) {
                 setMessageVisible(false);
+            }
+            if (tippySearch.current && !tippySearch.current.contains(event.target) && searchBar.current && !searchBar.current.contains(event.target)) {
+                setSearch('');
             }
         }
         document.addEventListener("mousedown", handleClickOutside);
@@ -67,12 +96,39 @@ function Header({ text }) {
                     <h3>{text}</h3>
                 </div>
             </div>
-            <div className={cx('search')}>
-                <input placeholder='Tìm kiếm' spellCheck={false} />
-                <button className={cx('search-btn')}>
-                    <FontAwesomeIcon icon={faMagnifyingGlass} />
-                </button>
-            </div>
+            <Tippy
+                interactive
+                visible={searchResult.length > 0}
+                render={attrs => (
+                    <div ref={tippySearch} className={cx('search-result')} tabIndex="-1" {...attrs}>
+                        <PopperWrapper>
+                            <h4 className={cx('search-title')}>Kết quả tìm kiếm</h4>
+                            {
+                                searchResult.map(
+                                    item => {
+                                        return <ActionItem onClick={() => setSearch('')} key={item.link} item={item} />
+                                    }
+                                )
+                            }
+                        </PopperWrapper>
+                    </div>
+                )}
+            >
+                <div ref={searchBar} className={cx('search')}>
+                    <input value={search} onChange={handleSearch} placeholder='Tìm kiếm' spellCheck={false} />
+                    <div className={cx('clear')}>
+                        {search.length > 0 &&
+                            <button onClick={clearSearch} >
+                                <FontAwesomeIcon icon={faCircleXmark} />
+                            </button>
+                        }
+                    </div>
+                    <button className={cx('search-btn')}>
+                        <FontAwesomeIcon icon={faMagnifyingGlass} />
+                    </button>
+                </div>
+            </Tippy>
+
             <div className={cx('actions')} >
                 <Tippy
                     interactive

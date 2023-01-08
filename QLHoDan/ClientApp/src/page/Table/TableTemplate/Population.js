@@ -1,7 +1,7 @@
 import { useState, forwardRef, useCallback } from 'react';
 import { styled } from '@mui/material/styles';
 import { tableCellClasses } from '@mui/material/TableCell';
-import { Button, Paper, TableRow, TableHead, TableContainer, TableCell, TableBody, Table, TextField, Slide, Collapse, Box, Dialog } from '@mui/material';
+import { Button, Paper, TableRow, TableHead, TableContainer, TableCell, TableBody, Table, TextField, Slide, Box, Dialog } from '@mui/material';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -53,9 +53,9 @@ export default function Population({ editMode }) {
     //
     const [open, setOpen] = useState(false);
     const handleClose = useCallback(() => setOpen(false), []);
-
+    //dữ liệu nhân khẩu đang được edit
     const [editRow, setEditRow] = useState({});
-
+    //dữ liệu nhân khẩu các input
     const [identification, setIdentification] = useState('');
     const [name, setName] = useState('');
     const [birthday, setBirthday] = useState('');
@@ -91,7 +91,7 @@ export default function Population({ editMode }) {
         setSoHoKhau(soHoKhau);
         setToPhuTrach(toPhuTrach);
     }, []);
-
+    //lưu dữ liệu nhân khẩu
     const handleSave = () => {
         setRows(
             prev => prev.map(item => {
