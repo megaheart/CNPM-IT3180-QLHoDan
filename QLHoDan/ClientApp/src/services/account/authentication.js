@@ -1,24 +1,23 @@
-import {API_ACCOUNT_PROFILE_URL, API_ACCOUNT_LOGIN_URL} from '~/AppConstant';
-class Authentication{
+import { API_ACCOUNT_PROFILE_URL, API_ACCOUNT_LOGIN_URL } from '~/AppConstant';
+class Authentication {
     user = null;
-    constructor(){
+    constructor() {
         let token = localStorage.getItem('AuthenticationToken');
-        if(token){
+        if (token) {
             this.user = this.getUserFromToken(token);
         }
     }
-    
-    get User(){
-        if(process.env.NODE_ENV === 'development'){
-            if(!this.isAuthenticated()) throw new Error("Please check isAuthenticated before using this property");
+
+    get User() {
+        if (process.env.NODE_ENV === 'development') {
+            if (!this.isAuthenticated()) throw new Error("Please check isAuthenticated before using this property");
         }
         return this.user
     }
-    signIn(username, password){
+    signIn(username, password) {
         return new Promise((resolve, reject) => {
             fetch(API_ACCOUNT_LOGIN_URL, {
                 method: 'POST',
-                mode: 'no-cors',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -27,57 +26,63 @@ class Authentication{
                     password: password
                 })
             }).then((response) => {
-                if(response.status === 200){
+                if (response.status === 200) {
                     response.json().then((data) => {
                         this.user = this.getUserFromToken(data.token);
                         localStorage.setItem('AuthenticationToken', data.token);
                         this.onAccountChanged(this.user);
-                        resolve(data);
+                        resolve();
                     });
-                    
+
                 }
-                else{
+                else {
                     console.log(response);
                     response.json().then((data) => {
                         reject(data);
                     })
-                    .catch((error) => {reject(error);})
+                        .catch((error) => { reject(error); })
                 }
-                
-                
-            }).catch((error) => {reject(error);});
+
+
+            }).catch((error) => { reject(error); });
         });
     }
-    logOut(){
-        if(this.isAuthenticated()){
+    logOut() {
+        if (this.isAuthenticated()) {
             localStorage.removeItem('AuthenticationToken');
             this.user = null;
             this.onAccountChanged(this.user);
         }
     }
-    fetchProfile(){
+    fetchProfile() {
         return new Promise((resolve, reject) => {
             fetch(API_ACCOUNT_PROFILE_URL, {
-                Authorization: `Bearer ${this.user.token}`
+                headers: {
+                    Authorization: `Bearer ${this.user.token}`
+                }
             }).then((response) => {
-                if(response.status === 200){
+                if (response.status === 200) {
                     response.json().then((data) => {
-                        resolve();
+                        resolve(data);
                     });
                 }
-                else{
-                    reject({code: "FetchError", message: "Error when fetching profile"});
+                else {
+                    console.log(response);
+                    response.json().then((data) => {
+                        reject(data);
+                    })
+                        .catch((error) => { reject(error); })
                 }
-            });
-            
+            }).catch((error) => { reject(error); });
+
         });
     }
-    onAccountChanged = (user) => {};
-    isAuthenticated(){
+    onAccountChanged = (user) => { };
+    isAuthenticated() {
         return this.user !== null && this.user.expiration > Date.now();
     }
-    getUserFromToken(token){
-        if(token){
+    getUserFromToken(token) {
+        if (token) {
             var o = this.parseJwt(token);
             return {
                 username: o['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'],
@@ -91,12 +96,13 @@ class Authentication{
     parseJwt(token) {
         var base64Url = token.split('.')[1];
         var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+        var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
             return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
         }).join(''));
-    
+
         return JSON.parse(jsonPayload);
     }
 }
+module.exports = Authentication;
 const authenticationService = new Authentication();
 export default authenticationService;
