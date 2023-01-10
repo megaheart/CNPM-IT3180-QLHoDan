@@ -9,9 +9,8 @@ function ActionItem({ item, onClick }) {
         <div className={cx('wrapper')}>
             <NavLink onClick={onClick} to={item.link} className={cx('info')}>
                 <h4 className={cx('name')}>
-                    <span>{item.title}</span>
+                    {item.title}
                 </h4>
-                <span className={cx('username')} >{item.title}</span>
             </NavLink>
         </div>
     );

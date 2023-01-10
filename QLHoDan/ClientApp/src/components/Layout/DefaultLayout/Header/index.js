@@ -49,6 +49,9 @@ function Header({ text }) {
     const clearSearch = () => {
         setSearch('');
     }
+    useEffect(() => {
+        searchBar.current.focus();
+    }, [search])
     const handleSearchResult = () => {
         if (search === '') {
             setSearchResult([]);
@@ -85,7 +88,7 @@ function Header({ text }) {
         };
     }, []);
     return (
-        <header >
+        <header className={cx('header-default')} >
             <div className={cx('header-head')}>
                 <div className={cx('header-1')}>
                     <div className={cx('header-1-2')}>
@@ -114,8 +117,8 @@ function Header({ text }) {
                     </div>
                 )}
             >
-                <div ref={searchBar} className={cx('search')}>
-                    <input value={search} onChange={handleSearch} placeholder='Tìm kiếm' spellCheck={false} />
+                <div className={cx('search')}>
+                    <input ref={searchBar} value={search} onChange={handleSearch} placeholder='Tìm kiếm' spellCheck={false} />
                     <div className={cx('clear')}>
                         {search.length > 0 &&
                             <button onClick={clearSearch} >
@@ -181,7 +184,7 @@ function Header({ text }) {
                         </div>
                     )}
                 >
-                    <Avatar sx={{ cursor: 'pointer' }} src={fuhua} onClick={turnOnTippy} />
+                    <Avatar sx={{ cursor: 'pointer', border: '2px solid transparent', '&:hover': { borderColor: 'green' } }} src={fuhua} onClick={turnOnTippy} />
                 </Tippy>
             </div>
         </ header>

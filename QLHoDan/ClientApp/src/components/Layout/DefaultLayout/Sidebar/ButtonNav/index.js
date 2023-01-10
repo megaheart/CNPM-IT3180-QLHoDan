@@ -38,4 +38,15 @@ const buttons = [
     { icon: <LogoutIcon />, title: 'Đăng xuất', link: '/authenticate', id: 'logout', isLogout: true, action: loggout },
 ]
 
+export const buttonForGuest = [
+    {
+        icon: <PlaylistAddIcon />, title: 'Gửi đơn', link: '/addnew/them_ho_khau',
+        collapse: [
+            { title: 'Thêm hộ khẩu', id: 'addnew1', linkCol: '/addnew/them_ho_khau' },
+            { title: 'Thêm nhân khẩu', id: 'addnew2', linkCol: '/addnew/them_nhan_khau' }
+        ],
+        id: 'addnew'
+    },
+]
+
 export default buttons;

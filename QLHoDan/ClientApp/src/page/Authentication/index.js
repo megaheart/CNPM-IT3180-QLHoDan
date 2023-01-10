@@ -6,6 +6,8 @@ import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 
+import { Router, Route, Routes } from 'react-router-dom';
+
 import classNames from 'classnames/bind';
 import styles from './Authentication.module.scss';
 
@@ -17,7 +19,7 @@ function Authentication() {
     const [value, setValue] = useState('1');
 
 
-    const handleChange = (event, newValue) => {
+    const handleChange = (e, newValue) => {
         setValue(newValue);
     };
 
@@ -36,6 +38,7 @@ function Authentication() {
                     </TabPanel>
                     <TabPanel value="2"><Register act={setValue} /></TabPanel>
                 </TabContext>
+
                 <div className={cx('footer-login')}>
                     <span className={cx('btn-text')}>Chính sách</span>
                     <span className={cx('btn-text')} >Bảo mật</span>

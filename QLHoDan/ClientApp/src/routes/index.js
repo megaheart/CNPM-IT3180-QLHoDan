@@ -1,14 +1,16 @@
 //page
 import { NKTable, HKTable } from '~/page/Table';
 import { HKForm, NKForm, RequireRemoving, DeathConfirm, SeparateHousehold, ChangePopulation, ChangeHousehold } from '~/page/Form';
+import ForgetPassword from '~/page/ForgetPassword';
 import Authentication from '~/page/Authentication';
 import Profile from '~/page/Account';
-import Start from '~/page/StartPage';
 import Notification from '~/page/Notification';
+import Guest, { Guest_Add_Household, Guest_Add_Resident } from '~/page/GuestUI'
 // import ErrorLogin from '~/page/Error'
 //layout
 import DefaultLayout from '~/components/Layout/DefaultLayout'
 import AuthenticationLayout from '~/components/Layout/AuthenticationLayout'
+import GuestLayout from '~/components/Layout/GuestLayout';
 
 const routes = [
     // { path: '/dashboard', element: DashboardComponent, layout: DefaultLayout, id: 'db' },
@@ -40,9 +42,20 @@ const routes = [
 
 ]
 const loginRoute = [
-    { path: '/', element: Start, layout: AuthenticationLayout, id: 'start' },
+    {
+        path: '/', element: Guest, layout: GuestLayout, id: 'guest'
+
+    },
+
+    { path: '/guest/them_ho_khau', element: Guest_Add_Household, layout: GuestLayout, id: 'ad1' },
+    { path: '/guest/them_nhan_khau', element: Guest_Add_Resident, layout: GuestLayout, id: 'ad2' },
+
     {
         path: '/authenticate', element: Authentication, layout: AuthenticationLayout, id: 'default'
-    }];
+    },
+    {
+        path: '/forgetpassword', element: ForgetPassword, layout: AuthenticationLayout, id: 'forget'
+    }
+];
 // const errorRoute = { path: '/error', element: ErrorLogin, layout: AuthenticationLayout, id: 'error' };
 export { routes, loginRoute }
