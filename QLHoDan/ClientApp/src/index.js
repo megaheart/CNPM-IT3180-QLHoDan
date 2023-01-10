@@ -7,13 +7,13 @@ import { AuthProvider } from './components/AuthenProvider';
 import authenticationService from './services/account/authentication';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <GlobalStyles>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </GlobalStyles>
-  </React.StrictMode>
+    <React.StrictMode>
+        <GlobalStyles>
+            <AuthProvider>
+                <App />
+            </AuthProvider>
+        </GlobalStyles>
+    </React.StrictMode>
 );
 
 

@@ -103,6 +103,5 @@ class Authentication {
         return JSON.parse(jsonPayload);
     }
 }
-module.exports = Authentication;
 const authenticationService = new Authentication();
 export default authenticationService;
