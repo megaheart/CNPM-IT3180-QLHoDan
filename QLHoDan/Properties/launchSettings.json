@@ -1,21 +1,13 @@
-﻿{
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:4698",
-      "sslPort": 44378
-    }
-  },
+{
   "profiles": {
     "QLHoDan": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:7265;http://localhost:5076",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy"
-      }
+      },
+      "applicationUrl": "https://localhost:7265;http://localhost:5076"
     },
     "IIS Express": {
       "commandName": "IISExpress",
@@ -24,6 +16,36 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy"
       }
+    },
+    "No SPA": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "https://localhost:7265/swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "sqlDebugging": true,
+      "nativeDebugging": true,
+      "applicationUrl": "https://localhost:7265;http://localhost:5076"
+    },
+    "No SPA Ip": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "https://192.168.64.239:7266/swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://192.168.64.239:7266",
+      "sqlDebugging": true,
+      "nativeDebugging": true
+    }
+  },
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:4698",
+      "sslPort": 44378
     }
   }
 }
