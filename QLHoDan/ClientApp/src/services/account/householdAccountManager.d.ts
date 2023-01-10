@@ -1,20 +1,22 @@
-import {UserState} from './authentication';
 interface HouseholdAccount {
     userName:string;
     fullName:string;
-    scope:string;
+    scope:number;
     note?:string;
 }
 interface HouseholdAccountInfoChange {
     userName:string;
     fullName?:string;
-    scope?:string;
+    scope?:number;
     note?:string;
 }
+interface WithPassword {
+    password:string;
+}
 class HouseholdAccountManager {
-    async getHouseholdAccounts(token:string):Promise<HouseholdAccount[]>;
-    async addHouseholdAccount(token:string, account:HouseholdAccount):Promise<void>;
-    async changeHouseholdAccountInfo(token:string, info:HouseholdAccountInfoChange):Promise<void>;
+    async getAccounts(token:string):Promise<HouseholdAccount[]>;
+    async addAccount(token:string, account:HouseholdAccount & WithPassword):Promise<void>;
+    async changeAccountInfo(token:string, info:HouseholdAccountInfoChange):Promise<void>;
 }
 const householdAccountManager:HouseholdAccountManager;
 export default householdAccountManager;
