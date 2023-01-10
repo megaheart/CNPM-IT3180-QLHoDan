@@ -13,3 +13,16 @@
     position: relative;
     overflow: hidden;
 }
+.authenticate-header {
+    width: 100%;
+    position: fixed;
+    top: 1px;
+    height: 50px;
+    background-color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    // background-color: #ffffff10;
+    // backdrop-filter: blur(12px);
+    // -webkit-backdrop-filter: blur(12px);
+}

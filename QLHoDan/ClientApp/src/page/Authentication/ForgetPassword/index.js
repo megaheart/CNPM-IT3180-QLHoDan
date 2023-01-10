@@ -1,28 +1,24 @@
 //hooks
 import { useCallback, useState, useEffect, useRef, useContext } from 'react'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, NavLink } from 'react-router-dom';
 //material-ui
-import { Button, CircularProgress, FormHelperText, InputLabel, InputAdornment, IconButton, Input, FormControl } from '@mui/material'
+import { Button, CircularProgress, FormHelperText, InputLabel, InputAdornment, Input, FormControl } from '@mui/material'
 //icons
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import AccountCircle from '@mui/icons-material/AccountCircle';
-import VpnKeyIcon from '@mui/icons-material/VpnKey';
 
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import PaymentIcon from '@mui/icons-material/Payment';
 //validation
 import validation from '~/services/validate';
 
 //api
-import Reaptcha from 'reaptcha';
 import { AuthContext } from '~/components/AuthenProvider'
 import accountApi from '~/services/api/accountApi'
 //sass
-import styles from './Login.module.scss'
+import styles from './ForgetPassword.module.scss'
 import classNames from 'classnames/bind'
 const cx = classNames.bind(styles);
-const REACT_APP_SITE_KEY = "6LcpTdwjAAAAAAKuHebI2kb4q1i2wXcDur3aL8kK"
 
-export default function Login() {
+export default function ForgetPassword() {
     //auth context
     const { setAuth } = useContext(AuthContext);
     //user state
@@ -38,14 +34,6 @@ export default function Login() {
     const [errMsg, setErrMsg] = useState('');
     const [start, setStart] = useState(false);
     const navigate = useNavigate();
-    //capcha
-    //capcha
-    const [captchaToken, setCaptchaToken] = useState('');
-    const verify = async () => {
-        const res = await captchaRef.current.getResponse();
-        setCaptchaToken(res);
-    }
-    const captchaRef = useRef(null)
     //handle loading
     const [loading, setLoading] = useState(false);
     useEffect(() => {
@@ -76,9 +64,9 @@ export default function Login() {
                 setStart(true);
             }
             else {
-                setUsernameError('');
                 setPasswordError('');
                 const user = await accountApi.checkLogin({ username });
+                console.log(user)
                 if (user.length === 0) {
                     setStart(true);
                     setErrMsg('Tài khoản không tồn tại');
@@ -88,10 +76,6 @@ export default function Login() {
                     setStart(true);
                     setErrMsg('Mật khẩu không đúng');
                     userRef.current.focus();
-                }
-                else if (captchaToken === '' || captchaToken === null) {
-                    setStart(true);
-                    setErrMsg('Vui lòng xác nhận bạn không phải là robot');
                 }
                 else {
                     setAuth(user[0]);
@@ -117,10 +101,6 @@ export default function Login() {
         setLoading(false);
     }
 
-    const handleForgetPassword = () => {
-        navigate('/forgetpassword');
-    }
-
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
             handleSubmit(e);
@@ -136,17 +116,10 @@ export default function Login() {
         }
 
     }
-
-    //handle password visibility
-    const [showPassword, setShowPassword] = useState(false);
-    const handleClickShowPassword = useCallback(() => setShowPassword((show) => !show), []);
-    const handleMouseDownPassword = useCallback((event) => {
-        event.preventDefault();
-    }, [])
-
     //render
     return (
-        <div className={cx('login')}>
+        <div className={cx('forget')}>
+            <h2>Khôi phục mật khẩu</h2>
             <div className={cx('login-form')}>
                 <div className={cx('login-form__input')} >
                     <FormControl sx={{ margin: '10px 0' }} className={cx('input-login')} variant="standard">
@@ -171,54 +144,31 @@ export default function Login() {
                     </FormControl>
                     <FormControl sx={{ margin: '10px 0' }} variant="standard">
                         <InputLabel sx={{ fontSize: 20 }} htmlFor="input_login_password">
-                            Mật khẩu
+                            Số CCCD/CMND
                         </InputLabel>
                         <Input
                             inputRef={passRef}
                             sx={{ fontSize: 20 }}
                             id="input_login_password"
-                            type={showPassword ? 'text' : 'password'}
+                            type='text'
                             startAdornment={
                                 <InputAdornment position="start">
-                                    <VpnKeyIcon />
+                                    <PaymentIcon />
                                 </InputAdornment>
                             }
                             value={password || ''}
                             onChange={handleValueInput}
                             onKeyDown={handleKeyDown}
-                            endAdornment={
-                                <InputAdornment position="end">
-                                    <IconButton
-                                        aria-label="toggle password visibility"
-                                        onClick={handleClickShowPassword}
-                                        onMouseDown={handleMouseDownPassword}
-                                        edge="end"
-                                    >
-                                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                                    </IconButton>
-                                </InputAdornment>
-                            }
-                            required
                         />
                         {start && <FormHelperText sx={{ fontSize: 10, color: 'red' }}>{passwordError}</FormHelperText>}
                     </FormControl>
-                    <span onClick={handleForgetPassword} className={cx('btn-text')}>Quên mật khẩu?</span>
-                    {<div style={{ margin: '0 auto' }}>
-                        <Reaptcha sitekey={REACT_APP_SITE_KEY} onVerify={verify} ref={captchaRef} />
-                    </div> || <CircularProgress
-                            sx={{
-                                marginTop: 1,
-                                animationDuration: '550ms',
-                            }}
-                            size={20}
-                            thickness={4} />}
                 </div>
                 <Button
                     variant="contained"
                     color="primary"
                     disabled={(usernameError.isValid && passwordError.isValid) ? true : false}
                     onClick={handleSubmit} sx={{ fontSize: 16, padding: "8px 18px " }} >
-                    Đăng nhập
+                    Xác nhận
                 </Button>
                 {loading &&
                     <CircularProgress
@@ -230,12 +180,8 @@ export default function Login() {
                         thickness={4} />}
                 {start && <p ref={errRef} style={{ marginTop: 10, color: 'red' }}>{errMsg}</p>}
                 <hr className={cx('hr-login')} />
-                <p style={{ fontSize: 18 }}>Chưa có tài khoản? <span className={cx('signup-btn')}>Đăng ký</span></p>
-                <div>
-                    <span></span>
-                </div>
             </div>
-
+            <h4><NavLink className={cx('go_to_authen')} to='/authenticate'>Quay lại trang đăng nhập</NavLink></h4>
         </div>
     )
 }

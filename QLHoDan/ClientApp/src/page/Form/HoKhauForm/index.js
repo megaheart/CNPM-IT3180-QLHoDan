@@ -172,7 +172,7 @@ export default function FormHKComponent() {
                 noValidate
                 autoComplete="off"
             >
-                <h1>Đơn đăng ký hộ khẩu</h1>
+                <h1 className={cx('title')}>Đơn đăng ký hộ khẩu</h1>
                 <div className={cx('input-text-area')}>
                     <TextField helperText='' required label="Số hộ khẩu" inputProps={{
                         style: { fontSize: 20 }

@@ -17,7 +17,7 @@ import classNames from 'classnames/bind'
 const cx = classNames.bind(styles)
 
 
-export default function Signup({ act }) {
+export default function Signup() {
     //use to navigate
     const navigate = useNavigate();
 
@@ -42,7 +42,7 @@ export default function Signup({ act }) {
     const [msg, setMsg] = useState('');
 
     //handle register
-    const handleRegister = async (e) => {
+    const handleRegister = async () => {
         setLoading(true);
         setStatus(false);
         try {
@@ -168,7 +168,7 @@ export default function Signup({ act }) {
                     thickness={4} />}
                 {status && <p style={{ marginTop: 10, color: 'red' }}>{msg}</p>}
                 <hr className={cx('hr-login')} />
-                <p style={{ fontSize: 18 }}>Đã có tài khoản? <span onClick={() => act('1')} className={cx('signin-btn')}>Đăng nhập</span></p>
+                <p style={{ fontSize: 18 }}>Đã có tài khoản? <span className={cx('signin-btn')}>Đăng nhập</span></p>
             </div>
         </div>
     )

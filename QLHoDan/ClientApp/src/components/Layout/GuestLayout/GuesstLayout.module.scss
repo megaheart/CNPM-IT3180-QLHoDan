@@ -1,0 +1,28 @@
+.wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    // justify-content: center;
+    flex-direction: row;
+    align-items: flex-start;
+    background-color: #eff1f4;
+    gap: 5px;
+    // background-image: url('../../../assets/Image/Background/wp7076634.jpg');
+    // background-repeat: repeat-y;
+    // background-position: center;
+    // background-attachment: fixed;
+    // background-size: cover;
+}
+
+.container {
+    flex: 1;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    gap: 5px;
+    justify-content: flex-start;
+}
+.content {
+    height: 80%;
+}

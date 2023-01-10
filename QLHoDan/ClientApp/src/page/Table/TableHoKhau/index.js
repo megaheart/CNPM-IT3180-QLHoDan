@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import { Collapse, Button, TextField, Alert, Snackbar, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { Button, Alert, Snackbar, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import FullScreenDialog from '../DiaLog/fullScreen';
 
@@ -45,6 +45,7 @@ export default function TableHoKhau() {
     //trường dữ liệu từng cột
     const [idField, setIdField] = useState();
     const [deskField, setDeskField] = useState();
+    //...
     //còn tiếp
 
     //confirm box xóa 1 hộ khẩu, xuất hiện khi nhấn nút xóa
@@ -163,7 +164,7 @@ export default function TableHoKhau() {
                 }
             ]);
             setLoadData(false);
-        }, 3000);
+        }, 1000);
         return () => clearTimeout(a);
     }, [])
     return (
