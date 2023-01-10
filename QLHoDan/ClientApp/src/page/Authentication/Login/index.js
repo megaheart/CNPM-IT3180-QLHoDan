@@ -22,7 +22,7 @@ import classNames from 'classnames/bind'
 const cx = classNames.bind(styles);
 const REACT_APP_SITE_KEY = "6LcpTdwjAAAAAAKuHebI2kb4q1i2wXcDur3aL8kK"
 
-export default function Login({ act }) {
+export default function Login() {
     //auth context
     const { setAuth } = useContext(AuthContext);
     //user state
@@ -230,7 +230,7 @@ export default function Login({ act }) {
                         thickness={4} />}
                 {start && <p ref={errRef} style={{ marginTop: 10, color: 'red' }}>{errMsg}</p>}
                 <hr className={cx('hr-login')} />
-                <p style={{ fontSize: 18 }}>Chưa có tài khoản? <span onClick={() => act('2')} className={cx('signup-btn')}>Đăng ký</span></p>
+                <p style={{ fontSize: 18 }}>Chưa có tài khoản? <span className={cx('signup-btn')}>Đăng ký</span></p>
                 <div>
                     <span></span>
                 </div>

@@ -1,8 +1,8 @@
 //page
 import { NKTable, HKTable } from '~/page/Table';
 import { HKForm, NKForm, RequireRemoving, DeathConfirm, SeparateHousehold, ChangePopulation, ChangeHousehold } from '~/page/Form';
-import ForgetPassword from '~/page/ForgetPassword';
-import Authentication from '~/page/Authentication';
+import ForgetPassword from '~/page/Authentication/ForgetPassword';
+import { Login, Register, Authentication } from '~/page/Authentication';
 import Profile from '~/page/Account';
 import Notification from '~/page/Notification';
 import Guest, { Guest_Add_Household, Guest_Add_Resident } from '~/page/GuestUI'
@@ -51,7 +51,13 @@ const loginRoute = [
     { path: '/guest/them_nhan_khau', element: Guest_Add_Resident, layout: GuestLayout, id: 'ad2' },
 
     {
-        path: '/authenticate', element: Authentication, layout: AuthenticationLayout, id: 'default'
+        path: '/authenticate', element: ForgetPassword, layout: AuthenticationLayout, id: 'default'
+    },
+    {
+        path: '/login', element: Login, layout: Authentication, id: 'login'
+    },
+    {
+        path: '/register', element: Register, layout: Authentication, id: 'register'
     },
     {
         path: '/forgetpassword', element: ForgetPassword, layout: AuthenticationLayout, id: 'forget'
