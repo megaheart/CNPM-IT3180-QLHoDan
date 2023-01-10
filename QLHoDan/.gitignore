@@ -230,3 +230,7 @@ _Pvt_Extensions
 
 # FAKE - F# Make
 .fake/
+
+#local
+.gitignore
+ClientApp/src/index.js

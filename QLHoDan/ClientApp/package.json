@@ -63,5 +63,8 @@
         "react-router-dom": "^6.4.5",
         "react-smooth-collapse": "^2.1.2",
         "sass": "^1.56.2"
+    },
+    "jest": {
+        "testURL": "https://localhost:7265"
     }
 }
