@@ -11,12 +11,10 @@ import ActionItem from '~/components/component/Action';
 //services
 import accountService from '~/services/account';
 //icons
-import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-import CircularProgress from '@mui/material/CircularProgress';
 import HomeIcon from '@mui/icons-material/Home';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleXmark, faSpinner, faMagnifyingGlass, faUser, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { faCircleXmark, faMagnifyingGlass, faUser, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { Avatar, Badge, Alert, Stack } from '@mui/material';
 import MailIcon from '@mui/icons-material/Mail';
 //search
@@ -29,13 +27,13 @@ function Header({ text }) {
     //tippy for avatar button
     const tippy = useRef();
     const [tippyAvatar, setTippyAvatar] = useState(null);
-    const turnOnTippy = (e) => {
+    const turnOnTippy = () => {
         setTippyAvatar(true);
     }
     //tippy for message button
     const tippyMessage = useRef();
     const [messageVisible, setMessageVisible] = useState(null);
-    const turnOnTippyMessage = (e) => {
+    const turnOnTippyMessage = () => {
         setMessageVisible(true);
     }
     //tippy and event for search bar
@@ -92,7 +90,7 @@ function Header({ text }) {
             <div className={cx('header-head')}>
                 <div className={cx('header-1')}>
                     <div className={cx('header-1-2')}>
-                        <span><NavLink className={cx('nav-item')} to='/dashboard'><HomeIcon /></NavLink></span>
+                        <span><NavLink className={cx('nav-item')} to='/profile'><HomeIcon /></NavLink></span>
                         <span><KeyboardArrowRightIcon className={cx('nav-item')} /></span>
                         <span>{text}</span>
                     </div>

@@ -181,7 +181,7 @@ export default function ForgetPassword() {
                 {start && <p ref={errRef} style={{ marginTop: 10, color: 'red' }}>{errMsg}</p>}
                 <hr className={cx('hr-login')} />
             </div>
-            <h4><NavLink className={cx('go_to_authen')} to='/authenticate'>Quay lại trang đăng nhập</NavLink></h4>
+            <h4><NavLink className={cx('go_to_authen')} to='/login'>Quay lại trang đăng nhập</NavLink></h4>
         </div>
     )
 }

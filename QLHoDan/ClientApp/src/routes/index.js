@@ -1,6 +1,6 @@
 //page
-import { NKTable, HKTable } from '~/page/Table';
-import { HKForm, NKForm, RequireRemoving, DeathConfirm, SeparateHousehold, ChangePopulation, ChangeHousehold } from '~/page/Form';
+import { NKTable, HKTable, ResidentHistory } from '~/page/Table';
+import { HKForm, NKForm, RequireRemoving, DeathConfirm, SeparateHousehold, ChangePopulation, ChangeHousehold, FixHouseholdNumber, ConfirmAchievement } from '~/page/Form';
 import ForgetPassword from '~/page/Authentication/ForgetPassword';
 import { Login, Register, Authentication } from '~/page/Authentication';
 import Profile from '~/page/Account';
@@ -24,6 +24,8 @@ const routes = [
             { subpath: '/addnew/don_tach_ho_khau', element: SeparateHousehold, id: 'sh' },
             { subpath: '/addnew/don_chuyen_doi_nhan_khau', element: ChangePopulation, id: 'cp' },
             { subpath: '/addnew/don_thay_doi_ho_khau', element: ChangeHousehold, id: 'ch' },
+            { subpath: '/addnew/don_sua_so_ho_khau', element: FixHouseholdNumber, id: 'fh' },
+            { subpath: '/addnew/don_xac_nhan_thanh_tich', element: ConfirmAchievement, id: 'ca' },
         ],
         id: 'tb',
         layout: DefaultLayout
@@ -32,6 +34,7 @@ const routes = [
         path: '/table', subRoutes: [
             { subpath: '/table/ho_khau', element: HKTable, id: 'tb1' },
             { subpath: '/table/nhan_khau', element: NKTable, id: 'tb2' },
+            { subpath: '/table/lich_su_nhan_khau', element: ResidentHistory, id: 'tb3' }
         ],
         layout: DefaultLayout, id: 'add'
     },

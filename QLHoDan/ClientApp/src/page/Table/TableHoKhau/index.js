@@ -3,7 +3,7 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { Button, Alert, Snackbar, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import FullScreenDialog from '../DiaLog/fullScreen';
-
+import AddHouseholDialog from '../DiaLog/AddHouseHold';
 import TableSkeleton from '../../Skeleton/index'
 // import styles from './Table1.module.scss';
 // import classNames from 'classnames/bind';
@@ -84,6 +84,11 @@ export default function TableHoKhau() {
         setDeleteId(null);
         setOpenAlert(false);
     };
+    // dialog tạo 1 hộ khẩu
+    const [isCreateMode, setIsCreateMode] = useState(false);
+    const closeCreateMode = () => {
+        setIsCreateMode(false);
+    }
     //thêm trạng thái các nút cho từng dòng: sưa, xóa, chi tiết
     useEffect(() => {
         setLoadData(true);
@@ -169,6 +174,7 @@ export default function TableHoKhau() {
     }, [])
     return (
         <div style={{ height: '90%', width: '100%', margin: '10' }}>
+            <AddHouseholDialog open={isCreateMode} onClose={closeCreateMode} />
             <Snackbar open={success} autoHideDuration={6000} onClose={handleCloseSnackbar}>
                 <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%', fontSize: 15 }}>
                     Xoá hộ khẩu thành công!
@@ -196,22 +202,25 @@ export default function TableHoKhau() {
                 </div>
             </Collapse> */}
 
-            {loadData ? <TableSkeleton /> : <DataGrid
-                sx={{ fontSize: 15 }}
-                editMode="row"
-                rows={rows}
-                columns={columnsTable}
-                components={{
-                    Toolbar: GridToolbar,
-                }}
-                componentsProps={{
-                    toolbar: {
-                        showQuickFilter: true,
-                        quickFilterProps: { debounceMs: 500 },
-                    },
-                }}
-                disableSelectionOnClick
-            />}
+            {
+                loadData ? <TableSkeleton /> : <DataGrid
+                    sx={{ fontSize: 15 }}
+                    editMode="row"
+                    rows={rows}
+                    columns={columnsTable}
+                    components={{
+                        Toolbar: GridToolbar,
+                    }}
+                    componentsProps={{
+                        toolbar: {
+                            showQuickFilter: true,
+                            quickFilterProps: { debounceMs: 500 },
+                        },
+                    }}
+                    disableSelectionOnClick
+                />
+            }
+            <Button onClick={() => setIsCreateMode(true)}>Thêm hộ khẩu</Button>
             <Dialog
                 open={openAlert}
                 onClose={handleClose}

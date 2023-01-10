@@ -173,7 +173,7 @@ export default function ChangeHousehold() {
                 noValidate
                 autoComplete="off"
             >
-                <h1>Đơn đăng ký hộ khẩu</h1>
+                <h1>Đơn thay đổi hộ khẩu</h1>
                 <div className={cx('input-text-area')}>
                     <TextField helperText='' required label="Số hộ khẩu" inputProps={{
                         style: { fontSize: 20 }
