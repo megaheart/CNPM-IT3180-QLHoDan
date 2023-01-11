@@ -5,7 +5,8 @@ import ForgetPassword from '~/page/Authentication/ForgetPassword';
 import { Login, Register, Authentication } from '~/page/Authentication';
 import Profile from '~/page/Account';
 import Notification from '~/page/Notification';
-import Guest, { Guest_Add_Household, Guest_Add_Resident } from '~/page/GuestUI'
+import Guest, { Guest_Add_Household, Guest_Add_Resident } from '~/page/GuestUI';
+import DashboardComponent from '~/page/Dashboard';
 // import ErrorLogin from '~/page/Error'
 //layout
 import DefaultLayout from '~/components/Layout/DefaultLayout'
@@ -13,7 +14,7 @@ import AuthenticationLayout from '~/components/Layout/AuthenticationLayout'
 import GuestLayout from '~/components/Layout/GuestLayout';
 
 const routes = [
-    // { path: '/dashboard', element: DashboardComponent, layout: DefaultLayout, id: 'db' },
+    { path: '/dashboard', element: DashboardComponent, layout: DefaultLayout, id: 'db' },
     {
         path: '/addnew',
         subRoutes: [

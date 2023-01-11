@@ -97,7 +97,7 @@ export default function Login() {
                 }
                 else {
                     setAuth(user[0]);
-                    navigate('/profile');
+                    navigate('/dashboard');
                 }
             }
         }

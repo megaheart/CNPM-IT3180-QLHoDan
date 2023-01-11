@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { routes, loginRoute } from '~/routes'
 import { AuthContext } from './components/AuthenProvider';
 import { useContext } from 'react';
-import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
 
 function App() {
   const { auth } = useContext(AuthContext);

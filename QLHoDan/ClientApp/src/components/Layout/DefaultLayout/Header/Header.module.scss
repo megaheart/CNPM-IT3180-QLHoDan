@@ -173,4 +173,7 @@
 
 .tippy {
     margin-right: 20px;
+    &::-webkit-scrollbar {
+        width: 0;
+    }
 }

@@ -1,5 +1,5 @@
 .author-layout {
-    background-image: url('../../../assets/Image/Background/mihoyo.png');
+    background-image: url('../../../assets/Image/Background/business.png');
     background-repeat: no-repeat;
     background-position: center;
     background-attachment: fixed;
@@ -17,11 +17,18 @@
     position: fixed;
     top: 1px;
     height: 50px;
-    background-color: #000;
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: flex-end;
     // background-color: #ffffff10;
     // backdrop-filter: blur(12px);
     // -webkit-backdrop-filter: blur(12px);
+}
+.header-nav {
+    font-size: 15px;
+    display: flex;
+    justify-content: space-around;
+    gap: 5px;
+    margin: 5px;
 }

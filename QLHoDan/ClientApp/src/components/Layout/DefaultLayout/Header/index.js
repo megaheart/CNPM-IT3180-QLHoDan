@@ -1,6 +1,7 @@
 import { useState, useRef, useContext, useEffect } from 'react';
 import { AuthContext } from '~/components/AuthenProvider';
 
+import { deepOrange, deepPurple } from '@mui/material/colors';
 import styles from './Header.module.scss';
 import classNames from 'classnames/bind';
 import { NavLink } from "react-router-dom";
@@ -182,7 +183,9 @@ function Header({ text }) {
                         </div>
                     )}
                 >
-                    <Avatar sx={{ cursor: 'pointer', border: '2px solid transparent', '&:hover': { borderColor: 'green' } }} src={fuhua} onClick={turnOnTippy} />
+                    <Avatar sx={{ cursor: 'pointer', border: '2px solid transparent', '&:hover': { borderColor: 'green' }, bgcolor: deepOrange[500] }}
+                        onClick={turnOnTippy} >N</Avatar>
+                    {/* <Avatar sx={{ cursor: 'pointer', border: '2px solid transparent', '&:hover': { borderColor: 'green' } }} src={fuhua} onClick={turnOnTippy} /> */}
                 </Tippy>
             </div>
         </ header>

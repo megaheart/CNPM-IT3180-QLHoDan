@@ -12,8 +12,7 @@ const loggout = () => {
 }
 
 const buttons = [
-    // { icon: <DashboardIcon />, title: 'Dashboard', link: '/dashboard', id: 'dashboard' },
-    { icon: <AccountBoxIcon />, title: 'Tài khoản', link: '/profile', id: 'profile' },
+    { icon: <DashboardIcon />, title: 'Hệ thống', link: '/dashboard', id: 'dashboard' },
     {
         icon: <PlaylistAddIcon />, title: 'Gửi đơn', link: '/addnew/them_ho_khau',
         collapse: [
@@ -32,11 +31,13 @@ const buttons = [
     {
         icon: <FindInPage />, title: 'Quản lý', link: '/table/ho_khau', id: 'table',
         collapse: [
-            { icon: <TableViewIcon />, title: 'Hộ khẩu', id: 'table1', linkCol: '/table/ho_khau' },
-            { icon: <TableViewIcon />, title: 'Nhân khẩu', id: 'table2', linkCol: '/table/nhan_khau' },
+            { icon: <TableViewIcon />, title: 'Danh sách hộ khẩu', id: 'table1', linkCol: '/table/ho_khau' },
+            { icon: <TableViewIcon />, title: 'Hồ sơ nhân khẩu', id: 'table2', linkCol: '/table/nhan_khau' },
             { icon: <TableViewIcon />, title: 'Lịch sử biến đổi nhân khẩu', id: 'table3', linkCol: '/table/lich_su_nhan_khau' },
         ]
     },
+
+    { icon: <AccountBoxIcon />, title: 'Tài khoản', link: '/profile', id: 'profile' },
     { icon: <NotificationsNoneIcon />, title: 'Thông báo', link: '/notification', id: 'notification' },
     { icon: <LogoutIcon />, title: 'Đăng xuất', link: '/', id: 'logout', isLogout: true, action: loggout },
 ]

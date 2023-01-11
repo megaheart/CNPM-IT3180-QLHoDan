@@ -80,7 +80,7 @@ export default function Signup() {
                     }
                     setAuth(data);
                     await accountApi.addAccount(data);
-                    setTimeout(() => navigate('/profile'), 100);
+                    setTimeout(() => navigate('/dashboard'), 100);
                 }
             }
 
