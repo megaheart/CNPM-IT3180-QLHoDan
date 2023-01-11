@@ -18,7 +18,12 @@
     width: 70%;
     height: auto;
 }
-
+.info-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-direction: column;
+}
 .change-avatar {
     position: absolute;
     bottom: -5px;

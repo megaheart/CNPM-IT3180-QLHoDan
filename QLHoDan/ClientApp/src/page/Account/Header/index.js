@@ -16,18 +16,20 @@ export default function Header() {
                     width: 300,
                     margin: '0 auto',
                     height: 300,
-                    fontSize: 150,
+                    fontSize: 100,
                     bgcolor: deepOrange[500]
                 }}
-                >N</Avatar>
+                >Đức</Avatar>
                 {/* <button className={cx('change-avatar')}><CameraAltOutlined /></button> */}
             </div>
             <h3>Bùi Trọng Đức</h3>
-            <span>helloworld123</span>
-            <span>Quyền hạn: Admin</span>
-            <hr />
-            <span>Nghề nghiệp : Tổ trưởng </span>
-            <span>Số điện thoại : 3243243423</span>
+            <div className={cx('info-container')}>
+                <span><b>Tên đăng nhập</b>: helloworld123</span>
+                <span><b>Quyền hạn</b>: Admin</span>
+                <hr />
+                <span><b>Nghề nghiệp</b> : Tổ trưởng </span>
+                <span><b>Số điện thoại</b> : 3243243423</span>
+            </div>
         </div>
     )
 }

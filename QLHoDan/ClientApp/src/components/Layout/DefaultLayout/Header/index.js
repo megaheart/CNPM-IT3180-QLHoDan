@@ -184,7 +184,7 @@ function Header({ text }) {
                     )}
                 >
                     <Avatar sx={{ cursor: 'pointer', border: '2px solid transparent', '&:hover': { borderColor: 'green' }, bgcolor: deepOrange[500] }}
-                        onClick={turnOnTippy} >N</Avatar>
+                        onClick={turnOnTippy} >Đức</Avatar>
                     {/* <Avatar sx={{ cursor: 'pointer', border: '2px solid transparent', '&:hover': { borderColor: 'green' } }} src={fuhua} onClick={turnOnTippy} /> */}
                 </Tippy>
             </div>
