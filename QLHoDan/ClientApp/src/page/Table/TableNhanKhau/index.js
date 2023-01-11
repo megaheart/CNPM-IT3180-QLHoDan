@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { Button, DialogContentText, DialogContent, DialogTitle, Dialog, Alert, DialogActions, Snackbar } from '@mui/material';
 import TableSkeleton from '../../Skeleton/index'
-
+import AddResidentDialog from '../DiaLog/AddResident';
 // import styles from './Table1.module.scss';
 // import classNames from 'classnames/bind';
 
@@ -31,6 +31,13 @@ export default function TableNhanKhau() {
     const [loadData, setLoadData] = useState(false);
     const [selectedRow, setSelectedRow] = useState();
     const [columnsTable, setColumsTable] = useState(columns);
+    // dialog tạo 1 hộ khẩu
+    const [isCreateMode, setIsCreateMode] = useState(false);
+    const closeCreateMode = () => {
+        setIsCreateMode(false);
+    }
+    //trạng thái thành công khi xóa 1 nhân khẩu
+    const [success, setSuccess] = useState(false);
     //confirm box xóa 1 nhân khẩu, xuất hiện khi nhấn nút xóa
     const [openDialog, setOpenDialog] = useState(false);
     //id của nhân khẩu cần xóa
@@ -52,8 +59,8 @@ export default function TableNhanKhau() {
         setDeleteId(null);
         setOpenDialog(false);
     };
-    //trạng thái thành công khi xóa 1 nhân khẩu
-    const [success, setSuccess] = useState(false);
+
+
     const handleCloseSnackbar = (event, reason) => {
         if (reason === 'clickaway') {
             return;
@@ -119,6 +126,7 @@ export default function TableNhanKhau() {
 
     return (
         <div style={{ height: '90%', width: '100%', margin: '10' }}>
+            <AddResidentDialog open={isCreateMode} onClose={closeCreateMode} />
             {/* <div>
                 <Button sx={{ margin: '0 5px 1px 0' }} variant="contained" color="primary" onClick={() => setVisible(!visible)}>
                     Edit
@@ -169,6 +177,7 @@ export default function TableNhanKhau() {
                 }}
                 disableSelectionOnClick
             />}
-        </div>
+            <Button variant='contained' sx={{ fontSize: 16 }} onClick={() => setIsCreateMode(true)}>Thêm nhân khẩu</Button>
+        </div >
     );
 }

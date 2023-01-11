@@ -17,7 +17,7 @@ const buttons = [
     {
         icon: <PlaylistAddIcon />, title: 'Gửi đơn', link: '/addnew/them_ho_khau',
         collapse: [
-            { title: 'Thêm hộ khẩu', id: 'addnew1', linkCol: '/addnew/them_ho_khau' },
+            { title: 'Đăng ký', id: 'addnew1', linkCol: '/addnew/them_ho_khau' },
             { title: 'Thêm nhân khẩu', id: 'addnew2', linkCol: '/addnew/them_nhan_khau' },
             { title: 'Xin chuyển đi', id: 'addnew3', linkCol: '/addnew/don_xin_chuyen_di' },
             { title: 'Chứng tử', id: 'addnew4', linkCol: '/addnew/don_chung_tu' },
@@ -30,7 +30,7 @@ const buttons = [
         id: 'addnew'
     },
     {
-        icon: <FindInPage />, title: 'Tra cứu', link: '/table/ho_khau', id: 'table',
+        icon: <FindInPage />, title: 'Quản lý', link: '/table/ho_khau', id: 'table',
         collapse: [
             { icon: <TableViewIcon />, title: 'Hộ khẩu', id: 'table1', linkCol: '/table/ho_khau' },
             { icon: <TableViewIcon />, title: 'Nhân khẩu', id: 'table2', linkCol: '/table/nhan_khau' },

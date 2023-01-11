@@ -2,7 +2,9 @@
 import { useCallback, useState, useEffect, useRef, useContext } from 'react'
 import { useNavigate } from 'react-router-dom';
 //material-ui
-import { Button, CircularProgress, FormHelperText, InputLabel, InputAdornment, IconButton, Input, FormControl } from '@mui/material'
+import { Button, CircularProgress, FormHelperText, InputLabel, InputAdornment, IconButton, Input, FormControl } from '@mui/material';
+//router
+import { Link } from 'react-router-dom'
 //icons
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
@@ -230,7 +232,7 @@ export default function Login() {
                         thickness={4} />}
                 {start && <p ref={errRef} style={{ marginTop: 10, color: 'red' }}>{errMsg}</p>}
                 <hr className={cx('hr-login')} />
-                <p style={{ fontSize: 18 }}>Chưa có tài khoản? <span className={cx('signup-btn')}>Đăng ký</span></p>
+                <p style={{ fontSize: 18 }}>Chưa có tài khoản? <Link to='/register'><span className={cx('signup-btn')}>Đăng ký</span></Link></p>
                 <div>
                     <span></span>
                 </div>

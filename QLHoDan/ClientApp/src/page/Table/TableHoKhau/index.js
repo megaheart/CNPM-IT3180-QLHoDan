@@ -36,15 +36,11 @@ export default function TableHoKhau() {
     const [rows, setRows] = useState(rowInit);
     //
     const [loadData, setLoadData] = useState(false);
-    //trạng thái thanh chỉnh sửa thông tin từng hộ khẩu
-    const [visible, setVisible] = useState(false);
 
     //các trường dữ liệu trong bảng
     const [columnsTable, setColumsTable] = useState(columns);
 
     //trường dữ liệu từng cột
-    const [idField, setIdField] = useState();
-    const [deskField, setDeskField] = useState();
     //...
     //còn tiếp
 
@@ -55,7 +51,7 @@ export default function TableHoKhau() {
     const [deleteId, setDeleteId] = useState();
 
     //1 dialog hiển thị chi tiết hộ khẩu khi nhấn vào nút 'chi tiết'
-    const [dialogInfo, setDialogInfo] = useState();
+    const [dialogInfo, setDialogInfo] = useState(false);
 
     //trạng thái thành công khi xóa 1 hộ khẩu
     const [success, setSuccess] = useState(false);
@@ -220,7 +216,7 @@ export default function TableHoKhau() {
                     disableSelectionOnClick
                 />
             }
-            <Button onClick={() => setIsCreateMode(true)}>Thêm hộ khẩu</Button>
+            <Button sx={{ fontSize: 16 }} variant='contained' onClick={() => setIsCreateMode(true)}>Thêm hộ khẩu</Button>
             <Dialog
                 open={openAlert}
                 onClose={handleClose}

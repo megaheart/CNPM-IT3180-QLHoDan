@@ -49,12 +49,7 @@ function Authentication({ children }) {
                     <TabPanel value="2"><Register act={setValue} /></TabPanel> */}
                     </TabContext>
                     {children}
-                    <div className={cx('footer-login')}>
-                        <span className={cx('btn-text')}>Chính sách</span>
-                        <span className={cx('btn-text')} >Bảo mật</span>
-                        <span className={cx('btn-text')}>Quyền</span>
-                        <span className={cx('btn-text')}>Liên lạc</span>
-                    </div>
+
                 </Box>
             </div>
         </AuthenticationLayout>
