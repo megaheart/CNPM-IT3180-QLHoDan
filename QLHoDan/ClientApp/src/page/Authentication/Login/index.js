@@ -1,6 +1,7 @@
 //hooks
-import { useCallback, useState, useEffect, useRef, useContext } from 'react'
+import { useCallback, useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom';
+import useAuth from "~/hooks/useAuth";
 //material-ui
 import { Button, CircularProgress, FormHelperText, InputLabel, InputAdornment, IconButton, Input, FormControl } from '@mui/material';
 //router
@@ -16,7 +17,6 @@ import validation from '~/services/validate';
 
 //api
 import Reaptcha from 'reaptcha';
-import { AuthContext } from '~/components/AuthenProvider'
 import accountApi from '~/services/api/accountApi'
 //sass
 import styles from './Login.module.scss'
@@ -26,7 +26,7 @@ const REACT_APP_SITE_KEY = "6LcpTdwjAAAAAAKuHebI2kb4q1i2wXcDur3aL8kK"
 
 export default function Login() {
     //auth context
-    const { setAuth } = useContext(AuthContext);
+    const { setAuth } = useAuth();
     //user state
     const [username, setUserName] = useState('');
     const [password, setPassword] = useState('');
@@ -97,7 +97,7 @@ export default function Login() {
                 }
                 else {
                     setAuth(user[0]);
-                    navigate('/dashboard');
+                    navigate('/profile');
                 }
             }
         }

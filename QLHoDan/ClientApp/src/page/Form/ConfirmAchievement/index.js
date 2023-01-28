@@ -7,7 +7,6 @@ import classNames from 'classnames/bind';
 const cx = classNames.bind(styles);
 
 export default function ConfirmAchievement() {
-
     const [open, setOpen] = useState(false);
     const handleClose = () => {
         setOpen(false);
@@ -33,7 +32,6 @@ export default function ConfirmAchievement() {
             arrImg && arrImg.forEach((file) => URL.revokeObjectURL(file.preview))
             //remvove the temporary url if avatar exists
         }
-
     }, [arrImg]);
     const removeImageByClick = (index) => {
         setArrImg(prev => prev.filter((item, i) => i !== index) || [])
@@ -103,7 +101,6 @@ export default function ConfirmAchievement() {
                         >
                             <Add /> Ảnh minh chứng
                         </Fab>
-
                     </label>
                     {(arrImg.length > 0) && <div className={cx('img-render')}>{arrImg.map((item, index) => (
                         <div key={"image" + index} style={{ position: 'relative', display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center', width: 'auto' }}>

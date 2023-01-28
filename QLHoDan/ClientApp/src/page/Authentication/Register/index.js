@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import { useState, useContext } from 'react'
+import { useState } from 'react';
+import useAuth from "~/hooks/useAuth";
 //router
 import { Link } from 'react-router-dom'
 //material-ui
@@ -10,8 +11,6 @@ import VpnKeyIcon from '@mui/icons-material/VpnKey';
 //api
 import accountApi from '../../../services/api/accountApi'
 import validation from '~/services/validate';
-//context 
-import { AuthContext } from '~/components/AuthenProvider'
 //style
 import styles from './Register.module.scss'
 import classNames from 'classnames/bind'
@@ -27,7 +26,7 @@ export default function Signup() {
     const [loading, setLoading] = useState(false);
 
     //auth context
-    const { setAuth } = useContext(AuthContext);
+    const { setAuth } = useAuth();
 
     //user state to register
     const [username, setUserName] = useState('');
