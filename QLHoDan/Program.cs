@@ -25,11 +25,11 @@ builder.Services.AddScoped<QLHoDan.Services.ITokenCreationService, JwtService>()
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
             ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-var sqliteConnectionString = builder.Configuration.GetConnectionString("SQLite")
-            ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+var connection2String = builder.Configuration.GetConnectionString("Connection2")
+            ?? throw new InvalidOperationException("Connection string 'Connection2' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     //options.UseSqlite(identityDataConnectionString)
-    options.UseSqlServer(connectionString)
+    options.UseSqlServer(connection2String)
 );
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>

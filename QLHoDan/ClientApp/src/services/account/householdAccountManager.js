@@ -19,7 +19,7 @@ class HouseholdAccountManager {
             },
             body: JSON.stringify(account)
         });
-        if (response.status != 200) return Promise.reject(await response.json());
+        if (response.status !== 200) return Promise.reject(await response.json());
         //return await response.text();
     }
     async changeAccountInfo(token, info) {
@@ -31,7 +31,7 @@ class HouseholdAccountManager {
             },
             body: JSON.stringify(info)
         });
-        if (response.status != 200) return Promise.reject(await response.json());
+        if (response.status !== 200) return Promise.reject(await response.json());
         //return await response.json();
     }
 }

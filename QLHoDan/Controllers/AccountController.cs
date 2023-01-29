@@ -20,6 +20,7 @@ namespace QLHoDan.Controllers
     [Route("api/account")]
     [ApiController]
     //[EnableCors("DevOnly_AllowSpecificOrigins")]
+
     public class AccountController : ControllerBase
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
@@ -50,10 +51,16 @@ namespace QLHoDan.Controllers
         }
         // POST api/account/signin
         /// <summary>
-        /// 
+        /// Đăng nhập vào hệ thống
         /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
+        /// <param name="model">
+        /// Bao gồm tên đăng nhập và mật khẩu của tài khoản muốn đăng nhập
+        /// </param>
+        /// <returns>
+        /// Nếu thành công sẽ trả về một đối tượng JSON có trường token lưu trữ đoạn mã dùng để xác minh truy cập.
+        /// Còn nếu thất bại thì trả về <seealso cref="ControllerBase.ModelState"/> khi request sai format hoặc
+        /// <seealso cref="RequestError"/> khi request bao gồm những thông tin không hợp lệ
+        /// </returns>
         [HttpPost("signin")]
         [AllowAnonymous]
         public async Task<IActionResult> SignIn([FromBody] SignInRequestModel model)
@@ -168,9 +175,20 @@ namespace QLHoDan.Controllers
 
         }
         //POST api/account/changepassword
+        /// <summary>
+        /// Thay đổi mật khẩu người dùng
+        /// </summary>
+        /// <param name="model">Mật khẩu cũ để xem xem có phải người sở hữu tài khoản thực hiện thay đổi không 
+        /// và mật khẩu mới mà người sở hữu tài khoản muốn đổi thành</param>
+        /// <returns>
+        /// Nếu thành công sẽ trả về một đối tượng JSON có trường token lưu trữ đoạn mã dùng để xác minh truy cập.
+        /// Còn nếu thất bại thì trả về <seealso cref="ControllerBase.ModelState"/> khi request sai format hoặc
+        /// <seealso cref="RequestError"/> khi request bao gồm những thông tin không hợp lệ
+        /// </returns>
         [HttpPost("changepassword")]
         [Authorize]
         //[ValidateAntiForgeryToken]
+        
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequestModel model)
         {
             if (!ModelState.IsValid)
@@ -178,7 +196,10 @@ namespace QLHoDan.Controllers
                 return BadRequest(ModelState);
             }
             var user = await _userManager.FindByIdAsync(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-
+            if(user== null)
+            {
+                return Unauthorized("Invalid Token");
+            }
             IdentityResult result =
                 await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
 
@@ -263,7 +284,6 @@ namespace QLHoDan.Controllers
         /// <summary>
         /// Get user's profile such as full name, scope
         /// </summary>
-        /// <returns><code>ProfileResponseModel</code></returns>
         [HttpGet("profile")]
         [Authorize]
         public async Task<IActionResult> GetProfile(/*[FromBody] DeleteAccountRequestModel model*/)
@@ -321,7 +341,8 @@ namespace QLHoDan.Controllers
         }
         //GET api/account/household/AccountList
         /// <summary>
-        /// Lấy ra tất cả danh sách tài khoản hộ dân
+        /// Lấy ra tất cả danh sách tài khoản hộ dân, chỉ người dùng cấp độ đặc biệt 
+        /// (Tổ trưởng, thư kí, chủ tịch xã) mới dùng được.
         /// </summary>
         /// <returns></returns>
         [HttpGet("household/AccountList")]
@@ -368,10 +389,6 @@ namespace QLHoDan.Controllers
         /// <summary>
         /// Thêm tài khoản hộ dân
         /// </summary>
-        /// <returns>
-        /// Một danh sách các lỗi, 
-        /// Nếu không có lỗi thì trả về danh sách rỗng (danh sách có 0 phần tử)
-        /// </returns>
         [HttpPost("household/addAccount")]
         [Authorize(Roles = "CommitteeChairman, Accountant, ScopeLeader")]
         public async Task<IActionResult> Household_AddAccount([FromBody] AddingHouseholdAccountRequestModel model)
