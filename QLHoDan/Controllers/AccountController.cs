@@ -1,6 +1,4 @@
-﻿using Duende.IdentityServer.Services;
-using Duende.IdentityServer.Stores;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
@@ -25,26 +23,17 @@ namespace QLHoDan.Controllers
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IIdentityServerInteractionService _interaction;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
-        private readonly IClientStore _clientStore;
-        private readonly IEventService _events;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly QLHoDan.Services.ITokenCreationService _jwtService;
         public AccountController(SignInManager<ApplicationUser> signInManager,
                                     UserManager<ApplicationUser> userManager,
-                                    IIdentityServerInteractionService interaction,
                                     IAuthenticationSchemeProvider schemeProvider,
-                                    IClientStore clientStore,
-                                    IEventService events,
                                     RoleManager<IdentityRole> roleManager,
                                     QLHoDan.Services.ITokenCreationService jwtService)
         {
             _userManager = userManager;
-            _interaction = interaction;
             _schemeProvider = schemeProvider;
-            _clientStore = clientStore;
-            _events = events;
             _signInManager = signInManager;
             _roleManager = roleManager;
             _jwtService = jwtService;
