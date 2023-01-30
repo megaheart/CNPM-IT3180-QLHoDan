@@ -62,6 +62,7 @@
         "react-app-rewired": "^2.2.1",
         "react-router-dom": "^6.4.5",
         "react-smooth-collapse": "^2.1.2",
+        "reaptcha": "^1.12.1",
         "sass": "^1.56.2"
     },
     "jest": {

@@ -1,0 +1,29 @@
+.container-authen {
+    width: auto;
+    max-width: 600px;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    max-height: 600px;
+    height: 500px;
+    //glass effect
+    // background-color: #ffffff10;
+    // backdrop-filter: blur(12px);
+    // -webkit-backdrop-filter: blur(12px);
+    background-color: #fff;
+}
+.footer-login {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 10px;
+}
+.btn-text {
+    color: blue;
+    &:hover {
+        color: #f50057;
+        cursor: pointer;
+    }
+}

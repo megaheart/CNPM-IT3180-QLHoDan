@@ -1,4 +1,4 @@
-header {
+.header-default {
     // position: fixed;
     // top: 10px;
     // left: 25%;
@@ -12,7 +12,7 @@ header {
 }
 
 .header-1 {
-    width: 200px;
+    width: 270px;
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
@@ -89,7 +89,9 @@ header {
         border-color: var(--focus-color);
     }
 }
-
+.search-result {
+    width: 361px;
+}
 .btn {
     margin: 10px 2px;
     border: none;
@@ -104,7 +106,19 @@ header {
         background-color: rgba(22, 24, 35, 0.06);
     }
 }
-
+.search-title {
+    color: #000;
+    font-size: 1.4rem;
+    font-weight: 600;
+    padding: 5px 12px;
+}
+.clear {
+    margin: 4px;
+    background-color: #e2e4e8;
+    button:hover {
+        cursor: pointer;
+    }
+}
 .actions {
     display: flex;
     flex-direction: row;
@@ -159,4 +173,7 @@ header {
 
 .tippy {
     margin-right: 20px;
+    &::-webkit-scrollbar {
+        width: 0;
+    }
 }

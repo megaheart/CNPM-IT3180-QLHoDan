@@ -7,14 +7,16 @@ import classNames from 'classnames/bind';
 const cx = classNames.bind(styles);
 
 export default function DeathConfirm() {
-
     const [open, setOpen] = useState(false);
+
     const handleClose = () => {
         setOpen(false);
     };
+
     const handleToggle = () => {
         setOpen(!open);
     };
+
     const handleRequestFullScreen = useCallback((e) => {
         e.target.requestFullscreen();
     }, []);
@@ -30,14 +32,16 @@ export default function DeathConfirm() {
         e.target.value = null;
 
         return () => {
-            arrImg && arrImg.forEach((file) => URL.revokeObjectURL(file.preview))
             //remvove the temporary url if avatar exists
+            arrImg && arrImg.forEach((file) => URL.revokeObjectURL(file.preview))
         }
 
     }, [arrImg]);
+
     const removeImageByClick = (index) => {
         setArrImg(prev => prev.filter((item, i) => i !== index) || [])
     }
+
     return (
         <div className={cx('container')}>
             <Box

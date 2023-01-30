@@ -51,7 +51,7 @@ export default function FullScreenDialog({ open, onClose }) {
             clearTimeout(timer.current);
         };
     }, []);
-    const handleButtonClick = () => {
+    const handleSave = () => {
         if (!loading) {
             setSuccess(false);
             setLoading(true);
@@ -119,7 +119,7 @@ export default function FullScreenDialog({ open, onClose }) {
                             aria-label="save"
                             color="primary"
                             sx={buttonSx}
-                            onClick={handleButtonClick}
+                            onClick={handleSave}
                             disabled={!editMode}
                         >
                             {success ? <CheckIcon /> : <SaveIcon />}
