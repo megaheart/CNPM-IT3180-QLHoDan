@@ -13,6 +13,8 @@
         public string Job { set; get; } // Nghề nghiệp
         public string Workplace { set; get; } // Nơi làm việc
         public string IdentityCode { set; get; } // CMND/CCCD, số giấy khai sinh
+        public DateTime? IDCardDate { set; get; } // cmnd ngày cấp,
+        public string? IDCardPlace { set; get; } // cmnd nơi cấp
         public string RelationShip { set; get; } // Quan hệ với chủ hộ
         public string AcademicLevel { set; get; } // trình độ học vấn
         public string CriminalRecord { set; get; } //Tiền án

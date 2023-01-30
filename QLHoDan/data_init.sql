@@ -42,3 +42,4 @@ INSERT [AspNetUserRoles] ([UserId], [RoleId]) VALUES (N'd31412b2-b9b7-4447-afe9-
 INSERT [AspNetUserRoles] ([UserId], [RoleId]) VALUES (N'd38cb583-294a-472f-b2ba-8bb11ca53ba3', N'c3b72ac8-2b6b-44c8-b9e9-da830da5e2f9')
 INSERT [AspNetUserRoles] ([UserId], [RoleId]) VALUES (N'd48c607c-d589-4b9d-8a32-b547df6d92c7', N'c3b72ac8-2b6b-44c8-b9e9-da830da5e2f9')
 INSERT [AspNetUserRoles] ([UserId], [RoleId]) VALUES (N'd58cc2c9-11cc-4de1-ae77-36498f579844', N'c3b72ac8-2b6b-44c8-b9e9-da830da5e2f9')
+
