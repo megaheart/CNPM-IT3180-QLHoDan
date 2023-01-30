@@ -387,7 +387,7 @@ namespace QLHoDan.Controllers
         }
         //POST api/account/household/addAccount
         /// <summary>
-        /// Thêm tài khoản hộ dân
+        /// Thêm tài khoản hộ dân, chỉ người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch xã) mới dùng được.
         /// </summary>
         [HttpPost("household/addAccount")]
         [Authorize(Roles = "CommitteeChairman, Accountant, ScopeLeader")]
@@ -401,7 +401,7 @@ namespace QLHoDan.Controllers
             var manager = await _userManager.FindByIdAsync(id);
             if (manager == null)
             {
-                return BadRequest(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
+                return Unauthorized(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
             }
             var isScopeLeader = await _userManager.IsInRoleAsync(manager, "ScopeLeader");
             if(isScopeLeader && manager.Scope != model.Scope)
@@ -444,7 +444,7 @@ namespace QLHoDan.Controllers
         }
         //POST api/account/household/changeAccountProfile
         /// <summary>
-        /// Thay đổi thông tin tài khoản hộ dân
+        /// Thay đổi thông tin tài khoản hộ dân, chỉ người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch xã) mới dùng được.
         /// </summary>
         /// <returns></returns>
         [HttpPost("household/changeAccountProfile")]
@@ -459,7 +459,7 @@ namespace QLHoDan.Controllers
             var manager = await _userManager.FindByIdAsync(id);
             if (manager == null)
             {
-                return BadRequest(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
+                return Unauthorized(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
             }
             var user = await _userManager.FindByNameAsync(model.UserName);
             if (user == null)

@@ -14,7 +14,7 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
     {
 
     }
-    public DbSet<Resident> Resident { set; get; }
+    public DbSet<Resident> Residents { set; get; }
     public DbSet<Household> Household { set; get; }
     public DbSet<HouseholdForm> HouseholdForm { set; get; }
     public DbSet<ResidentForm> ResidentForm { set; get; }
@@ -70,11 +70,12 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
         //modelBuilder.Entity<HoKhauForm>().Property<int>("ChuHoMoiId");
         modelBuilder.Entity<HouseholdForm>().HasMany<ResidentForm>(nk => nk.Members).WithOne();
 
-        modelBuilder.Entity<AddingResidentForm>().Property<int?>("NewResidentId").IsRequired(false);
+        //modelBuilder.Entity<AddingResidentForm>().Property<int?>("NewResidentId").IsRequired(false);
         modelBuilder.Entity<AddingResidentForm>()
-            .HasOne<ResidentForm>(nk => nk.NewResident).WithOne()
-            .OnDelete(DeleteBehavior.NoAction)
-            .HasForeignKey<AddingResidentForm>("NewResidentId");
+            .HasOne<ResidentForm>(nk => nk.NewResident).WithMany()
+            .OnDelete(DeleteBehavior.NoAction);
+            //.HasForeignKey<AddingResidentForm>("NewResidentId");
+
         //modelBuilder.Entity<AddingResidentForm>().Property<string>("Account").IsRequired(false);
         //modelBuilder.Entity<AddingResidentForm>()
         //    .HasOne<ApplicationUser>(nk => nk.Account).WithOne()
