@@ -14,10 +14,9 @@ import AuthenticationLayout from '~/components/Layout/AuthenticationLayout'
 import GuestLayout from '~/components/Layout/GuestLayout';
 
 const ROLES = {
-    ADMIN: 1,
-    MANAGER: 2,
-    USER: 3,
-    GUEST: 4
+    ADMIN: "CommitteeChairman",
+    MANAGER: "Accountant" | "ScopeLeader",
+    USER: "Household"
 }
 
 const routes = [

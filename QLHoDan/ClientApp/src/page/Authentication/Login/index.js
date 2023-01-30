@@ -81,11 +81,21 @@ export default function Login() {
             else {
                 setUsernameError('');
                 setPasswordError('');
-                setStart(true);
-                authenticationService.signIn(username, password).then((data) => {
-                    console.log(data)
-                })
-                    .catch((err) => console.log(err));
+                authenticationService.signIn(username, password).then(() => {
+                    const userData = authenticationService.User;
+                    console.log(userData)
+                    setAuth(userData);
+                    navigate('/dashboard');
+                    console.log(loading)
+                }).catch (
+                    (e) => {
+                        console.log(e)
+                    }
+                ).finish(
+                    () => {
+                        setLoading(false);
+                    }
+);
                 //if (user.length === 0) {
                 //    setStart(true);
                 //    setErrMsg('Tài khoản không tồn tại');
@@ -120,9 +130,7 @@ export default function Login() {
             else {
                 setErrMsg('Something went wrong');
             }
-            errRef.current.focus();
         }
-        setLoading(false);
     }
 
     const handleForgetPassword = () => {

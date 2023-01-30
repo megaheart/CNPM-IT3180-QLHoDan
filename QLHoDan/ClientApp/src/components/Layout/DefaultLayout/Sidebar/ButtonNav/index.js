@@ -7,8 +7,10 @@ import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { FindInPage } from '@mui/icons-material';
 
+import authenticationService from '~/services/account/authentication';
+
 const loggout = () => {
-    localStorage.removeItem('myUserNameReactApp');
+    authenticationService.logOut();
 }
 
 const buttons = [
@@ -42,6 +44,7 @@ const buttons = [
     { icon: <LogoutIcon />, title: 'Đăng xuất', link: '/', id: 'logout', isLogout: true, action: loggout },
 ]
 const navForResident = [
+    { icon: <DashboardIcon />, title: 'Hệ thống', link: '/dashboard', id: 'dashboard' },
     {
         icon: <PlaylistAddIcon />, title: 'Gửi đơn', link: '/addnew/them_ho_khau',
         collapse: [

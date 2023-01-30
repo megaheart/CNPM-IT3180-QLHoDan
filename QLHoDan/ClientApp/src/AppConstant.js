@@ -1,4 +1,4 @@
-export const SERVER_URL = 'https://localhost:7265';
+export const SERVER_URL = '';
 export const API_URL = `${SERVER_URL}/api`;
 
 export const API_ACCOUNT_URL = `${API_URL}/account`;
