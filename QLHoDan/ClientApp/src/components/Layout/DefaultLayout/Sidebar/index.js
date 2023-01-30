@@ -22,10 +22,10 @@ function Sidebar() {
     }
     const buttons = useMemo(
         () => {
-            if (auth.role === '1') {
+            if (auth.role === 1) {
                 return navForAdmin;
             }
-            else if (auth.role === '2') {
+            else if (auth.role === 2) {
                 return navForEmplyee;
             }
             else {

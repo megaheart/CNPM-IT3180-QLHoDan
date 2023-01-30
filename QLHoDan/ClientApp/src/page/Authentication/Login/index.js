@@ -15,14 +15,15 @@ import VpnKeyIcon from '@mui/icons-material/VpnKey';
 //validation
 import validation from '~/services/validate';
 
-//api
-import Reaptcha from 'reaptcha';
-import accountApi from '~/services/api/accountApi'
+// //api
+// import Reaptcha from 'reaptcha';
+import accountApi from '~/services/api/accountApi';
+import authenticationService from '~/services/account/authentication';
 //sass
 import styles from './Login.module.scss'
 import classNames from 'classnames/bind'
 const cx = classNames.bind(styles);
-const REACT_APP_SITE_KEY = "6LcpTdwjAAAAAAKuHebI2kb4q1i2wXcDur3aL8kK"
+//const REACT_APP_SITE_KEY = "6LcpTdwjAAAAAAKuHebI2kb4q1i2wXcDur3aL8kK"
 
 export default function Login() {
     //auth context
@@ -42,12 +43,12 @@ export default function Login() {
     const navigate = useNavigate();
     //capcha
     //capcha
-    const [captchaToken, setCaptchaToken] = useState('');
-    const verify = async () => {
-        const res = await captchaRef.current.getResponse();
-        setCaptchaToken(res);
-    }
-    const captchaRef = useRef(null)
+    // const [captchaToken, setCaptchaToken] = useState('');
+    // const verify = async () => {
+    //     const res = await captchaRef.current.getResponse();
+    //     setCaptchaToken(res);
+    // }
+    // const captchaRef = useRef(null)
     //handle loading
     const [loading, setLoading] = useState(false);
     useEffect(() => {
@@ -80,25 +81,30 @@ export default function Login() {
             else {
                 setUsernameError('');
                 setPasswordError('');
-                const user = await accountApi.checkLogin({ username });
-                if (user.length === 0) {
-                    setStart(true);
-                    setErrMsg('Tài khoản không tồn tại');
-                    userRef.current.focus();
-                }
-                else if (user[0].password !== password) {
-                    setStart(true);
-                    setErrMsg('Mật khẩu không đúng');
-                    userRef.current.focus();
-                }
-                else if (captchaToken === '' || captchaToken === null) {
-                    setStart(true);
-                    setErrMsg('Vui lòng xác nhận bạn không phải là robot');
-                }
-                else {
-                    setAuth(user[0]);
-                    navigate('/profile');
-                }
+                setStart(true);
+                authenticationService.signIn(username, password).then((data) => {
+                    console.log(data)
+                })
+                    .catch((err) => console.log(err));
+                //if (user.length === 0) {
+                //    setStart(true);
+                //    setErrMsg('Tài khoản không tồn tại');
+                //    userRef.current.focus();
+                //}
+                //else if (user[0].password !== password) {
+                //    setStart(true);
+                //    setErrMsg('Mật khẩu không đúng');
+                //    userRef.current.focus();
+                //}
+                //else if (captchaToken === '' || captchaToken === null) {
+                //    setStart(true);
+                //    setErrMsg('Vui lòng xác nhận bạn không phải là robot');
+                //}
+                //else {
+                //    setAuth(user[0]);
+                //    navigate('/profile');
+                //}
+
             }
         }
         catch (err) {
@@ -205,7 +211,7 @@ export default function Login() {
                         {start && <FormHelperText sx={{ fontSize: 10, color: 'red' }}>{passwordError}</FormHelperText>}
                     </FormControl>
                     <span onClick={handleForgetPassword} className={cx('btn-text')}>Quên mật khẩu?</span>
-                    {<div style={{ margin: '0 auto' }}>
+                    {/* {<div style={{ margin: '0 auto' }}>
                         <Reaptcha sitekey={REACT_APP_SITE_KEY} onVerify={verify} ref={captchaRef} />
                     </div> || <CircularProgress
                             sx={{
@@ -213,7 +219,7 @@ export default function Login() {
                                 animationDuration: '550ms',
                             }}
                             size={20}
-                            thickness={4} />}
+                            thickness={4} />} */}
                 </div>
                 <Button
                     variant="contained"

@@ -1,5 +1,5 @@
 //page
-import { NKTable, HKTable, ResidentHistory } from '~/page/Table';
+import { NKTable, HKTable, ResidentHistory, ManagerAccountResident } from '~/page/Table';
 import { HKForm, NKForm, RequireRemoving, DeathConfirm, SeparateHousehold, ChangePopulation, ChangeHousehold, FixHouseholdNumber, ConfirmAchievement } from '~/page/Form';
 import ForgetPassword from '~/page/Authentication/ForgetPassword';
 import { Login, Register, Authentication } from '~/page/Authentication';
@@ -14,10 +14,10 @@ import AuthenticationLayout from '~/components/Layout/AuthenticationLayout'
 import GuestLayout from '~/components/Layout/GuestLayout';
 
 const ROLES = {
-    ADMIN: '1',
-    MANAGER: '2',
-    USER: '3',
-    GUEST: '4'
+    ADMIN: 1,
+    MANAGER: 2,
+    USER: 3,
+    GUEST: 4
 }
 
 const routes = [
@@ -43,7 +43,8 @@ const routes = [
         path: '/table', subRoutes: [
             { subpath: '/table/ho_khau', element: HKTable, id: 'tb1' },
             { subpath: '/table/nhan_khau', element: NKTable, id: 'tb2' },
-            { subpath: '/table/lich_su_nhan_khau', element: ResidentHistory, id: 'tb3' }
+            { subpath: '/table/lich_su_nhan_khau', element: ResidentHistory, id: 'tb3' },
+            { subpath: '/table/danh_sach_tai_khoan_ho_dan', element: ManagerAccountResident, id: 'tb4' }
         ],
         layout: DefaultLayout, id: 'add', role: [ROLES.ADMIN, ROLES.MANAGER]
     },
@@ -59,7 +60,8 @@ const adminRoutes = [
         path: '/table', subRoutes: [
             { subpath: '/table/ho_khau', element: HKTable, id: 'tb1' },
             { subpath: '/table/nhan_khau', element: NKTable, id: 'tb2' },
-            { subpath: '/table/lich_su_nhan_khau', element: ResidentHistory, id: 'tb3' }
+            { subpath: '/table/lich_su_nhan_khau', element: ResidentHistory, id: 'tb3' },
+            { subpath: '/table/danh_sach_tai_khoan_ho_dan', element: ManagerAccountResident, id: 'tb4' }
         ],
         layout: DefaultLayout, id: 'add'
     },

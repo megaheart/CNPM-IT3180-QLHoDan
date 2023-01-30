@@ -12,7 +12,7 @@
     <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
     <ImplicitUsings>enable</ImplicitUsings>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <DocumentationFile>C:\Users\linh2\OneDrive - Hanoi University of Science and Technology\Hust\HK 2022-1\Nhập môn công nghệ phần mềm [IT3180]\BT\BTL\doc.xml</DocumentationFile>
+    <DocumentationFile></DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
