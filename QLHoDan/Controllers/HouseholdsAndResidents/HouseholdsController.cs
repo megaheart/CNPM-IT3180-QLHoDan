@@ -36,10 +36,6 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
         [HttpGet]
         public async Task<ActionResult<IEnumerable<HouseholdBriefInfo>>> GetHousehold()
         {
-            if (_context.Household == null)
-            {
-                return NotFound();
-            }
             var id = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var user = await _userManager.FindByIdAsync(id);
             if (user == null)
@@ -49,14 +45,20 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             const string ownerRelationShip = "Chủ hộ";
             if (await _userManager.IsInRoleAsync(user, "ScopeLeader"))
             {
-                return Ok(_context.Household.Where(u => u.Scope == user.Scope && u.IsManaged)
-                    .Select(u => new HouseholdBriefInfo()
+                var l = _context.Household.Where(u => u.Scope == user.Scope && u.IsManaged);
+                var o = new List<HouseholdBriefInfo>(l.Count());
+                foreach (var u in l){
+                    var owner = u.Members.First(m => m.RelationShip == ownerRelationShip);
+                    var h = new HouseholdBriefInfo()
                     {
                         HouseholdId = u.HouseholdId,
                         Scope = u.Scope,
-                        OwnerFullName = u.Members.First(m => m.RelationShip == ownerRelationShip).FullName,
-                        OwnerIDCode = u.Members.First(m => m.RelationShip == ownerRelationShip).IdentityCode,
-                    }));
+                        OwnerFullName = owner.FullName,
+                        OwnerIDCode = owner.IdentityCode,
+                    };
+                    o.Add(h);
+                }
+                return Ok(o);
             }
             else
             {
@@ -312,7 +314,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
         }
         private async Task<bool> ResidentsExists(string[] ids)
         {
-            return await _context.Residents.AnyAsync(e => ids.Contains(e.IdentityCode));
+            return await _context.Resident.AnyAsync(e => ids.Contains(e.IdentityCode));
         }
     }
 }
