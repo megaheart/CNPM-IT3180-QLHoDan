@@ -1,0 +1,67 @@
+.container {
+    width: 95%;
+    margin: 0 auto;
+    padding: 5px;
+    div {
+        margin: 5px 0;
+    }
+}
+.header-paper-population {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0 20px;
+}
+.identification-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.line-form {
+    width: 100%;
+    padding: 1px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin-left: 20px;
+}
+
+h1 {
+    text-align: center;
+}
+
+h3 {
+    text-align: left;
+    padding-left: 5px;
+}
+.iden {
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding: 2px;
+    margin: 1px 4px;
+}
+
+.err-mes {
+    font-size: 15px;
+    color: red;
+    padding-left: 5px;
+}
+.household-paper {
+    margin: 13px;
+    //     display: flex;
+    //     gap: 10px;
+}
+.title-household {
+    margin-bottom: 10px;
+    text-align: center;
+    font-size: 40px;
+}
+.household-detail {
+    margin: 6px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 10px;
+}

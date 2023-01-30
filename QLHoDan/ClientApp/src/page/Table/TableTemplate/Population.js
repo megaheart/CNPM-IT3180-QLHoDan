@@ -1,7 +1,7 @@
 import { useState, forwardRef, useCallback } from 'react';
 import { styled } from '@mui/material/styles';
 import { tableCellClasses } from '@mui/material/TableCell';
-import { Button, Paper, TableRow, TableHead, TableContainer, TableCell, TableBody, Table, TextField, Slide, Collapse, Box, Dialog } from '@mui/material';
+import { Button, Paper, TableRow, TableHead, TableContainer, TableCell, TableBody, Table, TextField, Slide, Box, Dialog } from '@mui/material';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -53,9 +53,9 @@ export default function Population({ editMode }) {
     //
     const [open, setOpen] = useState(false);
     const handleClose = useCallback(() => setOpen(false), []);
-
+    //dữ liệu nhân khẩu đang được edit
     const [editRow, setEditRow] = useState({});
-
+    //dữ liệu nhân khẩu các input
     const [identification, setIdentification] = useState('');
     const [name, setName] = useState('');
     const [birthday, setBirthday] = useState('');
@@ -91,7 +91,7 @@ export default function Population({ editMode }) {
         setSoHoKhau(soHoKhau);
         setToPhuTrach(toPhuTrach);
     }, []);
-
+    //lưu dữ liệu nhân khẩu
     const handleSave = () => {
         setRows(
             prev => prev.map(item => {
@@ -135,20 +135,21 @@ export default function Population({ editMode }) {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {rows.map((row) => (
+                        {rows.map((row, index) => (
                             <StyledTableRow key={row.idenftification}>
                                 {Object.keys(row).map((key) => {
                                     if (key !== 'id') {
                                         return (
-                                            <StyledTableCell align="center" component="th" scope="row">
+                                            <StyledTableCell key={key} align="center" component="th" scope="row">
                                                 {row[key]}
                                             </StyledTableCell>
                                         )
                                     }
                                     return null;
                                 })}
-                                <StyledTableCell align="center" component="th" scope="row">
-                                    <Button disabled={!editMode}
+                                <StyledTableCell key={row.idenftification + index} align="center" component="th" scope="row">
+                                    <Button key={row.identification + 'fix'}
+                                        disabled={!editMode}
                                         onClick={() => {
                                             handleEditRowData(row.id);
                                             handleEditField(row.idenftification, row.name, row.birthday, row.gender, row.relationship, row.soHoKhau, row.toPhuTrach);
@@ -157,7 +158,9 @@ export default function Population({ editMode }) {
                                     >
                                         Sửa
                                     </Button>
-                                    <Button disabled={!editMode} onClick={() => { handleDeleteRowsData(row.id) }}>Xóa</Button>
+                                    <Button
+                                        key={row.identification + 'delete'}
+                                        disabled={!editMode} onClick={() => { handleDeleteRowsData(row.id) }}>Xóa</Button>
                                 </StyledTableCell>
                             </StyledTableRow>
                         ))}

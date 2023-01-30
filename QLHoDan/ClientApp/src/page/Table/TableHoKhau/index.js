@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import { Collapse, Button, TextField, Alert, Snackbar, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { Button, Alert, Snackbar, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import FullScreenDialog from '../DiaLog/fullScreen';
-
+import AddHouseholDialog from '../DiaLog/AddHouseHold';
 import TableSkeleton from '../../Skeleton/index'
 // import styles from './Table1.module.scss';
 // import classNames from 'classnames/bind';
@@ -13,10 +13,10 @@ import TableSkeleton from '../../Skeleton/index'
 //column field
 const columns = [
     { field: 'id', headerName: 'ID', width: 40, align: 'center', headerAlign: 'center' },
-    { field: 'soHoKhau', headerName: 'Số hộ khẩu', align: 'center', headerAlign: 'center', width: 110 },
-    { field: 'noiThuongTru', headerName: 'Nơi thường trú', align: 'center', headerAlign: 'center', width: 140 },
+    { field: 'soHoKhau', headerName: 'Số hộ khẩu', align: 'center', headerAlign: 'center', width: 200 },
+    { field: 'noiThuongTru', headerName: 'Nơi thường trú', align: 'center', headerAlign: 'center', width: 200 },
     { field: 'thanhVien', headerName: 'Danh sách các thành viên', align: 'center', headerAlign: 'center', width: 300 },
-    { field: 'chuHo', headerName: 'Chủ hộ', align: 'center', headerAlign: 'center', width: 150 },
+    { field: 'chuHo', headerName: 'Chủ hộ', align: 'center', headerAlign: 'center', width: 200 },
     { field: 'toPhuTrach', headerName: 'Tổ phụ trách', type: 'number', width: 150, align: 'center', headerAlign: 'center' },
 ]
 //data in each row
@@ -36,15 +36,12 @@ export default function TableHoKhau() {
     const [rows, setRows] = useState(rowInit);
     //
     const [loadData, setLoadData] = useState(false);
-    //trạng thái thanh chỉnh sửa thông tin từng hộ khẩu
-    const [visible, setVisible] = useState(false);
 
     //các trường dữ liệu trong bảng
     const [columnsTable, setColumsTable] = useState(columns);
 
     //trường dữ liệu từng cột
-    const [idField, setIdField] = useState();
-    const [deskField, setDeskField] = useState();
+    //...
     //còn tiếp
 
     //confirm box xóa 1 hộ khẩu, xuất hiện khi nhấn nút xóa
@@ -54,7 +51,7 @@ export default function TableHoKhau() {
     const [deleteId, setDeleteId] = useState();
 
     //1 dialog hiển thị chi tiết hộ khẩu khi nhấn vào nút 'chi tiết'
-    const [dialogInfo, setDialogInfo] = useState();
+    const [dialogInfo, setDialogInfo] = useState(false);
 
     //trạng thái thành công khi xóa 1 hộ khẩu
     const [success, setSuccess] = useState(false);
@@ -83,6 +80,11 @@ export default function TableHoKhau() {
         setDeleteId(null);
         setOpenAlert(false);
     };
+    // dialog tạo 1 hộ khẩu
+    const [isCreateMode, setIsCreateMode] = useState(false);
+    const closeCreateMode = () => {
+        setIsCreateMode(false);
+    }
     //thêm trạng thái các nút cho từng dòng: sưa, xóa, chi tiết
     useEffect(() => {
         setLoadData(true);
@@ -163,11 +165,12 @@ export default function TableHoKhau() {
                 }
             ]);
             setLoadData(false);
-        }, 3000);
+        }, 1000);
         return () => clearTimeout(a);
     }, [])
     return (
         <div style={{ height: '90%', width: '100%', margin: '10' }}>
+            <AddHouseholDialog open={isCreateMode} onClose={closeCreateMode} />
             <Snackbar open={success} autoHideDuration={6000} onClose={handleCloseSnackbar}>
                 <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%', fontSize: 15 }}>
                     Xoá hộ khẩu thành công!
@@ -195,22 +198,25 @@ export default function TableHoKhau() {
                 </div>
             </Collapse> */}
 
-            {loadData ? <TableSkeleton /> : <DataGrid
-                sx={{ fontSize: 15 }}
-                editMode="row"
-                rows={rows}
-                columns={columnsTable}
-                components={{
-                    Toolbar: GridToolbar,
-                }}
-                componentsProps={{
-                    toolbar: {
-                        showQuickFilter: true,
-                        quickFilterProps: { debounceMs: 500 },
-                    },
-                }}
-                disableSelectionOnClick
-            />}
+            {
+                loadData ? <TableSkeleton /> : <DataGrid
+                    sx={{ fontSize: 15 }}
+                    editMode="row"
+                    rows={rows}
+                    columns={columnsTable}
+                    components={{
+                        Toolbar: GridToolbar,
+                    }}
+                    componentsProps={{
+                        toolbar: {
+                            showQuickFilter: true,
+                            quickFilterProps: { debounceMs: 500 },
+                        },
+                    }}
+                    disableSelectionOnClick
+                />
+            }
+            <Button sx={{ fontSize: 16 }} variant='contained' onClick={() => setIsCreateMode(true)}>Thêm hộ khẩu</Button>
             <Dialog
                 open={openAlert}
                 onClose={handleClose}

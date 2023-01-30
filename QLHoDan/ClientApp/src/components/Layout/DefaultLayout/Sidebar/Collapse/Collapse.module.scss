@@ -10,12 +10,19 @@
 //         color: #fff;
 //     }
 // }
+.nav-div {
+    height: 300px;
+    overflow-y: scroll;
+}
 .nav-group-collapse {
     display: flex;
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-start;
-    width: 200px;
+    width: 500px;
+    &::-webkit-scrollbar {
+        width: 0;
+    }
 }
 .text-btn {
     text-align: left;

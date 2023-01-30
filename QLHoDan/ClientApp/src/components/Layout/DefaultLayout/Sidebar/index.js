@@ -1,9 +1,9 @@
 import styles from './Sidebar.module.scss';
-import { useState, useContext, useCallback } from 'react';
+import { useState, useContext, useCallback, useMemo } from 'react';
 //icon
 // import MenuIcon from '@mui/icons-material/Menu';
 import { PushPinOutlined } from '@mui/icons-material'
-import buttons from './ButtonNav';
+import { navForResident, navForAdmin, navForEmplyee } from './ButtonNav';
 import classNames from 'classnames/bind';
 import { NavLink } from "react-router-dom";
 import CollapseButton from './Collapse';
@@ -15,11 +15,24 @@ const cx = classNames.bind(styles);
 function Sidebar() {
     //authenticate management
     const changer = useContext(TitleContext);
-    const { setAuth } = useContext(AuthContext);
+    const { auth, setAuth } = useContext(AuthContext);
     const handleAuth = () => {
         accountService.logout(setAuth);
         localStorage.removeItem('myUserNameReactApp');
     }
+    const buttons = useMemo(
+        () => {
+            if (auth.role === '1') {
+                return navForAdmin;
+            }
+            else if (auth.role === '2') {
+                return navForEmplyee;
+            }
+            else {
+                return navForResident;
+            }
+        }, [auth.role]
+    )
     //pin sidebar
     const [open, setOpen] = useState(true);
     const [pin, setPin] = useState(true);
