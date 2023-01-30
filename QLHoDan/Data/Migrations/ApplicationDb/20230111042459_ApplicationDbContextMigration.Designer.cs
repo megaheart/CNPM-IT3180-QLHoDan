@@ -12,7 +12,7 @@ using QLHoDan.Data;
 namespace QLHoDan.Data.Migrations.ApplicationDb
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221231040128_ApplicationDbContextMigration")]
+    [Migration("20230111042459_ApplicationDbContextMigration")]
     partial class ApplicationDbContextMigration
     {
         /// <inheritdoc />
@@ -325,9 +325,6 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                     b.Property<DateTime>("CreatedTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("IdCode")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("ImageLinks")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -338,11 +335,13 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                     b.Property<bool>("NotAcceptedReason")
                         .HasColumnType("bit");
 
+                    b.Property<string>("ResidentIdentityCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("IdCode")
-                        .IsUnique()
-                        .HasFilter("[IdCode] IS NOT NULL");
+                    b.HasIndex("ResidentIdentityCode");
 
                     b.ToTable("AchievementEvidenceForm");
                 });
@@ -441,6 +440,9 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsActivated")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
@@ -456,7 +458,6 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("Note")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PasswordHash")
@@ -512,27 +513,25 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                     b.Property<DateTime>("CreatedTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("IdCode")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<bool>("IsAccepted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("NewHouseholdId")
+                    b.Property<string>("NewHouseholdHouseholdId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("NotAcceptedReason")
                         .HasColumnType("bit");
 
+                    b.Property<string>("ResidentIdentityCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("IdCode")
-                        .IsUnique()
-                        .HasFilter("[IdCode] IS NOT NULL");
+                    b.HasIndex("NewHouseholdHouseholdId");
 
-                    b.HasIndex("NewHouseholdId")
-                        .IsUnique()
-                        .HasFilter("[NewHouseholdId] IS NOT NULL");
+                    b.HasIndex("ResidentIdentityCode");
 
                     b.ToTable("ChangingHouseholdForm");
                 });
@@ -556,6 +555,7 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                         .HasColumnType("datetime2");
 
                     b.Property<string>("HouseholdId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsAccepted")
@@ -564,7 +564,7 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                     b.Property<bool>("NotAcceptedReason")
                         .HasColumnType("bit");
 
-                    b.Property<string>("OwnerIdCode")
+                    b.Property<string>("OwnerIdentityCode")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Reason")
@@ -576,13 +576,9 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
 
                     b.HasKey("Id");
 
-                    b.HasIndex("HouseholdId")
-                        .IsUnique()
-                        .HasFilter("[HouseholdId] IS NOT NULL");
+                    b.HasIndex("HouseholdId");
 
-                    b.HasIndex("OwnerIdCode")
-                        .IsUnique()
-                        .HasFilter("[OwnerIdCode] IS NOT NULL");
+                    b.HasIndex("OwnerIdentityCode");
 
                     b.ToTable("ChangingHouseholdInfoForm");
                 });
@@ -623,9 +619,6 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                     b.Property<string>("FullName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("IdCode")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<bool>("IsAccepted")
                         .HasColumnType("bit");
 
@@ -648,14 +641,16 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ResidentIdentityCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Workplace")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IdCode")
-                        .IsUnique()
-                        .HasFilter("[IdCode] IS NOT NULL");
+                    b.HasIndex("ResidentIdentityCode");
 
                     b.ToTable("ChangingResidentInfoForm");
                 });
@@ -675,9 +670,6 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                     b.Property<DateTime>("CreatedTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("IdCode")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("ImageLinks")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -688,11 +680,13 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                     b.Property<bool>("NotAcceptedReason")
                         .HasColumnType("bit");
 
+                    b.Property<string>("ResidentIdentityCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("IdCode")
-                        .IsUnique()
-                        .HasFilter("[IdCode] IS NOT NULL");
+                    b.HasIndex("ResidentIdentityCode");
 
                     b.ToTable("DeadForm");
                 });
@@ -763,7 +757,7 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
 
                     b.HasKey("Id");
 
-                    b.ToTable("householdForm");
+                    b.ToTable("HouseholdForm");
                 });
 
             modelBuilder.Entity("QLHoDan.Models.MovingOutForm", b =>
@@ -780,9 +774,6 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
 
                     b.Property<DateTime>("CreatedTime")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("IdCode")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsAccepted")
                         .HasColumnType("bit");
@@ -801,11 +792,13 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                     b.Property<bool>("NotAcceptedReason")
                         .HasColumnType("bit");
 
+                    b.Property<string>("ResidentIdentityCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("IdCode")
-                        .IsUnique()
-                        .HasFilter("[IdCode] IS NOT NULL");
+                    b.HasIndex("ResidentIdentityCode");
 
                     b.ToTable("MovingOutForm");
                 });
@@ -916,9 +909,6 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("SplitingHouseholdFormId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Workplace")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -926,8 +916,6 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                     b.HasKey("IdentityCode");
 
                     b.HasIndex("HouseholdId");
-
-                    b.HasIndex("SplitingHouseholdFormId");
 
                     b.ToTable("Resident");
                 });
@@ -1091,10 +1079,11 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                     b.Property<int>("AchievementType")
                         .HasColumnType("int");
 
-                    b.Property<string>("IdCode")
+                    b.Property<string>("ResidentIdentityCode")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int?>("RewardCeremonyId")
+                    b.Property<int>("RewardCeremonyId")
                         .HasColumnType("int");
 
                     b.Property<string>("RewardName")
@@ -1106,15 +1095,30 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IdCode")
-                        .IsUnique()
-                        .HasFilter("[IdCode] IS NOT NULL");
+                    b.HasIndex("ResidentIdentityCode");
 
-                    b.HasIndex("RewardCeremonyId")
-                        .IsUnique()
-                        .HasFilter("[RewardCeremonyId] IS NOT NULL");
+                    b.HasIndex("RewardCeremonyId");
 
                     b.ToTable("RewardRecord");
+                });
+
+            modelBuilder.Entity("QLHoDan.Models.SHForm_Resident", b =>
+                {
+                    b.Property<int>("SHFormId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ResidentId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("RelationShip")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("SHFormId", "ResidentId");
+
+                    b.HasIndex("ResidentId");
+
+                    b.ToTable("SHForm_Resident");
                 });
 
             modelBuilder.Entity("QLHoDan.Models.SplitingHouseholdForm", b =>
@@ -1142,7 +1146,8 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                     b.Property<bool>("NotAcceptedReason")
                         .HasColumnType("bit");
 
-                    b.Property<string>("OwnerIdCode")
+                    b.Property<string>("OwnerIdentityCode")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Scope")
@@ -1150,9 +1155,7 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OwnerIdCode")
-                        .IsUnique()
-                        .HasFilter("[OwnerIdCode] IS NOT NULL");
+                    b.HasIndex("OwnerIdentityCode");
 
                     b.ToTable("SplitingHouseholdForm");
                 });
@@ -1211,9 +1214,10 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
             modelBuilder.Entity("QLHoDan.Models.AchievementEvidenceForm", b =>
                 {
                     b.HasOne("QLHoDan.Models.Resident", "Resident")
-                        .WithOne()
-                        .HasForeignKey("QLHoDan.Models.AchievementEvidenceForm", "IdCode")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .WithMany()
+                        .HasForeignKey("ResidentIdentityCode")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.Navigation("Resident");
                 });
@@ -1242,14 +1246,15 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
 
             modelBuilder.Entity("QLHoDan.Models.ChangingHouseholdForm", b =>
                 {
-                    b.HasOne("QLHoDan.Models.Resident", "Resident")
-                        .WithOne()
-                        .HasForeignKey("QLHoDan.Models.ChangingHouseholdForm", "IdCode")
-                        .OnDelete(DeleteBehavior.NoAction);
-
                     b.HasOne("QLHoDan.Models.Household", "NewHousehold")
-                        .WithOne()
-                        .HasForeignKey("QLHoDan.Models.ChangingHouseholdForm", "NewHouseholdId")
+                        .WithMany()
+                        .HasForeignKey("NewHouseholdHouseholdId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("QLHoDan.Models.Resident", "Resident")
+                        .WithMany()
+                        .HasForeignKey("ResidentIdentityCode")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -1261,14 +1266,14 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
             modelBuilder.Entity("QLHoDan.Models.ChangingHouseholdInfoForm", b =>
                 {
                     b.HasOne("QLHoDan.Models.Household", "Household")
-                        .WithOne()
-                        .HasForeignKey("QLHoDan.Models.ChangingHouseholdInfoForm", "HouseholdId")
+                        .WithMany()
+                        .HasForeignKey("HouseholdId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("QLHoDan.Models.Resident", "Owner")
-                        .WithOne()
-                        .HasForeignKey("QLHoDan.Models.ChangingHouseholdInfoForm", "OwnerIdCode")
+                        .WithMany()
+                        .HasForeignKey("OwnerIdentityCode")
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Household");
@@ -1279,9 +1284,10 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
             modelBuilder.Entity("QLHoDan.Models.ChangingResidentInfoForm", b =>
                 {
                     b.HasOne("QLHoDan.Models.Resident", "Resident")
-                        .WithOne()
-                        .HasForeignKey("QLHoDan.Models.ChangingResidentInfoForm", "IdCode")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .WithMany()
+                        .HasForeignKey("ResidentIdentityCode")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.Navigation("Resident");
                 });
@@ -1289,9 +1295,10 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
             modelBuilder.Entity("QLHoDan.Models.DeadForm", b =>
                 {
                     b.HasOne("QLHoDan.Models.Resident", "Resident")
-                        .WithOne()
-                        .HasForeignKey("QLHoDan.Models.DeadForm", "IdCode")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .WithMany()
+                        .HasForeignKey("ResidentIdentityCode")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.Navigation("Resident");
                 });
@@ -1299,9 +1306,10 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
             modelBuilder.Entity("QLHoDan.Models.MovingOutForm", b =>
                 {
                     b.HasOne("QLHoDan.Models.Resident", "Resident")
-                        .WithOne()
-                        .HasForeignKey("QLHoDan.Models.MovingOutForm", "IdCode")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .WithMany()
+                        .HasForeignKey("ResidentIdentityCode")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.Navigation("Resident");
                 });
@@ -1313,10 +1321,6 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                         .HasForeignKey("HouseholdId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("QLHoDan.Models.SplitingHouseholdForm", null)
-                        .WithMany("Residents")
-                        .HasForeignKey("SplitingHouseholdFormId");
 
                     b.Navigation("Household");
                 });
@@ -1342,13 +1346,14 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
             modelBuilder.Entity("QLHoDan.Models.RewardRecord", b =>
                 {
                     b.HasOne("QLHoDan.Models.Resident", "Resident")
-                        .WithOne()
-                        .HasForeignKey("QLHoDan.Models.RewardRecord", "IdCode")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .WithMany()
+                        .HasForeignKey("ResidentIdentityCode")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("QLHoDan.Models.RewardCeremony", "RewardCeremony")
-                        .WithOne()
-                        .HasForeignKey("QLHoDan.Models.RewardRecord", "RewardCeremonyId")
+                        .WithMany()
+                        .HasForeignKey("RewardCeremonyId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -1357,12 +1362,32 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                     b.Navigation("RewardCeremony");
                 });
 
+            modelBuilder.Entity("QLHoDan.Models.SHForm_Resident", b =>
+                {
+                    b.HasOne("QLHoDan.Models.Resident", "Resident")
+                        .WithMany()
+                        .HasForeignKey("ResidentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("QLHoDan.Models.SplitingHouseholdForm", "SplitingHouseholdForm")
+                        .WithMany()
+                        .HasForeignKey("SHFormId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Resident");
+
+                    b.Navigation("SplitingHouseholdForm");
+                });
+
             modelBuilder.Entity("QLHoDan.Models.SplitingHouseholdForm", b =>
                 {
                     b.HasOne("QLHoDan.Models.Resident", "Owner")
-                        .WithOne()
-                        .HasForeignKey("QLHoDan.Models.SplitingHouseholdForm", "OwnerIdCode")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .WithMany()
+                        .HasForeignKey("OwnerIdentityCode")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.Navigation("Owner");
                 });
@@ -1380,11 +1405,6 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
             modelBuilder.Entity("QLHoDan.Models.RewardCeremony", b =>
                 {
                     b.Navigation("AchievementRewardPairs");
-                });
-
-            modelBuilder.Entity("QLHoDan.Models.SplitingHouseholdForm", b =>
-                {
-                    b.Navigation("Residents");
                 });
 #pragma warning restore 612, 618
         }

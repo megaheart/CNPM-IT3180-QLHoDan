@@ -18,3 +18,4 @@ class AccountApi {
 
 const accountApi = new AccountApi();
 export default accountApi;
+

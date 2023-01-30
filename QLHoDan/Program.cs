@@ -1,41 +1,79 @@
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.IdentityModel.Tokens;
 using QLHoDan.Data;
 using QLHoDan.Models;
+using QLHoDan.Services;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "DevOnly_AllowSpecificOrigins", policy => {
+        policy.WithOrigins("https://localhost:44436", "http://localhost:44436").AllowAnyMethod().AllowAnyHeader();
+    });
+});
+
+//Add custom Services
+builder.Services.AddScoped<QLHoDan.Services.ITokenCreationService, JwtService>();
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
             ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-var sqliteConnectionString = builder.Configuration.GetConnectionString("SQLite")
-            ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+var connection2String = builder.Configuration.GetConnectionString("Connection2")
+            ?? throw new InvalidOperationException("Connection string 'Connection2' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     //options.UseSqlite(identityDataConnectionString)
-    options.UseSqlServer(connectionString)
+    options.UseSqlServer(connection2String)
 );
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
         {
             options.SignIn.RequireConfirmedAccount = false;
             options.SignIn.RequireConfirmedEmail = false;
             options.SignIn.RequireConfirmedPhoneNumber = false;
+            options.User.RequireUniqueEmail = false;
+            options.Password.RequireDigit = false;
+            options.Password.RequiredLength = 6;
+            options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequireUppercase = false;
+            options.Password.RequireLowercase = false;
         })
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddIdentityServer()
     .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
 
-builder.Services.AddAuthentication()
-    .AddIdentityServerJwt();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters()
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidAudience = builder.Configuration["JwtToken:Audience"],
+            ValidIssuer = builder.Configuration["JwtToken:Issuer"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["JwtToken:Key"])
+            )
+        };
+    });
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(option =>
+{
+    option.SuppressInputFormatterBuffering = true;
+});
 builder.Services.AddRazorPages();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -73,6 +111,9 @@ using (var scope = app.Services.CreateScope())
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
+    app.UseHttpLogging();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 else
 {
@@ -83,6 +124,11 @@ else
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseCors("DevOnly_AllowSpecificOrigins");
+//}
 
 app.UseAuthentication();
 app.UseIdentityServer();

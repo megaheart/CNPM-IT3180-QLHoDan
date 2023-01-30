@@ -9,6 +9,7 @@ namespace QLHoDan.Models
 
 	public class Resident
 	{
+		public string ID { get; set; }
 		public string FullName{set;get;} // Họ và tên (fullName)
 
 

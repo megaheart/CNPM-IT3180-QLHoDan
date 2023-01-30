@@ -13,6 +13,8 @@
         "@testing-library/jest-dom": "^5.16.5",
         "@testing-library/react": "^13.4.0",
         "@testing-library/user-event": "^13.5.0",
+        "dotenv": "^16.0.3",
+        "http-proxy-middleware": "^2.0.6",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "react-scripts": "5.0.1",
@@ -62,5 +64,8 @@
         "react-smooth-collapse": "^2.1.2",
         "reaptcha": "^1.12.1",
         "sass": "^1.56.2"
+    },
+    "jest": {
+        "testURL": "https://localhost:7265"
     }
 }
