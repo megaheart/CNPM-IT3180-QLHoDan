@@ -81,16 +81,22 @@ export default function Login() {
             else {
                 setUsernameError('');
                 setPasswordError('');
-                console.log(username,password)
+                console.log(username, password)
                 authenticationService.signIn(username, password).then(() => {
-                    console.log(1);
-                    setLoading(false);
+                    const userData = authenticationService.User;
+                    console.log(userData)
+                    setAuth(userData);
+                    navigate('/dashboard');
+                    console.log(loading)
                 }).catch(
                     (e) => {
-                        console.log(e);
+                        console.log(e)
+                    }
+                ).finally(
+                    () => {
                         setLoading(false);
                     }
-                )
+                );
                 //if (user.length === 0) {
                 //    setStart(true);
                 //    setErrMsg('Tài khoản không tồn tại');

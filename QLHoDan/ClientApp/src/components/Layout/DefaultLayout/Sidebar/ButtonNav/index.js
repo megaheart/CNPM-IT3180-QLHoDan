@@ -78,6 +78,9 @@ const navForAdmin = [
             { icon: <TableViewIcon />, title: 'Tài khoản hộ dân', id: 'table4', linkCol: '/table/danh_sach_tai_khoan_ho_dan' }
         ]
     },
+    {
+        icon: <EmojiEventsIcon />, title: 'Trao thưởng', link: '/award', id: 'award'
+    },
     { icon: <AccountBoxIcon />, title: 'Tài khoản', link: '/profile', id: 'profile' },
     { icon: <NotificationsNoneIcon />, title: 'Thông báo', link: '/notification', id: 'notification' },
     { icon: <LogoutIcon />, title: 'Đăng xuất', link: '/', id: 'logout', isLogout: true, action: loggout },

@@ -5,13 +5,12 @@ import { useState, useContext, useCallback, useMemo } from 'react';
 import authenticationService from '~/services/account/authentication';
 // import MenuIcon from '@mui/icons-material/Menu';
 import { PushPinOutlined } from '@mui/icons-material'
-import buttons, { navForResident, navForAdmin, navForEmplyee } from './ButtonNav';
+import { navForResident, navForAdmin, navForEmplyee } from './ButtonNav';
 import classNames from 'classnames/bind';
 import { NavLink } from "react-router-dom";
 import CollapseButton from './Collapse';
 import { TitleContext } from '../';
-import { AuthContext } from '~/components/AuthenProvider'
-import accountService from '~/services/account';
+import { AuthContext } from '~/components/AuthenProvider';
 const cx = classNames.bind(styles);
 
 function Sidebar() {
@@ -21,19 +20,19 @@ function Sidebar() {
     const handleAuth = () => {
         authenticationService.logOut();
     }
-    // const buttons = useMemo(
-    //     () => {
-    //         if (auth.role === "CommitteeChairman") {
-    //             return navForAdmin;
-    //         }
-    //         else if (auth.role === "Accountant" | "ScopeLeader") {
-    //             return navForEmplyee;
-    //         }
-    //         else {
-    //             return navForResident;
-    //         }
-    //     }, [auth.role]
-    // )
+    const buttons = useMemo(
+        () => {
+            if (auth.role === "CommitteeChairman") {
+                return navForAdmin;
+            }
+            else if (auth.role === "Accountant" | "ScopeLeader") {
+                return navForEmplyee;
+            }
+            else {
+                return navForResident;
+            }
+        }, [auth.role]
+    )
     //pin sidebar
     const [open, setOpen] = useState(true);
     const [pin, setPin] = useState(true);

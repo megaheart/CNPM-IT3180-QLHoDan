@@ -23,7 +23,7 @@ function App() {
         }))
       }
       {
-        !auth.hasOwnProperty('username') && (
+        auth.hasOwnProperty('username') && (
           routes.map((route => {
             const Page = route.element;
             let Layout = route.layout;
