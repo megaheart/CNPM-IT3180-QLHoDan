@@ -87,15 +87,15 @@ export default function Login() {
                     setAuth(userData);
                     navigate('/dashboard');
                     console.log(loading)
-                }).catch (
+                }).catch(
                     (e) => {
                         console.log(e)
                     }
-                ).finish(
+                ).finally(
                     () => {
                         setLoading(false);
                     }
-);
+                );
                 //if (user.length === 0) {
                 //    setStart(true);
                 //    setErrMsg('Tài khoản không tồn tại');
