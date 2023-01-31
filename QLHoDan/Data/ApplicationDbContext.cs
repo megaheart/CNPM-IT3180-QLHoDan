@@ -12,7 +12,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             : base(options)
     {
     }
-    public DbSet<Resident> Residents { set; get; }
+    public DbSet<Resident> Resident { set; get; }
     public DbSet<Household> Household { set; get; }
     public DbSet<HouseholdForm> HouseholdForm { set; get; }
     public DbSet<ResidentForm> ResidentForm { set; get; }
@@ -36,30 +36,43 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<Resident>().HasKey(nk => nk.IdentityCode);
         modelBuilder.Entity<Household>().HasKey(hk => hk.HouseholdId);
         modelBuilder.Entity<HouseholdForm>().HasKey(hk => hk.Id);
+        modelBuilder.Entity<HouseholdForm>().Property(hk => hk.Id).ValueGeneratedOnAdd();
         modelBuilder.Entity<ResidentForm>().HasKey(hk => hk.Id);
+        modelBuilder.Entity<ResidentForm>().Property(hk => hk.Id).ValueGeneratedOnAdd();
         modelBuilder.Entity<AddingResidentForm>().HasKey(hk => hk.Id);
+        modelBuilder.Entity<AddingResidentForm>().Property(hk => hk.Id).ValueGeneratedOnAdd();
         modelBuilder.Entity<ResidentChangeRecord>().HasKey(hk => hk.Id);
+        modelBuilder.Entity<ResidentChangeRecord>().Property(hk => hk.Id).ValueGeneratedOnAdd();
         modelBuilder.Entity<MovingOutForm>().HasKey(hk => hk.Id);
+        modelBuilder.Entity<MovingOutForm>().Property(hk => hk.Id).ValueGeneratedOnAdd();
         modelBuilder.Entity<DeadForm>().HasKey(hk => hk.Id);
+        modelBuilder.Entity<DeadForm>().Property(hk => hk.Id).ValueGeneratedOnAdd();
         modelBuilder.Entity<SplitingHouseholdForm>().HasKey(hk => hk.Id);
+        modelBuilder.Entity<SplitingHouseholdForm>().Property(hk => hk.Id).ValueGeneratedOnAdd();
 
         modelBuilder.Entity<SHForm_Resident>().Property<int>("SHFormId");
         modelBuilder.Entity<SHForm_Resident>().Property<string>("ResidentId");
         modelBuilder.Entity<SHForm_Resident>().HasKey("SHFormId", "ResidentId");
 
         modelBuilder.Entity<ChangingResidentInfoForm>().HasKey(hk => hk.Id);
+        modelBuilder.Entity<ChangingResidentInfoForm>().Property(hk => hk.Id).ValueGeneratedOnAdd();
         modelBuilder.Entity<ChangingHouseholdInfoForm>().HasKey(hk => hk.Id);
+        modelBuilder.Entity<ChangingHouseholdInfoForm>().Property(hk => hk.Id).ValueGeneratedOnAdd();
         modelBuilder.Entity<ChangingHouseholdForm>().HasKey(hk => hk.Id);
+        modelBuilder.Entity<ChangingHouseholdForm>().Property(hk => hk.Id).ValueGeneratedOnAdd();
         modelBuilder.Entity<NotificationMessage>().HasKey(hk => hk.Id);
+        modelBuilder.Entity<NotificationMessage>().Property(hk => hk.Id).ValueGeneratedOnAdd();
         modelBuilder.Entity<AchievementEvidenceForm>().HasKey(hk => hk.Id);
+        modelBuilder.Entity<AchievementEvidenceForm>().Property(hk => hk.Id).ValueGeneratedOnAdd();
         modelBuilder.Entity<AchievementRewardPair>().HasKey(g => g.Id);
-
+        modelBuilder.Entity<AchievementRewardPair>().Property(hk => hk.Id).ValueGeneratedOnAdd();
         modelBuilder.Entity<AchievementRewardPair>().Property<int?>("RewardCeremonyId").IsRequired(false);
         modelBuilder.Entity<AchievementRewardPair>().HasIndex("RewardCeremonyId", "AchievementType").IsUnique();
 
         modelBuilder.Entity<RewardCeremony>().HasKey(hk => hk.Id);
+        modelBuilder.Entity<RewardCeremony>().Property(hk => hk.Id).ValueGeneratedOnAdd();
         modelBuilder.Entity<RewardRecord>().HasKey(hk => hk.Id);
-
+        modelBuilder.Entity<RewardRecord>().Property(hk => hk.Id).ValueGeneratedOnAdd();
         //modelBuilder.Entity<GTPTQDTTT>().HasIndex("DotPhatThuong", "PhanLoai").IsUnique(true);
 
         //modelBuilder.Entity<THForm>().Property<int>("ChuHoMoiId");
