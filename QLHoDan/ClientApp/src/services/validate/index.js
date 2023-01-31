@@ -7,7 +7,7 @@ function checkUsernameValidation(value) {
         };
     }
 
-    const isValidLength = /^.{6,16}$/;
+    const isValidLength = /^.{2,50}$/;
     if (!isValidLength.test(value)) {
         return {
             isValid: false,
