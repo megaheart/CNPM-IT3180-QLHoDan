@@ -312,7 +312,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
         }
         private async Task<bool> ResidentsExists(string[] ids)
         {
-            return await _context.Residents.AnyAsync(e => ids.Contains(e.IdentityCode));
+            return await _context.Resident.AnyAsync(e => ids.Contains(e.IdentityCode));
         }
     }
 }

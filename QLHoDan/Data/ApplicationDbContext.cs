@@ -12,7 +12,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             : base(options)
     {
     }
-    public DbSet<Resident> Residents { set; get; }
+    public DbSet<Resident> Resident { set; get; }
     public DbSet<Household> Household { set; get; }
     public DbSet<HouseholdForm> HouseholdForm { set; get; }
     public DbSet<ResidentForm> ResidentForm { set; get; }
