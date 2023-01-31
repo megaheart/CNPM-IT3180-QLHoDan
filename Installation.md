@@ -22,3 +22,14 @@
 - Nếu tiếp tục lỗi thì lại chờ 10s và reload lại.
 
 - Sau 3 lần mà không được thì mong bạn liên hệ với bên phát triển để chúng tôi sửa lỗi
+
+## Chạy thử chương trình
+
+### Tài khoản Test
+
+|Username|Password|Role|
+|-----|--------|--------|
+|admin|Linh@123456|Chủ tịch phường|
+|accountant|Linh@123456|Thư kí|
+|scopeleader|Linh@123456|Tổ trưởng|
+|household|Linh@123456|Hộ dân|
