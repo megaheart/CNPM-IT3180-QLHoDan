@@ -6,6 +6,7 @@
 }
 
 .side-bar {
+    min-width: 56px;
     padding: 20px 10px 10px 10px;
     transition: width 3s ease-in-out;
     height: calc(100vh - 2 * var(--margin-side-bar));
@@ -126,4 +127,11 @@ hr {
     height: 0.5px;
     background: linear-gradient(90deg, rgba(228, 228, 235, 1) 2%, rgba(2, 0, 36, 1) 53%, rgba(214, 226, 226, 1) 98%);
     margin: 10px 0;
+}
+@media only screen and (max-width: 1211px) {
+    .normal-btn,
+    .nav-group-collapse,
+    .icon-collapse {
+        display: none;
+    }
 }

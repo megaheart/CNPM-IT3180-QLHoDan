@@ -1,0 +1,24 @@
+.award-form {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    margin: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+}
+
+.award-1 {
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    border-right: 1px solid #ccc;
+}
+
+.award-2 {
+    flex: 1;
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}

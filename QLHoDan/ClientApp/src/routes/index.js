@@ -7,6 +7,7 @@ import Profile from '~/page/Account';
 import Notification from '~/page/Notification';
 import Guest, { Guest_Add_Household, Guest_Add_Resident } from '~/page/GuestUI';
 import DashboardComponent from '~/page/Dashboard';
+import PersistentDrawerRight from '~/features/Award'
 // import ErrorLogin from '~/page/Error'
 //layout
 import DefaultLayout from '~/components/Layout/DefaultLayout'
@@ -44,6 +45,12 @@ const routes = [
             { subpath: '/table/nhan_khau', element: NKTable, id: 'tb2' },
             { subpath: '/table/lich_su_nhan_khau', element: ResidentHistory, id: 'tb3' },
             { subpath: '/table/danh_sach_tai_khoan_ho_dan', element: ManagerAccountResident, id: 'tb4' }
+        ],
+        layout: DefaultLayout, id: 'add', role: [ROLES.ADMIN, ROLES.MANAGER]
+    },
+    {
+        path: '/award-route', subRoutes: [
+            { subpath: '/award', element: PersistentDrawerRight, id: 'a1' }
         ],
         layout: DefaultLayout, id: 'add', role: [ROLES.ADMIN, ROLES.MANAGER]
     },

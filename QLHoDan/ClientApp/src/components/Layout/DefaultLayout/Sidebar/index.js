@@ -5,7 +5,7 @@ import { useState, useContext, useCallback, useMemo } from 'react';
 import authenticationService from '~/services/account/authentication';
 // import MenuIcon from '@mui/icons-material/Menu';
 import { PushPinOutlined } from '@mui/icons-material'
-import { navForResident, navForAdmin, navForEmplyee } from './ButtonNav';
+import buttons, { navForResident, navForAdmin, navForEmplyee } from './ButtonNav';
 import classNames from 'classnames/bind';
 import { NavLink } from "react-router-dom";
 import CollapseButton from './Collapse';
@@ -21,19 +21,19 @@ function Sidebar() {
     const handleAuth = () => {
         authenticationService.logOut();
     }
-    const buttons = useMemo(
-        () => {
-            if (auth.role === "CommitteeChairman") {
-                return navForAdmin;
-            }
-            else if (auth.role === "Accountant" | "ScopeLeader") {
-                return navForEmplyee;
-            }
-            else {
-                return navForResident;
-            }
-        }, [auth.role]
-    )
+    // const buttons = useMemo(
+    //     () => {
+    //         if (auth.role === "CommitteeChairman") {
+    //             return navForAdmin;
+    //         }
+    //         else if (auth.role === "Accountant" | "ScopeLeader") {
+    //             return navForEmplyee;
+    //         }
+    //         else {
+    //             return navForResident;
+    //         }
+    //     }, [auth.role]
+    // )
     //pin sidebar
     const [open, setOpen] = useState(true);
     const [pin, setPin] = useState(true);
@@ -51,7 +51,7 @@ function Sidebar() {
         <div className={cx('side-bar')} onMouseOver={(pin === true) ? fixedFunc : (open === false) ? toggle : fixedFunc} onMouseLeave={(pin === true) ? fixedFunc : (open === true) ? toggle : fixedFunc
         } >
             <NavLink className={cx('btn-menu')} onClick={pinToggle} >
-                <span><PushPinOutlined /></span>
+                <span ><PushPinOutlined className={cx('icon-collapse')} /></span>
                 <span className={open ? cx('normal-btn') : cx('hide-btn')} >{open && 'Ghim'}</span>
             </NavLink>
             <hr />

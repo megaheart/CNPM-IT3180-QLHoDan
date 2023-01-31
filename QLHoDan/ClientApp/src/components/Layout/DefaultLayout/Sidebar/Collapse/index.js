@@ -18,7 +18,7 @@ function CollapseButton({ buttonObject, isOpen }) {
             <NavLink className={cx('btn-side')} onClick={toggle}>
                 <span>{buttonObject.icon}</span>
                 <span className={isOpen ? cx('normal-btn') : cx('hide-btn')} >{isOpen && (buttonObject.title)}</span>
-                <span>{isOpen && (!visible ? <KeyboardArrowDown /> : <KeyboardArrowUp />)}</span>
+                <span className={cx('icon-collapse')}>{isOpen && (!visible ? <KeyboardArrowDown /> : <KeyboardArrowUp />)}</span>
             </NavLink>
             {isOpen && (
                 <SmoothCollapse

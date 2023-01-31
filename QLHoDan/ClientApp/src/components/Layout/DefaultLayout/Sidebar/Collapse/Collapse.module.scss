@@ -29,3 +29,9 @@
     width: 10rem;
     margin-left: 10px;
 }
+@media only screen and (max-width: 1211px) {
+    .icon-collapse,
+    .nav-group-collapse {
+        display: none;
+    }
+}

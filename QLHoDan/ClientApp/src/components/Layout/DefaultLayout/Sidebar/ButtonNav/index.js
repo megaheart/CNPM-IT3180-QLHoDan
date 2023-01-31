@@ -6,6 +6,7 @@ import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { FindInPage } from '@mui/icons-material';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 
 import authenticationService from '~/services/account/authentication';
 
@@ -38,7 +39,9 @@ const buttons = [
             { icon: <TableViewIcon />, title: 'Lịch sử biến đổi nhân khẩu', id: 'table3', linkCol: '/table/lich_su_nhan_khau' },
         ]
     },
-
+    {
+        icon: <EmojiEventsIcon />, title: 'Trao thưởng', link: '/award', id: 'award'
+    },
     { icon: <AccountBoxIcon />, title: 'Tài khoản', link: '/profile', id: 'profile' },
     { icon: <NotificationsNoneIcon />, title: 'Thông báo', link: '/notification', id: 'notification' },
     { icon: <LogoutIcon />, title: 'Đăng xuất', link: '/', id: 'logout', isLogout: true, action: loggout },

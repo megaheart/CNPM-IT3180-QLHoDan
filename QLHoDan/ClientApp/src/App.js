@@ -2,6 +2,11 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { routes, loginRoute } from '~/routes';
 import useAuth from "~/hooks/useAuth";
 import RequireAuth from './services/ProtectedRoute/requireAuth';
+const ROLES = {
+  ADMIN: "CommitteeChairman",
+  MANAGER: "Accountant" | "ScopeLeader",
+  USER: "Household"
+}
 function App() {
   const { auth } = useAuth();
   return (
@@ -18,7 +23,7 @@ function App() {
         }))
       }
       {
-        auth.hasOwnProperty('username') && (
+        !auth.hasOwnProperty('username') && (
           routes.map((route => {
             const Page = route.element;
             let Layout = route.layout;
