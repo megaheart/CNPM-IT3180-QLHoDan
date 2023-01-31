@@ -41,7 +41,6 @@ function Header({ text }) {
     const tippySearch = useRef();
     const searchBar = useRef();
     const [search, setSearch] = useState('');
-    const [searchResult, setSearchResult] = useState([]);
     const handleSearch = (e) => {
         setSearch(e.target.value);
     }
@@ -51,17 +50,6 @@ function Header({ text }) {
     useEffect(() => {
         searchBar.current.focus();
     }, [search])
-    const handleSearchResult = () => {
-        if (search === '') {
-            setSearchResult([]);
-        }
-        else {
-            setSearchResult(filterByTitle(FormsAction, search));
-        }
-    }
-    useEffect(() => {
-        handleSearchResult();
-    }, [search]);
     //logout
     const handleLogout = () => {
         accountService.logout(setAuth);
@@ -81,6 +69,7 @@ function Header({ text }) {
                 setSearch('');
             }
         }
+        console.log(1)
         document.addEventListener("mousedown", handleClickOutside);
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
@@ -100,13 +89,13 @@ function Header({ text }) {
             </div>
             <Tippy
                 interactive
-                visible={searchResult.length > 0}
+                visible={filterByTitle(FormsAction, search).length > 0 && search.length > 0}
                 render={attrs => (
                     <div ref={tippySearch} className={cx('search-result')} tabIndex="-1" {...attrs}>
                         <PopperWrapper>
                             <h4 className={cx('search-title')}>Kết quả tìm kiếm</h4>
                             {
-                                searchResult.map(
+                                filterByTitle(FormsAction, search).map(
                                     item => {
                                         return <ActionItem onClick={() => setSearch('')} key={item.link} item={item} />
                                     }

@@ -11,7 +11,7 @@ function checkUsernameValidation(value) {
     if (!isValidLength.test(value)) {
         return {
             isValid: false,
-            message: "Tên đăng nhập phải có ít nhất 6 ký tự và tối đa 16 ký tự.",
+            message: "Tên đăng nhập phải có ít nhất 2 ký tự và tối đa 16 ký tự.",
         };
     }
     return {

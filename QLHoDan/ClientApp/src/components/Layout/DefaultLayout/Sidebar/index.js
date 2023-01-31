@@ -1,6 +1,8 @@
 import styles from './Sidebar.module.scss';
 import { useState, useContext, useCallback, useMemo } from 'react';
 //icon
+//authentication
+import authenticationService from '~/services/account/authentication';
 // import MenuIcon from '@mui/icons-material/Menu';
 import { PushPinOutlined } from '@mui/icons-material'
 import { navForResident, navForAdmin, navForEmplyee } from './ButtonNav';
@@ -17,15 +19,14 @@ function Sidebar() {
     const changer = useContext(TitleContext);
     const { auth, setAuth } = useContext(AuthContext);
     const handleAuth = () => {
-        accountService.logout(setAuth);
-        localStorage.removeItem('myUserNameReactApp');
+        authenticationService.logOut();
     }
     const buttons = useMemo(
         () => {
-            if (auth.role === '1') {
+            if (auth.role === "CommitteeChairman") {
                 return navForAdmin;
             }
-            else if (auth.role === '2') {
+            else if (auth.role === "Accountant" | "ScopeLeader") {
                 return navForEmplyee;
             }
             else {
