@@ -7,8 +7,10 @@ import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { FindInPage } from '@mui/icons-material';
 
+import authenticationService from '~/services/account/authentication';
+
 const loggout = () => {
-    localStorage.removeItem('myUserNameReactApp');
+    authenticationService.logOut();
 }
 
 const buttons = [
@@ -42,6 +44,7 @@ const buttons = [
     { icon: <LogoutIcon />, title: 'Đăng xuất', link: '/', id: 'logout', isLogout: true, action: loggout },
 ]
 const navForResident = [
+    { icon: <DashboardIcon />, title: 'Hệ thống', link: '/dashboard', id: 'dashboard' },
     {
         icon: <PlaylistAddIcon />, title: 'Gửi đơn', link: '/addnew/them_ho_khau',
         collapse: [
@@ -63,13 +66,13 @@ const navForResident = [
 ];
 const navForAdmin = [
     { icon: <DashboardIcon />, title: 'Hệ thống', link: '/dashboard', id: 'dashboard' },
-    { icon: <AccountBoxIcon />, title: 'Tài khoản', link: '/profile', id: 'profile' },
     {
         icon: <FindInPage />, title: 'Quản lý', link: '/table/ho_khau', id: 'table',
         collapse: [
             { icon: <TableViewIcon />, title: 'Danh sách hộ khẩu', id: 'table1', linkCol: '/table/ho_khau' },
             { icon: <TableViewIcon />, title: 'Hồ sơ nhân khẩu', id: 'table2', linkCol: '/table/nhan_khau' },
             { icon: <TableViewIcon />, title: 'Lịch sử biến đổi nhân khẩu', id: 'table3', linkCol: '/table/lich_su_nhan_khau' },
+            { icon: <TableViewIcon />, title: 'Tài khoản hộ dân', id: 'table4', linkCol: '/table/danh_sach_tai_khoan_ho_dan' }
         ]
     },
     { icon: <AccountBoxIcon />, title: 'Tài khoản', link: '/profile', id: 'profile' },
