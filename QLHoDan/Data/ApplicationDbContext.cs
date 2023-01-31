@@ -1,18 +1,16 @@
-﻿using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Duende.IdentityServer.EntityFramework.Options;
 using QLHoDan.Models;
 using QLHoDan.Models.DbConversions;
 
 namespace QLHoDan.Data;
 
-public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {
-    public ApplicationDbContext(DbContextOptions options, IOptions<OperationalStoreOptions> operationalStoreOptions)
-        : base(options, operationalStoreOptions)
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options)
     {
-
     }
     public DbSet<Resident> Residents { set; get; }
     public DbSet<Household> Household { set; get; }

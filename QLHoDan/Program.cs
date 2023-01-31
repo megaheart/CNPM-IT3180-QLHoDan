@@ -6,10 +6,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.IdentityModel.Tokens;
+using QLHoDan;
 using QLHoDan.Data;
 using QLHoDan.Models;
 using QLHoDan.Services;
 using System.Text;
+using IdentityServer4;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,7 +50,10 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddIdentityServer()
-    .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
+    .AddInMemoryIdentityResources(Config.IdentityResources)
+    .AddInMemoryApiScopes(Config.ApiScopes)
+    .AddInMemoryClients(Config.Clients)
+    .AddAspNetIdentity<ApplicationUser>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
