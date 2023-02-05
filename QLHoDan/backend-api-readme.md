@@ -80,13 +80,17 @@
     ```json
     {
         "fullName": "string",
-        "scope": number
+        "scope": number,
+        "avatarLink": "string",
+        "wallpaperLink": "string"
     }
     ```
     |Tham số|Miêu tả|
     |-------|-------|
     |fullName|Tên đầy đủ của người sở hữu tài khoản|
     |scope|Tổ phụ trách quản lý tài khoản|
+    |avatarLink|Id của bức ảnh đại diện|
+    |wallpaperLink|Id của bức ảnh tường|
 
 - **Lỗi**
     - [401 Unauthorized]
@@ -392,7 +396,7 @@
         *Tài khoản không đủ quyền để truy cập. Tài khoản không phải chủ tịch phường.*
 
 # Module Quản lý hộ khẩu nhân khẩu
-## Quản lý hộ khẩu, nhân khẩu
+## Quản lý hộ khẩu
 ### Lấy danh sách hộ khẩu
 <span style="color:#34a853; width: 50px; display: inline-block">**GET**</span> ```https://localhost:7265/api/Households```
 
@@ -599,6 +603,376 @@
     - [404 NotFound]
 
         *Hộ khẩu không tồn tại trong CSDL để cập nhật*
+### Xoá hộ khẩu
+<span style="color:#ea4335; width: 50px; display: inline-block">**DELETE**</span> ```https://localhost:7265/api/Households/{householdId}```
+
+*Xoá hộ khẩu, chỉ người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch phường) mới dùng được.*
+
+*Tổ trưởng chỉ xoá được hộ khẩu thuộc tổ quản lý.*
+
+- **Route Params**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |householdId|Số hộ khẩu mà muốn xoá|
+
+- **Request Header**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |Authorization|Một chuỗi kí tự là token nhận được sau khi đăng nhập|
+
+- **Response Body khi thành công**
+    
+    Không có
+
+- **Lỗi**
+    - [401 Unauthorized]
+
+        *JWT Token không hợp lệ*
+
+    - [403 Forbidden]
+
+        *Tài khoản không đủ quyền để truy cập. Tài khoản không phải người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch phường)*
+
+    - [404 NotFound]
+
+        *Hộ khẩu không tồn tại trong CSDL để xoá*
+
+## Quản lý nhân khẩu
+### Lấy danh sách nhân khẩu
+<span style="color:#34a853; width: 50px; display: inline-block">**GET**</span> ```https://localhost:7265/api/Residents[?isDead={boolean}&movedOut={boolean}]```
+
+*Lấy ra danh sách nhân khẩu (thông tin khá sơ lược), chỉ người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch phường) mới dùng được.*
+
+*Tổ trưởng chỉ lấy ra danh sách nhân khẩu thuộc tổ quản lý, thư kí, chủ tịch phường có thể lấy được tất cả danh sách nhân khẩu của toàn phường.*
+
+- **Query Params**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |isDead|*[tuỳ chọn]* `true` để lấy danh sách người đã chết, `false` để lấy danh sách những nhân khẩu bình thường<br/>Mặc định là `false`|
+    |movedOut|*[tuỳ chọn]* `true` để lấy danh sách người đã chuyển đi, `false` để lấy danh sách những nhân khẩu đang thường trú/tạm trú<br/>Mặc định là `false`|
+
+- **Request Header**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |Authorization|Một chuỗi kí tự là token nhận được sau khi đăng nhập|
+
+- **Response Body khi thành công**
+    ```json
+    [
+        {
+            "identityCode": "string",
+            "fullName": "string",
+            "dateOfBirth": "DateTime",
+            "isMale": boolean,
+            "householdId": "string",
+            "relationShip": "string",
+            "scope": 0
+        },
+        ...
+    ]
+    ```
+    |Tham số  |Miêu tả  |
+    |---------|---------|
+    |identityCode|Số CMND/CCCD/Mã định danh điện tử của nhân khẩu|
+    |fullName|Họ và tên nhân khẩu|
+    |dateOfBirth|Ngày tháng năm sinh|
+    |isMale|Giới tính **(Nam: *true*/ Nữ: *false*)**|
+    |householdId|Số hộ khẩu mà nhân khẩu thuộc về|
+    |relationShip|Quan hệ của nhân khẩu với chủ hộ|
+    |scope|Tổ phụ trách quản lý nhân khẩu|
+
+- **Lỗi**
+    - [401 Unauthorized]
+
+        *JWT Token không hợp lệ*
+
+    - [403 Forbidden]
+
+        *Tài khoản không đủ quyền để truy cập. Tài khoản không phải người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch phường)*
+
+### Lấy thông tin chi tiết của nhân khẩu
+<span style="color:#34a853; width: 50px; display: inline-block">**GET**</span>
+```https://localhost:7265/api/Residents/{idCode}```
+
+*Lấy ra thông tin chi tiết của nhân khẩu, chỉ người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch phường) mới dùng được.*
+
+*Tổ trưởng chỉ lấy ra thông tin chi tiết của nhân khẩu thuộc tổ quản lý, thư kí, chủ tịch phường có thể lấy được thông tin chi tiết của nhân khẩu của toàn phường.*
+
+- **Route Params**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |householdId|Số nhân khẩu mà muốn lấy thông tin ra|
+
+- **Request Header**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |Authorization|Một chuỗi kí tự là token nhận được sau khi đăng nhập|
+
+- **Response Body khi thành công**
+    ```json
+    {
+        "fullName": "string",
+        "alias": "string",
+        "dateOfBirth": "DateTime",
+        "isMale": boolean,
+        "birthPlace": "string",
+        "nativeLand": "string",
+        "ethnic": "string",
+        "nation": "string",
+        "job": "string",
+        "workplace": "string",
+        "identityCode": "string",
+        "idCardDate": "DateTime"|null|undefined,
+        "idCardPlace": "string"|null|undefined,
+        "relationShip": "string",
+        "isManaged": boolean,
+        "isDead": boolean,
+        "moveOutPlace": "string"|null|undefined,
+        "moveOutDate": "DateTime"|null|undefined,
+        "moveOutReason": "string"|null|undefined,
+        "academicLevel": "string",
+        "criminalRecord": "string",
+        "moveInDate": "DateTime",
+        "moveInReason": "string",
+        "householdId": "string"|null|undefined
+    }
+
+    ```
+    |Tham số  |Miêu tả  |
+    |---------|---------|
+    |fullName|Họ và tên|
+    |alias|Bí danh|
+    |dateOfBirth|Ngày tháng năm sinh|
+    |isMale|Giới tính|
+    |birthPlace|Nơi sinh|
+    |nativeLand|Nguyên quán|
+    |ethnic|Dân tộc|
+    |nation|Quốc tịch|
+    |job|Nghề nghiệp|
+    |workplace|Nơi làm việc|
+    |identityCode|CMND/CCCD, số định danh điện tử|
+    |idCardDate|cmnd ngày cấp|
+    |idCardPlace|cmnd nơi cấp|
+    |relationShip|Quan hệ với chủ hộ|
+    |moveOutPlace|Địa điểm chuyển đi|
+    |moveOutDate|Ngày chuyển đi|
+    |moveOutReason|Lý do chuyển đi|
+    |academicLevel|trình độ học vấn|
+    |criminalRecord|Tiền án|
+    |moveInDate|ngày chuyển đến|
+    |moveInReason|lý do chuyển đến|
+    |householdId|Số hộ khẩu mà nhân khẩu thuộc về|
+
+- **Lỗi**
+    - [401 Unauthorized]
+
+        *JWT Token không hợp lệ*
+
+    - [403 Forbidden]
+
+        *Tài khoản không đủ quyền để truy cập. Tài khoản không phải người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch phường)*
+
+    - [400 BadRequest] IdS_ScopeOutOfManagement
+
+        *Tổ trưởng không thể lấy thông tin nhân khẩu thuộc phạm vi quản lý của tổ khác*
+
+### Thêm nhân khẩu mới
+<span style="color:#fbbc05; width: 50px; display: inline-block">**POST**</span> ```https://localhost:7265/api/Residents```
+
+*Thêm nhân khẩu mới, chỉ người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch phường) mới dùng được.*
+
+*Tổ trưởng chỉ thêm được nhân khẩu mới thuộc tổ quản lý.*
+
+- **Request Header**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |Authorization|Một chuỗi kí tự là token nhận được sau khi đăng nhập|
+
+- **Request Body**
+    ```json
+    {
+        "fullName": "string",
+        "alias": "string",
+        "dateOfBirth": "DateTime",
+        "isMale": boolean,
+        "birthPlace": "string",
+        "nativeLand": "string",
+        "ethnic": "string",
+        "nation": "string",
+        "job": "string",
+        "workplace": "string",
+        "identityCode": "string",
+        "idCardDate": "DateTime"|null|undefined,
+        "idCardPlace": "string"|null|undefined,
+        "relationShip": "string",
+        "academicLevel": "string",
+        "criminalRecord": "string",
+        "moveInDate": "DateTime",
+        "moveInReason": "string",
+        "scope": number|null|undefined,
+        "householdId": "string"|null|undefined
+    }
+    ```
+    |Tham số  |Miêu tả  |
+    |---------|---------|
+    |fullName|Họ và tên|
+    |alias|Bí danh|
+    |dateOfBirth|Ngày tháng năm sinh|
+    |isMale|Giới tính|
+    |birthPlace|Nơi sinh|
+    |nativeLand|Nguyên quán|
+    |ethnic|Dân tộc|
+    |nation|Quốc tịch|
+    |job|Nghề nghiệp|
+    |workplace|Nơi làm việc|
+    |identityCode|CMND/CCCD, số định danh điện tử|
+    |idCardDate|cmnd ngày cấp|
+    |idCardPlace|cmnd nơi cấp|
+    |relationShip|Quan hệ với chủ hộ|
+    |academicLevel|trình độ học vấn|
+    |criminalRecord|Tiền án|
+    |moveInDate|ngày chuyển đến|
+    |moveInReason|lý do chuyển đến|
+    |householdId|*[tuỳ chọn]* Số hộ khẩu mà nhân khẩu thuộc về. Nếu nhân khẩu tạm trú thì không điền|
+    |scope|*[tuỳ chọn]* Tổ quản lý nhân khẩu. Nếu đã điền trường **householdId** thì có thể bỏ qua trường này vì **scope** sẽ được lấy tự động từ hộ khẩu.|
+
+- **Response Body khi thành công**
+    
+    Không có gì
+
+- **Lỗi**
+    - [401 Unauthorized]
+
+        *JWT Token không hợp lệ*
+
+    - [403 Forbidden]
+
+        *Tài khoản không đủ quyền để truy cập. Tài khoản không phải người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch phường)*
+
+    - [404 NotFound]
+
+        *Xảy ra khi quá trình thêm nhân khẩu vào CSDL bị lỗi (cách khắc phục đó là request lại lần nữa)*
+
+    - [409 Conflict]
+
+        *Xảy ra khi nhân khẩu thêm vào có số nhân khẩu đã tồn tại trong CSDL hoặc số CMND/CCCD của một trong các thành viên được liệt kê trong **nonExistMembers** ở **Request body** đã tồn tại trong CSDL*
+
+    - [400 BadRequest] IdS_ScopeOutOfManagement
+
+        *Tổ trưởng không thể tạo nhân khẩu thuộc phạm vi quản lý của tổ khác*
+
+### Cập nhật nhân khẩu
+<span style="color:#4285f4; width: 50px; display: inline-block">**PUT**</span>```https://localhost:7265/api/Residents```
+
+*Cập nhật thông tin nhân khẩu, chỉ người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch phường) mới dùng được.*
+
+*Tổ trưởng chỉ cập nhật được thông tin nhân khẩu thuộc tổ quản lý.*
+
+- **Request Header**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |Authorization|Một chuỗi kí tự là token nhận được sau khi đăng nhập|
+
+- **Request Body**
+    ```json
+    {
+        "fullName": "string"|null|undefined,
+        "alias": "string"|null|undefined,
+        "dateOfBirth": "DateTime"|null|undefined,
+        "isMale": boolean|null|undefined,
+        "birthPlace": "string"|null|undefined,
+        "nativeLand": "string"|null|undefined,
+        "ethnic": "string"|null|undefined,
+        "nation": "string"|null|undefined,
+        "job": "string"|null|undefined,
+        "workplace": "string"|null|undefined,
+        "identityCode": "string",
+        "idCardDate": "DateTime"|null|undefined,
+        "idCardPlace": "string"|null|undefined,
+        "relationShip": "string"|null|undefined,
+        "academicLevel": "string"|null|undefined,
+        "criminalRecord": "string"|null|undefined,
+        "moveInDate": "DateTime"|null|undefined,
+        "moveInReason": "string"|null|undefined,
+        "moveOutPlace": "string"|null|undefined,
+        "moveOutDate": "DateTime"|null|undefined,
+        "moveOutReason": "string"|null|undefined,
+        "scope": number|null|undefined,
+        "householdId": "string"|null|undefined
+    }
+    ```
+    |Tham số  |Miêu tả  |
+    |---------|---------|
+    |fullName|*[tuỳ chọn]* Họ và tên|
+    |alias|*[tuỳ chọn]* Bí danh|
+    |dateOfBirth|*[tuỳ chọn]* Ngày tháng năm sinh|
+    |isMale|*[tuỳ chọn]* Giới tính|
+    |birthPlace|*[tuỳ chọn]* Nơi sinh|
+    |nativeLand|*[tuỳ chọn]* Nguyên quán|
+    |ethnic|*[tuỳ chọn]* Dân tộc|
+    |nation|*[tuỳ chọn]* Quốc tịch|
+    |job|*[tuỳ chọn]* Nghề nghiệp|
+    |workplace|*[tuỳ chọn]* Nơi làm việc|
+    |identityCode|CMND/CCCD, số định danh điện tử|
+    |idCardDate|*[tuỳ chọn]* cmnd ngày cấp|
+    |idCardPlace|*[tuỳ chọn]* cmnd nơi cấp|
+    |relationShip|*[tuỳ chọn]* Quan hệ với chủ hộ|
+    |academicLevel|*[tuỳ chọn]* trình độ học vấn|
+    |criminalRecord|*[tuỳ chọn]* Tiền án|
+    |moveInDate|*[tuỳ chọn]* ngày chuyển đến|
+    |moveInReason|*[tuỳ chọn]* lý do chuyển đến|
+    |householdId|*[tuỳ chọn]* Số hộ khẩu mà nhân khẩu thuộc về. Nếu muốn chuyển nhân khẩu sang dạng tạm trú thì điền giá trị ```"delete"```|
+    |scope|*[tuỳ chọn]* Tổ quản lý nhân khẩu. Nếu đã điền trường **householdId** thì có thể bỏ qua trường này vì **scope** sẽ được lấy tự động từ hộ khẩu.<br/>✅ Chỉ thay đổi được scope khi một trong hai điều kiện trên thoả mãn: 1️⃣ *Hành động cập nhật này thay đổi **householdId** sang một giá trị rỗng*, hoặc 2️⃣ *Ban đầu **householdId** rỗng và hành động cập nhật này không thay đổi **householdId*** <br/> 🚫 Khi đối tượng ban đầu có trường **householdId** khác rỗng, mà hành động cập nhật nhật này không làm thay đổi **householdId** hoặc thay đổi sang một giá trị khác rỗng thì tuyệt đối không được thay đổi scope.|
+
+- **Response Body khi thành công**
+    
+    Không có gì
+
+- **Lỗi**
+    - [401 Unauthorized]
+
+        *JWT Token không hợp lệ*
+
+    - [403 Forbidden]
+
+        *Tài khoản không đủ quyền để truy cập. Tài khoản không phải người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch phường)*
+
+    - [404 NotFound]
+
+        *Hộ khẩu không tồn tại trong CSDL để cập nhật*
+### Xoá nhân khẩu
+<span style="color:#ea4335; width: 50px; display: inline-block">**DELETE**</span> ```https://localhost:7265/api/Residents/{idCode}```
+
+*Xoá nhân khẩu, chỉ người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch phường) mới dùng được.*
+
+*Tổ trưởng chỉ xoá được nhân khẩu thuộc tổ quản lý.*
+
+- **Route Params**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |householdId|Số nhân khẩu mà muốn xoá|
+
+- **Request Header**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |Authorization|Một chuỗi kí tự là token nhận được sau khi đăng nhập|
+
+- **Response Body khi thành công**
+    
+    Không có
+
+- **Lỗi**
+    - [401 Unauthorized]
+
+        *JWT Token không hợp lệ*
+
+    - [403 Forbidden]
+
+        *Tài khoản không đủ quyền để truy cập. Tài khoản không phải người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch phường)*
+
+    - [404 NotFound]
+
+        *Hộ khẩu không tồn tại trong CSDL để xoá*
 
 # Các kiểu dữ liệu được sử dụng nhiều lần
 
