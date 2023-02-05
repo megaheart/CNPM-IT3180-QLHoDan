@@ -15,7 +15,7 @@
 
 - Giải nén
 
-- Tại Folder **Group1-QLHD** click vào file **run.bat**
+- Tại Folder **Group1-QLHD** click vào file **run.bat** ***(ℹ️ Nhớ đừng tắt cmd sau khi chạy bat nhé)***
 
 - Nếu trình duyệt báo không truy cập được hay lỗi gì đấy khác thì hãy chờ khoảng 10s rồi reload lại trang.
 
