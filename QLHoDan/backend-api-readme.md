@@ -2,7 +2,7 @@
 # Module Nền tảng
 ## Truy cập tài nguyên tĩnh
 ### Lấy nội dung ảnh
-<span style="color:#34a853; width: 50px; display: inline-block">**GET**</span> ```https://localhost:7265/api/static/img/{id}```
+<span style="color:#34a853; width: 50px; display: inline-block">**GET**</span> ```https://localhost:7265/static/img/{id}```
 
 *Dùng để lấy nội dung file ảnh*
 
