@@ -7,7 +7,7 @@
         /// </summary>
         public string? FullName { get; set; }
         public int? Scope { get; set; }
-        public int? AvatarLink { get; set; }
-        public int? WallpaperLink { get; set; }
+        public string? AvatarLink { get; set; }
+        public string? WallpaperLink { get; set; }
     }
 }
