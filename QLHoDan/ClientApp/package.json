@@ -57,7 +57,6 @@
         "customize-cra": "^1.0.0",
         "query-string": "^8.1.0",
         "react-app-rewired": "^2.2.1",
-        "react-draggable": "^4.4.5",
         "react-router-dom": "^6.4.5",
         "react-smooth-collapse": "^2.1.2",
         "sass": "^1.56.2"
