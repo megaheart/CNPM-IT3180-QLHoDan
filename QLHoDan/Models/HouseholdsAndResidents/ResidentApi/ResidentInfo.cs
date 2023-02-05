@@ -1,4 +1,4 @@
-﻿namespace QLHoDan.Models.ResidentApi
+﻿namespace QLHoDan.Models.HouseholdsAndResidents.ResidentApi
 {
     public class ResidentInfo
     {

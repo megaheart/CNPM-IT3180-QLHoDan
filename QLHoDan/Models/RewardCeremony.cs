@@ -20,7 +20,7 @@ namespace QLHoDan.Models
         //cho tất cả những đứa trẻ đều có thành tích là 0, bảng chuyển đổi
         //thành tích sẽ chuyển đổi từ 0 sang giá trị phần quà mà các em được
         //nhận trong dịp đó
-        public List<AchievementRewardPair> AchievementRewardPairs { set;get;}
+        public List<AchievementRewardPair> AchievementRewardPairs { set; get; } = new List<AchievementRewardPair>();
         //Chủ tịch phường đã duyệt danh sách phát thưởng chưa
         public bool IsAccepted { set;get;}
         //Đã phát thưởng chưa

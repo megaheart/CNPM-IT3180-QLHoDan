@@ -8,7 +8,7 @@ namespace QLHoDan.Models
         public Resident Resident { set; get; } // ID của các cháu (vì các cháu chưa có CMND)
         public string AchievementName { set; get; } // Tiêu đề thành tích
         public int? AchievementType { set; get; } // Phân loại thành tích
-        public List<string> ImageLinks { set; get; } // Ảnh giấy khai sinh (Đường dẫn đến địa chỉ của ảnh là được)
+        public List<string> ImageLinks { set; get; } = new List<string>();// Ảnh giấy khai sinh (Đường dẫn đến địa chỉ của ảnh là được)
         public DateTime CreatedTime { set; get; } // Giờ phút ngày tháng năm form được gửi lên
 
         public bool IsAccepted { set; get; } // Đã duyệt chưa

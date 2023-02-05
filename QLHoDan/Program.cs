@@ -33,8 +33,8 @@ var connection2String = builder.Configuration.GetConnectionString("Connection2")
 var sqliteString = builder.Configuration.GetConnectionString("SQLite")
             ?? throw new InvalidOperationException("Connection string 'SQLite' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    //options.UseSqlite(identityDataConnectionString)
-    options.UseSqlite(sqliteString)
+//options.UseSqlServer(connection2String)
+options.UseSqlite(sqliteString)
 );
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
