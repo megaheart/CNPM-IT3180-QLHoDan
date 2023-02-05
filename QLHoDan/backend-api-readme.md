@@ -125,11 +125,40 @@
     |Tham số|Miêu tả|
     |-------|-------|
     |Authorization|Một chuỗi kí tự là token nhận được sau khi đăng nhập|
-- **Request Body**
-    Chưa biết viết gì
+- **Request Body (Content-Type=multipart/form-data)**
 
+    Là dạng dữ liệu form-data với các trường bên dưới
+
+    |Key|Value|Miêu tả|
+    |-------|-------|-------|
+    |file|Nội dung file ảnh|Ảnh avatar được upload lên|
 - **Response Body khi thành công**
     Một chuỗi text là Id của avatar, dùng API [Lấy nội dung ảnh](#lấy-nội-dung-ảnh) và Id vừa nhận được để tải avatar xuống
+
+- **Lỗi**
+    - [401 Unauthorized]
+
+        *JWT Token không hợp lệ*
+
+### Cập nhật Wallpaper
+
+<span style="color:#fbbc05; width: 50px; display: inline-block">**POST**</span> ```https://localhost:7265/api/account/changeWallpaper```
+
+*Dùng để cập nhật wallpaper của tài khoản người dùng*
+
+- **Request Header**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |Authorization|Một chuỗi kí tự là token nhận được sau khi đăng nhập|
+- **Request Body (Content-Type=multipart/form-data)**
+
+    Là dạng dữ liệu form-data với các trường bên dưới
+
+    |Key|Value|Miêu tả|
+    |-------|-------|-------|
+    |file|Nội dung file ảnh|Ảnh Wallpaper được upload lên|
+- **Response Body khi thành công**
+    Một chuỗi text là Id của Wallpaper, dùng API [Lấy nội dung ảnh](#lấy-nội-dung-ảnh) và Id vừa nhận được để tải Wallpaper xuống
 
 - **Lỗi**
     - [401 Unauthorized]

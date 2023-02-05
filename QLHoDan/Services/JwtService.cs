@@ -12,7 +12,7 @@ namespace QLHoDan.Services
 
     public class JwtService : ITokenCreationService
     {
-        private const int EXPIRATION_MINUTES = 5;
+        private const int EXPIRATION_MINUTES = 60 * 24;
 
         private readonly IConfiguration _configuration;
         private readonly UserManager<ApplicationUser> _userManager;

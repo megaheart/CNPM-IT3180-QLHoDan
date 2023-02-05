@@ -301,7 +301,7 @@ namespace QLHoDan.Controllers
         }
         //GET api/account/changeAvatar
         /// <summary>
-        /// 
+        /// Dùng để cập nhật hình đại diện của tài khoản người dùng
         /// </summary>
         [HttpPost("changeAvatar")]
         [Authorize]
@@ -323,26 +323,31 @@ namespace QLHoDan.Controllers
             }
             return Ok(user.AvatarLink);
         }
-        ////GET api/account/changeAvatar
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        //[HttpGet("profile")]
-        //[Authorize]
-        //public async Task<IActionResult> GetProfile(/*[FromBody] DeleteAccountRequestModel model*/)
-        //{
-        //    //if (!ModelState.IsValid)
-        //    //{
-        //    //    return BadRequest(ModelState);
-        //    //}
-        //    var id = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-        //    var user = await _userManager.FindByIdAsync(id);
-        //    if (user == null)
-        //    {
-        //        return Unauthorized(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
-        //    }
+        //GET api/account/changeWallpaper
+        /// <summary>
+        /// 
+        /// </summary>
+        [HttpGet("changeWallpaper")]
+        [Authorize]
+        public async Task<IActionResult> ChangeWallpaper([FromForm(Name = "file")] IFormFile file)
+        {
+            var id = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return Unauthorized(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
+            }
+            user.WallpaperLink = await _storage.SaveImage(file, "wallpaper_" + user.UserName);
+            IdentityResult result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                if (result.Errors != null)
+                    return BadRequest(result.Errors);
+                return BadRequest(new[] { new RequestError("IdS_ChangeWallpaperUnknown", "Unknown Error") });
+            }
+            return Ok(user.WallpaperLink);
 
-        //}
+        }
 
         //POST api/account/admin/changeAccountProfile
         /// <summary>
