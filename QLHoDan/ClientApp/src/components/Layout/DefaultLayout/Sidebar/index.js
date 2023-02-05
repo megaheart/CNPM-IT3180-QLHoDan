@@ -19,17 +19,18 @@ function Sidebar() {
     const { auth, setAuth } = useContext(AuthContext);
     const handleAuth = () => {
         authenticationService.logOut();
+        setAuth({})
     }
     const buttons = useMemo(
         () => {
-            if (auth.role === "CommitteeChairman") {
-                return navForAdmin;
+            if (auth.role === "Household") {
+                return navForResident;
             }
-            else if (auth.role === "Accountant" | "ScopeLeader") {
+            else if (auth.role === "Accountant" || auth.role === "ScopeLeader") {
                 return navForEmplyee;
             }
             else {
-                return navForResident;
+                return navForAdmin;
             }
         }, [auth.role]
     )

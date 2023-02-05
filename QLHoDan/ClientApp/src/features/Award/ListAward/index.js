@@ -8,24 +8,22 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Button from '@mui/material/Button';
+import { Collapse } from '@mui/material';
 const columns = [
-    { id: 'id', label: 'ID', width: 50 },
-    { id: 'username', label: 'Tên đăng nhập', width: 100 },
-    { id: 'password', label: 'Mật khẩu', width: 100 }
-
+    { id: 'code', label: 'Mã đợt phát thưởng', width: 150 }
 ];
-
-function createData(id, username, password) {
-    return { id, username, password };
+function createData(code) {
+    return { code };
 }
 
 const rows = [
-    createData(1, 'admin123', '12345678'),
-    createData(1, 'thanhlam0241', 'thanhlam0241'),
-    createData(1, 'thnagdgfd', '12345678'),
+    createData(34432432),
+    createData(34432332),
+    createData(34432132),
+    createData(34442432),
 ];
 
-export default function ManagerAccountResident() {
+export default function ListAwardEvent() {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -39,7 +37,7 @@ export default function ManagerAccountResident() {
     };
 
     return (
-        <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+        <Paper sx={{ overflow: 'hidden' }}>
             <TableContainer sx={{ maxHeight: 440 }}>
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead>
@@ -53,6 +51,12 @@ export default function ManagerAccountResident() {
                                     {column.label}
                                 </TableCell>
                             ))}
+                            <TableCell style={{ fontSize: 15 }} >
+                                Danh sách cháu nhận thưởng
+                            </TableCell>
+                            <TableCell style={{ fontSize: 15 }}>
+                                Danh sách phần quà
+                            </TableCell>
                             <TableCell></TableCell>
                         </TableRow>
                     </TableHead>
@@ -72,9 +76,15 @@ export default function ManagerAccountResident() {
                                                 </TableCell>
                                             );
                                         })}
-                                        <TableCell align="right">
-                                            <Button variant='contained' >Sửa</Button>
-                                            <Button variant='contained' color='error' >Xóa</Button>
+                                        <TableCell align="center"  >
+                                            <Button variant='contained' sx={{ height: 40 }} >Chi tiết</Button>
+                                        </TableCell>
+                                        <TableCell align="center" sx={{ width: 200 }}>
+                                            <Button variant='contained' sx={{ height: 40 }} >Chi tiết</Button>
+                                        </TableCell>
+                                        <TableCell align="center" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 1 }} >
+                                            <Button variant='contained' sx={{ height: 40 }} >Sửa</Button>
+                                            <Button variant='contained' color='error' sx={{ height: 40 }}  >Xóa</Button>
                                         </TableCell>
                                     </TableRow>
                                 );

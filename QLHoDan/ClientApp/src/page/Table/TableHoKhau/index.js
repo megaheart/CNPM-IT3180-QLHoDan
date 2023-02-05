@@ -21,14 +21,14 @@ const columns = [
 ]
 //data in each row
 const rowInit = [
-    { id: 1, soHoKhau: '123432', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Văn C', toPhuTrach: 1 },
-    { id: 2, soHoKhau: '123432', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Văn C', toPhuTrach: 1 },
-    { id: 3, soHoKhau: '123432', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Văn C', toPhuTrach: 1 },
-    { id: 4, soHoKhau: '123432', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Văn C', toPhuTrach: 1 },
-    { id: 5, soHoKhau: '123432', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Văn C', toPhuTrach: 1 },
-    { id: 6, soHoKhau: '123432', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Văn C', toPhuTrach: 1 },
-    { id: 7, soHoKhau: '123432', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Văn C', toPhuTrach: 1 },
-    { id: 8, soHoKhau: '123432', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Văn C', toPhuTrach: 1 }
+    { id: 1, soHoKhau: '4534345', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Văn Thanh', toPhuTrach: 1 },
+    { id: 2, soHoKhau: '1234432', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Trần Ngọc Cường', toPhuTrach: 6 },
+    { id: 3, soHoKhau: '5123432', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Đức Minh', toPhuTrach: 1 },
+    { id: 4, soHoKhau: '1234329', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Văn Minh', toPhuTrach: 2 },
+    { id: 5, soHoKhau: '1234323', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Văn Nam', toPhuTrach: 4 },
+    { id: 6, soHoKhau: '1234332', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Văn Khánh', toPhuTrach: 1 },
+    { id: 7, soHoKhau: '1423432', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Quốc Duy', toPhuTrach: 1 },
+    { id: 8, soHoKhau: '9023432', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Phạm Đình Quân', toPhuTrach: 6 }
 ]
 
 export default function TableHoKhau() {

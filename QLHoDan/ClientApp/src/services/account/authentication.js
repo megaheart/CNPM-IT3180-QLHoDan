@@ -42,8 +42,6 @@ class Authentication {
                     })
                         .catch((error) => { reject(error); })
                 }
-
-
             }).catch((error) => { reject(error); });
         });
     }

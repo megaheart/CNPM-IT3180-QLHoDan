@@ -31,10 +31,10 @@ function createData(idenftification, name, birthday, gender, relationship, soHoK
     return { idenftification, name, birthday, gender, relationship, soHoKhau, toPhuTrach };
 }
 const rowData = [
-    { idenftification: '123466769', name: 'Nguyễn Văn D', birthday: '01/01/1990', gender: 'Nam', relationship: 'Chủ hộ', soHoKhau: '123456789', toPhuTrach: '1' },
-    { idenftification: '123454785', name: 'Nguyễn Văn C', birthday: '01/01/1990', gender: 'Nam', relationship: 'Vợ', soHoKhau: '123456789', toPhuTrach: '1' },
-    { idenftification: '123456789', name: 'Nguyễn Văn A', birthday: '01/01/2002', gender: 'Nam', relationship: 'Con trai', soHoKhau: '123456789', toPhuTrach: '1' },
-    { idenftification: '123456767', name: 'Nguyễn Văn B', birthday: '01/01/2002', gender: 'Nam', relationship: 'Con gái', soHoKhau: '123456789', toPhuTrach: '1' },
+    { idenftification: '00123466769', name: 'Phạm Đình Quân', birthday: '01/01/1990', gender: 'Nam', relationship: 'Chủ hộ', soHoKhau: '123456789', toPhuTrach: '1' },
+    { idenftification: '00123454785', name: 'Nguyễn Văn Nam', birthday: '01/01/1990', gender: 'Nam', relationship: 'Vợ', soHoKhau: '123456789', toPhuTrach: '1' },
+    { idenftification: '00123456789', name: 'Nguyễn Văn Khánh', birthday: '01/01/2002', gender: 'Nam', relationship: 'Con trai', soHoKhau: '123456789', toPhuTrach: '1' },
+    { idenftification: '00123456767', name: 'Nguyễn Văn Trọng', birthday: '01/01/2002', gender: 'Nam', relationship: 'Con gái', soHoKhau: '123456789', toPhuTrach: '1' },
 ]
 const Rows = [
     ...rowData.map((item, index) => {
@@ -148,7 +148,7 @@ export default function Population({ editMode }) {
                                     return null;
                                 })}
                                 <StyledTableCell key={row.idenftification + index} align="center" component="th" scope="row">
-                                    <Button key={row.identification + 'fix'}
+                                    <Button
                                         disabled={!editMode}
                                         onClick={() => {
                                             handleEditRowData(row.id);

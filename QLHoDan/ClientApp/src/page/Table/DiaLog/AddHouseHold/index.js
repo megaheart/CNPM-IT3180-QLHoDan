@@ -28,6 +28,8 @@ import classNames from 'classnames/bind';
 import styles from './AddHousehold.module.scss';
 import ConfirmBox from '../ConfirmBox';
 
+import DraggabledPaperComponent from '../Draggable';
+
 const cx = classNames.bind(styles);
 const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -197,21 +199,20 @@ export default function AddHouseholDialog({ open, onClose }) {
                 </Alert>
             </Snackbar>
             <Dialog
-                fullScreen
+                fullWidth={true}
+                maxWidth='1000'
                 open={open}
                 onClose={handleClose}
                 TransitionComponent={Transition}
             >
                 <div className={cx('header-paper-population')}>
-                    <Button variant="contained" color="error" sx={{ fontSize: '1.5rem', margin: '2 0', textAlign: 'right', width: 50 }} onClick={handlStartClose}>Đóng</Button>
+                    <Button variant="contained" color="error" onClick={handlStartClose}>Đóng</Button>
                 </div>
                 <div className={cx('household-paper')}>
                     <h2 className={cx('title-household')}>Thêm hộ khẩu mới</h2>
                     <div className={cx('household-detail')}>
                         <TextField
                             sx={{ width: '400px' }}
-                            inputProps={{ style: { fontSize: 15 } }}
-                            InputLabelProps={{ style: { fontSize: 20 } }}
                             required
                             label="Số hộ khẩu"
                             defaultValue="123"
@@ -219,8 +220,6 @@ export default function AddHouseholDialog({ open, onClose }) {
                         />
                         <TextField
                             sx={{ width: '400px' }}
-                            inputProps={{ style: { fontSize: 15 } }}
-                            InputLabelProps={{ style: { fontSize: 20 } }}
                             required
                             label="Nơi thường trú"
                             defaultValue="123"
@@ -228,8 +227,6 @@ export default function AddHouseholDialog({ open, onClose }) {
                         />
                         <TextField
                             sx={{ width: '400px' }}
-                            inputProps={{ style: { fontSize: 15 } }}
-                            InputLabelProps={{ style: { fontSize: 20 } }}
                             required
                             label="Tổ phụ trách"
                             defaultValue="123"
@@ -291,14 +288,14 @@ export default function AddHouseholDialog({ open, onClose }) {
                                 </TableCell>
                             </TableRow>
                             <TableRow>
-                                <StyledTableCell sx={{ fontSize: 10 }} align="center">CCCD/CMND</StyledTableCell>
-                                <StyledTableCell sx={{ fontSize: 10 }} align="center">Họ và tên</StyledTableCell>
-                                <StyledTableCell sx={{ fontSize: 10 }} align="center">Ngày sinh</StyledTableCell>
-                                <StyledTableCell sx={{ fontSize: 10 }} align="center">Giới tính</StyledTableCell>
-                                <StyledTableCell sx={{ fontSize: 10 }} align="center">Quan hệ với chủ hộ</StyledTableCell>
-                                <StyledTableCell sx={{ fontSize: 10 }} align="center">Sổ hộ khẩu</StyledTableCell>
-                                <StyledTableCell sx={{ fontSize: 10 }} align="center">Tổ phụ trách</StyledTableCell>
-                                <StyledTableCell sx={{ fontSize: 10 }} align="center">Edit</StyledTableCell>
+                                <StyledTableCell align="center">CCCD/CMND</StyledTableCell>
+                                <StyledTableCell align="center">Họ và tên</StyledTableCell>
+                                <StyledTableCell align="center">Ngày sinh</StyledTableCell>
+                                <StyledTableCell align="center">Giới tính</StyledTableCell>
+                                <StyledTableCell align="center">Quan hệ với chủ hộ</StyledTableCell>
+                                <StyledTableCell align="center">Sổ hộ khẩu</StyledTableCell>
+                                <StyledTableCell align="center">Tổ phụ trách</StyledTableCell>
+                                <StyledTableCell align="center">Edit</StyledTableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>

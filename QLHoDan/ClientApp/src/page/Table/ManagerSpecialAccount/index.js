@@ -1,5 +1,4 @@
-import { TextField } from '@mui/material';
-import { useState, useRef } from 'react';
+import * as React from 'react';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -9,23 +8,27 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Button from '@mui/material/Button';
-import styles from './SetupSA.module.scss';
-import classNames from 'classnames/bind';
-import Fab from '@mui/material/Fab';
-import { Add } from '@mui/icons-material';
-const cx = classNames.bind(styles);
 const columns = [
-    { id: 'name', label: 'Tên phần thưởng', minWidth: 100 },
-    { id: 'value', label: 'Giá trị phần thưởng', minWidth: 100 }
-
+    { id: 'id', label: 'ID', width: 50 },
+    { id: 'username', label: 'Tên đăng nhập', width: 100 },
+    { id: 'password', label: 'Mật khẩu', width: 100 },
+    { id: 'role', label: 'Quyền hạn', width: 100 }
 ];
 
-function ListSpecialAward() {
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
-    const refNameAward = useRef(null);
-    const refValueAward = useRef(null);
-    const [typesAward, setTypesAward] = useState([]);
+function createData(id, username, password, role) {
+    return { id, username, password, role };
+}
+
+const rows = [
+    createData(1, 'admin123', '12345678', 'Kế toán'),
+    createData(1, 'thanhlam0241', 'thanhlam0241', 'Tổ trưởng'),
+    createData(1, 'thnagdgfd', '12345678', 'Tổ trưởng'),
+];
+
+export default function ManagerSpecialAccount() {
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -35,46 +38,9 @@ function ListSpecialAward() {
         setPage(0);
     };
 
-    const handleAddTypeAward = () => {
-        const typeAward = {
-            name: refNameAward.current.value,
-            value: refValueAward.current.value
-        }
-        setTypesAward([...typesAward, typeAward]);
-    }
-
     return (
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-            <div className={cx('add-type-award')}>
-                <div className={cx('input-type-award')}>
-                    <TextField inputRef={refNameAward} sx={{ m: 1, width: 200 }} label="Tên phần thưởng" inputProps={{
-                        style: { fontSize: 20 }
-                    }}
-                        InputLabelProps={{
-                            style: { fontSize: 20 }
-                        }}
-                        variant="standard" />
-                    <TextField inputRef={refValueAward} sx={{ m: 1, width: 200 }} label="Giá trị phần thưởng " inputProps={{
-                        style: { fontSize: 20 }
-                    }}
-                        InputLabelProps={{
-                            style: { fontSize: 20 }
-                        }}
-                        variant="standard" />
-                </div>
-                <Fab
-                    color="secondary"
-                    size="small"
-                    component="span"
-                    aria-label="add"
-                    variant="extended"
-                    onClick={handleAddTypeAward}
-                    sx={{ marginBottom: 1 }}
-                >
-                    <Add /> Thêm loại phần thưởng
-                </Fab>
-            </div>
-            <TableContainer sx={{ height: 230 }}>
+            <TableContainer sx={{ maxHeight: 440 }}>
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead>
                         <TableRow>
@@ -91,11 +57,11 @@ function ListSpecialAward() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {typesAward
+                        {rows
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            .map((row, index) => {
+                            .map((row) => {
                                 return (
-                                    <TableRow hover role="checkbox" tabIndex={-1} key={index}>
+                                    <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
                                         {columns.map((column) => {
                                             const value = row[column.id];
                                             return (
@@ -106,7 +72,7 @@ function ListSpecialAward() {
                                                 </TableCell>
                                             );
                                         })}
-                                        <TableCell align="right" sx={{ display: 'flex', flexDirection: 'row', gap: 1 }}>
+                                        <TableCell align="right">
                                             <Button variant='contained' >Sửa</Button>
                                             <Button variant='contained' color='error' >Xóa</Button>
                                         </TableCell>
@@ -119,7 +85,7 @@ function ListSpecialAward() {
             <TablePagination
                 rowsPerPageOptions={[10, 20, 100]}
                 component="div"
-                count={typesAward.length}
+                count={rows.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 onPageChange={handleChangePage}
@@ -128,5 +94,3 @@ function ListSpecialAward() {
         </Paper>
     );
 }
-
-export default ListSpecialAward;

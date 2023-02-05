@@ -18,6 +18,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleXmark, faMagnifyingGlass, faUser, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { Avatar, Badge, Alert, Stack } from '@mui/material';
 import MailIcon from '@mui/icons-material/Mail';
+//authentication
+import authenticationService from '~/services/account/authentication';
 //search
 import { FormsAction, TableAction, filterByTitle } from '~/components/component/Action/SearchResult';
 const cx = classNames.bind(styles);
@@ -52,7 +54,8 @@ function Header({ text }) {
     }, [search])
     //logout
     const handleLogout = () => {
-        accountService.logout(setAuth);
+        authenticationService.logOut();
+        setAuth({});
     }
     //count number of message
     const [count, setCount] = useState(4);

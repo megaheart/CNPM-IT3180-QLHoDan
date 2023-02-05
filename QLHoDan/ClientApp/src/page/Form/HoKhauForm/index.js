@@ -264,24 +264,13 @@ export default function FormHKComponent() {
                     >
                         <div className={cx('backdrop-add')}>
                             <div style={{ display: 'flex', flexFlow: 'row wrap', justifyContent: 'center' }}>
-                                <TextField helperText='' required inputRef={nameRef} label="Họ và tên" inputProps={{
-                                    style: { fontSize: 20 }
-                                }}
-                                    InputLabelProps={{
-                                        style: { fontSize: 20 }
-                                    }}
+                                <TextField helperText='' required inputRef={nameRef} label="Họ và tên"
                                     variant="standard" />
-                                <TextField helperText='' required inputRef={aliasRef} label="Bí danh" inputProps={{
-                                    style: { fontSize: 20 }
-                                }}
-                                    InputLabelProps={{
-                                        style: { fontSize: 20 }
-                                    }}
+                                <TextField helperText='' required inputRef={aliasRef} label="Bí danh"
                                     variant="standard" />
-                                <LocalizationProvider sx={{ fontSize: 12 }} dateAdapter={AdapterDayjs}>
+                                <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DatePicker
                                         required
-                                        sx={{ fontSize: 12 }}
                                         label="Ngày sinh"
                                         value={birthday}
                                         inputRef={birthdayRef}
@@ -291,61 +280,21 @@ export default function FormHKComponent() {
                                         renderInput={(params) => <TextField {...params} />}
                                     />
                                 </LocalizationProvider>
-                                <TextField helperText='' required inputRef={birthPlaceRef} label="Nơi sinh" inputProps={{
-                                    style: { fontSize: 20 }
-                                }}
-                                    InputLabelProps={{
-                                        style: { fontSize: 20 }
-                                    }}
+                                <TextField helperText='' required inputRef={birthPlaceRef} label="Nơi sinh"
                                     variant="standard" />
-                                <TextField helperText='' required inputRef={domicileRef} label="Nguyên quán" inputProps={{
-                                    style: { fontSize: 20 }
-                                }}
-                                    InputLabelProps={{
-                                        style: { fontSize: 20 }
-                                    }}
+                                <TextField helperText='' required inputRef={domicileRef} label="Nguyên quán"
                                     variant="standard" />
-                                <TextField helperText='' required inputRef={dantocRef} label="Dân tộc" inputProps={{
-                                    style: { fontSize: 20 }
-                                }}
-                                    InputLabelProps={{
-                                        style: { fontSize: 20 }
-                                    }}
+                                <TextField helperText='' required inputRef={dantocRef} label="Dân tộc"
                                     variant="standard" />
-                                <TextField helperText='' required inputRef={citizenshipRef} label="Quốc tịch" inputProps={{
-                                    style: { fontSize: 20 }
-                                }}
-                                    InputLabelProps={{
-                                        style: { fontSize: 20 }
-                                    }}
+                                <TextField helperText='' required inputRef={citizenshipRef} label="Quốc tịch"
                                     variant="standard" />
-                                <TextField helperText='' required inputRef={careerRef} label="Nghề nghiệp" inputProps={{
-                                    style: { fontSize: 20 }
-                                }}
-                                    InputLabelProps={{
-                                        style: { fontSize: 20 }
-                                    }}
+                                <TextField helperText='' required inputRef={careerRef} label="Nghề nghiệp"
                                     variant="standard" />
-                                <TextField helperText='' required inputRef={workplaceRef} label="Nơi làm việc" inputProps={{
-                                    style: { fontSize: 20 }
-                                }}
-                                    InputLabelProps={{
-                                        style: { fontSize: 20 }
-                                    }}
+                                <TextField helperText='' required inputRef={workplaceRef} label="Nơi làm việc"
                                     variant="standard" />
-                                <TextField helperText='' required inputRef={identificationRef} label="CMND/CCCD" inputProps={{
-                                    style: { fontSize: 20 }
-                                }}
-                                    InputLabelProps={{
-                                        style: { fontSize: 20 }
-                                    }}
+                                <TextField helperText='' required inputRef={identificationRef} label="CMND/CCCD"
                                     variant="standard" />
-                                <TextField helperText='' required inputRef={relationshipRef} label="Quan hệ với chủ hộ" inputProps={{
-                                    style: { fontSize: 20 }
-                                }}
-                                    InputLabelProps={{
-                                        style: { fontSize: 20 }
-                                    }}
+                                <TextField helperText='' required inputRef={relationshipRef} label="Quan hệ với chủ hộ"
                                     variant="standard" />
                                 <TextField helperText='' required
                                     id="standard-select-gender"
@@ -365,7 +314,7 @@ export default function FormHKComponent() {
                             {visibleDes &&
                                 <div style={{ display: 'flex', flexFlow: 'row wrap', justifyContent: 'center' }}>
                                     <Fab
-                                        sx={{ marginLeft: 1, width: 80 }}
+                                        sx={{ marginLeft: 1, width: 100 }}
                                         color="success"
                                         size="small"
                                         component="span"
@@ -376,8 +325,8 @@ export default function FormHKComponent() {
                                         <DoneSharp /> Đồng ý
                                     </Fab>
                                     <Fab
-                                        sx={{ marginLeft: 1, width: 50 }}
-                                        color="warning"
+                                        sx={{ marginLeft: 1, width: 100 }}
+                                        color="error"
                                         size="small"
                                         component="span"
                                         aria-label="add"

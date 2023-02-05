@@ -83,13 +83,17 @@ export default function Login() {
                 setPasswordError('');
                 console.log(username, password)
                 authenticationService.signIn(username, password).then(() => {
-                    const userData = authenticationService.User;
-                    console.log(userData)
-                    setAuth(userData);
+                    console.log(1);
+                    if (authenticationService.isAuthenticated()) {
+                        const userData = authenticationService.User;
+                        console.log(userData);
+                        setAuth(userData);
+                    }
+                    //setAuth(userData);
                     navigate('/dashboard');
-                    console.log(loading)
                 }).catch(
                     (e) => {
+                        console.log('ERROR')
                         console.log(e)
                     }
                 ).finally(
