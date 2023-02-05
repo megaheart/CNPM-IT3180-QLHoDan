@@ -28,8 +28,6 @@ import classNames from 'classnames/bind';
 import styles from './AddHousehold.module.scss';
 import ConfirmBox from '../ConfirmBox';
 
-import DraggabledPaperComponent from '../Draggable';
-
 const cx = classNames.bind(styles);
 const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
