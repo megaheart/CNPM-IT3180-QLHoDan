@@ -288,8 +288,54 @@ namespace QLHoDan.Controllers
                 return BadRequest(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
             }
 
-            return Ok(new ProfileResponseModel { FullName = user.FullName, Scope = user.Scope });
+            return Ok(new ProfileResponseModel { 
+                FullName = user.FullName, 
+                Scope = user.Scope, 
+                AvatarLink = user.AvatarLink,
+                WallpaperLink = user.WallpaperLink,
+            });
         }
+        ////GET api/account/changeAvatar
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //[HttpGet("profile")]
+        //[Authorize]
+        //public async Task<IActionResult> GetProfile(/*[FromBody] DeleteAccountRequestModel model*/)
+        //{
+        //    //if (!ModelState.IsValid)
+        //    //{
+        //    //    return BadRequest(ModelState);
+        //    //}
+        //    var id = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+        //    var user = await _userManager.FindByIdAsync(id);
+        //    if (user == null)
+        //    {
+        //        return BadRequest(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
+        //    }
+
+        //}
+        ////GET api/account/changeAvatar
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //[HttpGet("profile")]
+        //[Authorize]
+        //public async Task<IActionResult> GetProfile(/*[FromBody] DeleteAccountRequestModel model*/)
+        //{
+        //    //if (!ModelState.IsValid)
+        //    //{
+        //    //    return BadRequest(ModelState);
+        //    //}
+        //    var id = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+        //    var user = await _userManager.FindByIdAsync(id);
+        //    if (user == null)
+        //    {
+        //        return BadRequest(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
+        //    }
+
+        //}
+
         //POST api/account/admin/changeAccountProfile
         /// <summary>
         /// Thay đổi thông tin tài khoản bất kì

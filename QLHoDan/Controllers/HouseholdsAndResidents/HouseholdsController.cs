@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using QLHoDan.Data;
 using QLHoDan.Models;
 using QLHoDan.Models.Api;
-using QLHoDan.Models.HouseholdApi;
+using QLHoDan.Models.HouseholdsAndResidents.HouseholdApi;
 using System.Data;
 using System.Security.Claims;
 
@@ -33,8 +33,12 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
         /// Tổ trưởng chỉ lấy ra danh sách hộ khẩu thuộc tổ quản lý, thư kí, chủ tịch phường 
         /// có thể lấy được tất cả danh sách hộ khẩu của toàn phường.
         /// </summary>
+        /// <param name="movedOut">
+        /// `true` để lấy danh sách người đã chuyển đi, `false` để lấy danh sách những nhân khẩu đang thường trú/tạm trú
+        /// <br/>Mặc định là `false`
+        /// </param>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<HouseholdBriefInfo>>> GetHousehold()
+        public async Task<ActionResult<IEnumerable<HouseholdBriefInfo>>> GetHousehold([FromQuery]bool movedOut = false)
         {
             if (_context.Household == null)
             {
@@ -49,7 +53,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             const string ownerRelationShip = "Chủ hộ";
             if (await _userManager.IsInRoleAsync(user, "ScopeLeader"))
             {
-                return Ok(_context.Household.Where(u => u.Scope == user.Scope && u.IsManaged)
+                return Ok(_context.Household.Where(u => u.Scope == user.Scope && u.IsManaged && u.MoveOutDate.HasValue == movedOut)
                     .Select(u => new HouseholdBriefInfo()
                     {
                         HouseholdId = u.HouseholdId,
@@ -61,7 +65,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             else
             {
 
-                return Ok(_context.Household.Where(u => u.IsManaged)
+                return Ok(_context.Household.Where(u => u.IsManaged && u.MoveOutDate.HasValue == movedOut)
                     .Select(u => new HouseholdBriefInfo()
                     {
                         HouseholdId = u.HouseholdId,
@@ -79,6 +83,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
         /// Tổ trưởng chỉ lấy ra thông tin chi tiết của hộ khẩu thuộc tổ quản lý, thư kí, 
         /// chủ tịch phường có thể lấy được thông tin chi tiết của hộ khẩu của toàn phường.
         /// </summary>
+        /// <param name="householdId">Số hộ khẩu mà muốn lấy thông tin ra</param>
         [HttpGet("{householdId}")]
         public async Task<ActionResult<HouseholdDetail>> GetHousehold(string householdId)
         {
@@ -86,7 +91,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             {
                 return NotFound();
             }
-            var household = await _context.Household.FindAsync(householdId);
+            var household = await _context.Household.Include(h => h.Members).FirstOrDefaultAsync(h => h.HouseholdId == householdId);
 
             if (household == null)
             {
@@ -96,7 +101,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             var manager = await _userManager.FindByIdAsync(id);
             if (manager == null)
             {
-                return BadRequest(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
+                return Unauthorized(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
             }
             var isScopeLeader = await _userManager.IsInRoleAsync(manager, "ScopeLeader");
             if (isScopeLeader && manager.Scope != household.Scope)
@@ -128,10 +133,19 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
         public async Task<IActionResult> PostHousehold(AddingHouseholdRequestModel model)
         {
             string[] nonExistMemberIds = model.NonExistMembers.Select(m => m.IdentityCode).ToArray();
-            if (await HouseholdExists(model.HouseholdId) || await ResidentsExists(nonExistMemberIds))
+            //var hState = await GetHouseholdState(model.HouseholdId);
+            if (await HouseholdExists(model.HouseholdId) || await ResidentsExists(nonExistMemberIds /*|| hState == _HouseholdState.Managed*/ ))
             {
                 return Conflict();
             }
+            //else if(hState == _HouseholdState.NotManaged)
+            //{
+            //    return BadRequest(new RequestError()
+            //    {
+            //        Code = "ExistAtRecycleBin",
+            //        Description = "Household có cùng HouseholdId đang tồn tại trong thùng rác, dọn nó trong thùng rác trước khi thêm"
+            //    });
+            //}
             var id = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var manager = await _userManager.FindByIdAsync(id);
             if (manager == null)
@@ -171,43 +185,47 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             //    }
 
             //}
-            foreach (var mem in model.NonExistMembers)
+            if (model.NonExistMembers != null)
             {
-                Resident resident = new Resident()
+                foreach (var mem in model.NonExistMembers)
                 {
-                    FullName = mem.FullName,
-                    Alias = mem.Alias,
-                    DateOfBirth = mem.DateOfBirth,
-                    IsMale = mem.IsMale,
-                    BirthPlace = mem.BirthPlace,
-                    NativeLand = mem.NativeLand,
-                    Ethnic = mem.Ethnic,
-                    Nation = mem.Nation,
-                    Job = mem.Job,
-                    Workplace = mem.Workplace,
-                    IdentityCode = mem.IdentityCode,
-                    IDCardDate = mem.IDCardDate,
-                    IDCardPlace = mem.IDCardPlace,
-                    RelationShip = mem.RelationShip,
-                    IsManaged = true,
-                    IsDead = false,
-                    AcademicLevel = mem.AcademicLevel,
-                    CriminalRecord = mem.CriminalRecord,
-                    MoveInDate = mem.MoveInDate,
-                    MoveInReason = mem.MoveInReason,
-                };
-                household.Members.Add(resident);
+                    Resident resident = new Resident()
+                    {
+                        FullName = mem.FullName,
+                        Alias = mem.Alias,
+                        DateOfBirth = mem.DateOfBirth,
+                        IsMale = mem.IsMale,
+                        BirthPlace = mem.BirthPlace,
+                        NativeLand = mem.NativeLand,
+                        Ethnic = mem.Ethnic,
+                        Nation = mem.Nation,
+                        Job = mem.Job,
+                        Workplace = mem.Workplace,
+                        IdentityCode = mem.IdentityCode,
+                        IDCardDate = mem.IDCardDate,
+                        IDCardPlace = mem.IDCardPlace,
+                        RelationShip = mem.RelationShip,
+                        IsManaged = true,
+                        IsDead = false,
+                        AcademicLevel = mem.AcademicLevel,
+                        CriminalRecord = mem.CriminalRecord,
+                        MoveInDate = mem.MoveInDate,
+                        MoveInReason = mem.MoveInReason,
+                        Scope = household.Scope,
+                    };
+                    household.Members.Add(resident);
 
+                }
             }
 
-            _context.Entry(household).State = EntityState.Modified;
+            _context.Household.Add(household);
             try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!await HouseholdExists(model.HouseholdId) || !await ResidentsExists(nonExistMemberIds))
+                if (!(await GetHouseholdState(model.HouseholdId) == _HouseholdState.NotExist) || !await ResidentsExists(nonExistMemberIds))
                 {
                     return NotFound();
                 }
@@ -228,7 +246,15 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
         [HttpPut()]
         public async Task<IActionResult> PutHousehold(UpdateHouseholdRequestModel model)
         {
-            var household = await _context.Household.FindAsync(model.HouseholdId);
+            if (model.NonExistMembers != null)
+            {
+                string[] nonExistMemberIds = model.NonExistMembers.Select(m => m.IdentityCode).ToArray();
+                if (await ResidentsExists(nonExistMemberIds))
+                {
+                    return Conflict();
+                }
+            }
+            var household = await _context.Household.Include(h => h.Members).FirstOrDefaultAsync(h => h.HouseholdId == model.HouseholdId);
             if (household == null)
             {
                 return NotFound();
@@ -240,6 +266,10 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             if (model.Scope != null)
             {
                 household.Scope = model.Scope.Value;
+                household.Members.ForEach(member =>
+                {
+                    member.Scope = model.Scope.Value;
+                });
             }
             if (model.MoveOutPlace != null)
             {
@@ -280,11 +310,13 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
                         CriminalRecord = mem.CriminalRecord,
                         MoveInDate = mem.MoveInDate,
                         MoveInReason = mem.MoveInReason,
+                        Scope = household.Scope,
                     };
-                    _context.Entry(resident).State = EntityState.Modified;
                     resident.Household = household;
+                    _context.Resident.Add(resident);
                 }
             }
+            _context.Household.Update(household);
 
             await _context.SaveChangesAsync();
 
@@ -292,6 +324,10 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
         }
 
         // DELETE: api/Households/5
+        /// <summary>
+        /// Xoá hộ khẩu, chỉ người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch phường) mới dùng được.
+        /// Tổ trưởng chỉ xoá được hộ khẩu thuộc tổ quản lý.
+        /// </summary>
         [HttpDelete("{householdId}")]
         public async Task<IActionResult> DeleteHousehold(string householdId)
         {
@@ -300,12 +336,52 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             {
                 return NotFound();
             }
+            //household.IsManaged = false;
+            _context.Resident.Where(x => x.HouseholdId == householdId).ExecuteDelete();
             _context.Household.Remove(household);
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+
+                if(ex.InnerException != null)
+                {
+                    if(ex.InnerException.GetType() == typeof(Microsoft.Data.Sqlite.SqliteException))
+                    {
+                        var innerEx = ex.InnerException as Microsoft.Data.Sqlite.SqliteException;
+                        if(innerEx.SqliteErrorCode == 19) 
+                            return BadRequest(new RequestError()
+                        {
+                            Code = "ForeignKeyConstraintFailed",
+                            Description = "Một số hàng trong các bảng khác có khoá ngoài trỏ đến phần tử này. Phần tử này hiện tại không thể bị xoá.",
+                        });
+                    }
+                }
+                string code = string.Format("{0} + innerError: {1}", ex.GetType().FullName, ex.InnerException?.GetType().FullName);
+                return BadRequest(new RequestError()
+                {
+                    Code = code,
+                    Description = ex.InnerException?.Message ?? ex.Message,
+                });
+            }
 
             return Ok();
         }
-
+        enum _HouseholdState
+        {
+            NotExist,
+            NotManaged,
+            Managed
+        }
+        private async Task<_HouseholdState> GetHouseholdState(string id)
+        {
+            var h = await _context.Household.FindAsync(id);
+            if (h == null) return _HouseholdState.NotExist;
+            if (h.IsManaged) return _HouseholdState.Managed;
+            return _HouseholdState.NotManaged;
+        }
         private async Task<bool> HouseholdExists(string id)
         {
             return await _context.Household.AnyAsync(e => e.HouseholdId == id);
