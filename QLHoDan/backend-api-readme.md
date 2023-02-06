@@ -1,4 +1,23 @@
 # Tài liệu API backend của phần mềm quản lý hộ dân
+# Module Nền tảng
+## Truy cập tài nguyên tĩnh
+### Lấy nội dung ảnh
+<span style="color:#34a853; width: 50px; display: inline-block">**GET**</span> ```https://localhost:7265/static/img/{id}```
+
+*Dùng để lấy nội dung file ảnh*
+
+- **Route Params**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |id|Id của bức ảnh|
+
+- **Response Body khi thành công**
+    Nội dung nhị phân của file ảnh
+
+- **Lỗi**
+    - [400 NotFound]
+
+        *Id của hình ảnh không chính xác*
 # Module Quản lý tài khoản
 ## Truy cập Tài khoản cá nhân
 ### Đăng nhập
@@ -91,6 +110,55 @@
     |scope|Tổ phụ trách quản lý tài khoản|
     |avatarLink|Id của bức ảnh đại diện|
     |wallpaperLink|Id của bức ảnh tường|
+
+- **Lỗi**
+    - [401 Unauthorized]
+
+        *JWT Token không hợp lệ*
+### Cập nhật avatar
+
+<span style="color:#fbbc05; width: 50px; display: inline-block">**POST**</span> ```https://localhost:7265/api/account/changeAvatar```
+
+*Dùng để cập nhật hình đại diện của tài khoản người dùng*
+
+- **Request Header**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |Authorization|Một chuỗi kí tự là token nhận được sau khi đăng nhập|
+- **Request Body (Content-Type=multipart/form-data)**
+
+    Là dạng dữ liệu form-data với các trường bên dưới
+
+    |Key|Value|Miêu tả|
+    |-------|-------|-------|
+    |file|Nội dung file ảnh|Ảnh avatar được upload lên|
+- **Response Body khi thành công**
+    Một chuỗi text là Id của avatar, dùng API [Lấy nội dung ảnh](#lấy-nội-dung-ảnh) và Id vừa nhận được để tải avatar xuống
+
+- **Lỗi**
+    - [401 Unauthorized]
+
+        *JWT Token không hợp lệ*
+
+### Cập nhật Wallpaper
+
+<span style="color:#fbbc05; width: 50px; display: inline-block">**POST**</span> ```https://localhost:7265/api/account/changeWallpaper```
+
+*Dùng để cập nhật wallpaper của tài khoản người dùng*
+
+- **Request Header**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |Authorization|Một chuỗi kí tự là token nhận được sau khi đăng nhập|
+- **Request Body (Content-Type=multipart/form-data)**
+
+    Là dạng dữ liệu form-data với các trường bên dưới
+
+    |Key|Value|Miêu tả|
+    |-------|-------|-------|
+    |file|Nội dung file ảnh|Ảnh Wallpaper được upload lên|
+- **Response Body khi thành công**
+    Một chuỗi text là Id của Wallpaper, dùng API [Lấy nội dung ảnh](#lấy-nội-dung-ảnh) và Id vừa nhận được để tải Wallpaper xuống
 
 - **Lỗi**
     - [401 Unauthorized]
@@ -398,11 +466,16 @@
 # Module Quản lý hộ khẩu nhân khẩu
 ## Quản lý hộ khẩu
 ### Lấy danh sách hộ khẩu
-<span style="color:#34a853; width: 50px; display: inline-block">**GET**</span> ```https://localhost:7265/api/Households```
+<span style="color:#34a853; width: 50px; display: inline-block">**GET**</span> ```https://localhost:7265/api/Households[?movedOut={boolean}]```
 
 *Lấy ra danh sách hộ khẩu (thông tin khá sơ lược), chỉ người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch phường) mới dùng được.*
 
 *Tổ trưởng chỉ lấy ra danh sách hộ khẩu thuộc tổ quản lý, thư kí, chủ tịch phường có thể lấy được tất cả danh sách hộ khẩu của toàn phường.*
+
+- **Query Params**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |movedOut|*[tuỳ chọn]* `true` để lấy danh sách hộ khẩu đã chuyển đi, `false` để lấy danh sách những hộ khẩu đang thường trú<br/>Mặc định là `false`|
 
 - **Request Header**
     |Tham số|Miêu tả|
@@ -519,7 +592,7 @@
     |Tham số  |Miêu tả  |
     |---------|---------|
     |householdId|Số hộ khẩu|
-    |nonExistMembers|Danh sách thông tin về những nhân khẩu chưa có trong CSDL.<br/> Thông tin chi tiết cấu trúc đại diện cho thông tin mỗi nhân khẩu [ResidentInfo](#class-ResidentInfo)|
+    |nonExistMembers|Danh sách thông tin về những nhân khẩu chưa có trong CSDL.<br/> Thông tin chi tiết cấu trúc đại diện cho thông tin mỗi nhân khẩu [ResidentInfo](#residentinfo)|
     |address|Địa chỉ của hộ dân|
     |scope|Tổ phụ trách quản lý hộ khẩu|
     |moveOutPlace|*[tuỳ chọn]* Địa điểm chuyển đi|
@@ -579,7 +652,7 @@
     |Tham số  |Miêu tả  |
     |---------|---------|
     |householdId|Số hộ khẩu|
-    |nonExistMembers|*[tuỳ chọn]* Danh sách thông tin về những nhân khẩu chưa có trong CSDL mà bạn muốn bổ sung.<br/> Thông tin chi tiết cấu trúc đại diện cho thông tin mỗi nhân khẩu [ResidentInfo](#class-ResidentInfo)|
+    |nonExistMembers|*[tuỳ chọn]* Danh sách thông tin về những nhân khẩu chưa có trong CSDL mà bạn muốn bổ sung.<br/> Thông tin chi tiết cấu trúc đại diện cho thông tin mỗi nhân khẩu [ResidentInfo](#residentinfo)|
     |address|*[tuỳ chọn]* Địa chỉ của hộ dân|
     |scope|*[tuỳ chọn]* Tổ phụ trách quản lý hộ khẩu|
     |moveOutPlace|*[tuỳ chọn]* Địa điểm chuyển đi|
@@ -636,6 +709,12 @@
     - [404 NotFound]
 
         *Hộ khẩu không tồn tại trong CSDL để xoá*
+
+    - [400 BadRequest] ForeignKeyConstraintFailed
+
+        *Xảy ra khi xoá một phần tử mà một số hàng trong các bảng khác có khoá ngoài trỏ đến phần tử này.*
+
+        *Phần tử này hiện tại không thể bị xoá. Thay vào đó hãy cảnh báo người dùng rằng hộ khẩu này không thể xoá (Nó đã được các dữ liệu khác đề cập đến, cũng như điều này đảm bảo thông tin của sổ hộ khẩu này là một thông tin hợp lệ với thực tiễn, không phải một mẫu thử nghiệm.)*
 
 ## Quản lý nhân khẩu
 ### Lấy danh sách nhân khẩu
@@ -939,7 +1018,7 @@
 
     - [404 NotFound]
 
-        *Hộ khẩu không tồn tại trong CSDL để cập nhật*
+        *Nhân khẩu khẩu không tồn tại trong CSDL để cập nhật*
 ### Xoá nhân khẩu
 <span style="color:#ea4335; width: 50px; display: inline-block">**DELETE**</span> ```https://localhost:7265/api/Residents/{idCode}```
 
@@ -950,7 +1029,7 @@
 - **Route Params**
     |Tham số|Miêu tả|
     |-------|-------|
-    |householdId|Số nhân khẩu mà muốn xoá|
+    |idCode|Số CMND/CCCD/Mã định danh điện tử của nhân khẩu mà muốn xoá|
 
 - **Request Header**
     |Tham số|Miêu tả|
@@ -972,11 +1051,15 @@
 
     - [404 NotFound]
 
-        *Hộ khẩu không tồn tại trong CSDL để xoá*
+        *Nhân khẩu không tồn tại trong CSDL để xoá*
+    - [400 BadRequest] ForeignKeyConstraintFailed
 
+        *Xảy ra khi xoá một phần tử mà một số hàng trong các bảng khác có khoá ngoài trỏ đến phần tử này.*
+
+        *Phần tử này hiện tại không thể bị xoá. Thay vào đó hãy cảnh báo người dùng rằng hộ khẩu này không thể xoá (Nó đã được các dữ liệu khác đề cập đến, cũng như điều này đảm bảo thông tin của nhân khẩu này là một thông tin hợp lệ với thực tiễn, không phải một mẫu thử nghiệm.)*
 # Các kiểu dữ liệu được sử dụng nhiều lần
 
-## <span id="class-ResidentInfo">ResidentInfo</span>
+## ResidentInfo
 ```json
 {
   "fullName": "string",

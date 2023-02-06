@@ -11,7 +11,7 @@ using QLHoDan.Data;
 namespace QLHoDan.Data.Migrations.ApplicationDb
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230205043944_ApplicationDbContextMigration")]
+    [Migration("20230205131728_ApplicationDbContextMigration")]
     partial class ApplicationDbContextMigration
     {
         /// <inheritdoc />
@@ -269,8 +269,8 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("AvatarLink")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("AvatarLink")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -332,8 +332,8 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                         .HasMaxLength(256)
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("WallpaperLink")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("WallpaperLink")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 

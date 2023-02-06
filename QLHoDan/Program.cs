@@ -25,6 +25,7 @@ builder.Services.AddCors(options =>
 
 //Add custom Services
 builder.Services.AddScoped<QLHoDan.Services.ITokenCreationService, JwtService>();
+builder.Services.AddSingleton<QLHoDan.Services.Storage>();
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
             ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");

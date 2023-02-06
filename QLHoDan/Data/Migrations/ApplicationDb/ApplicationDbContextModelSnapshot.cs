@@ -266,8 +266,8 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("AvatarLink")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("AvatarLink")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -329,8 +329,8 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                         .HasMaxLength(256)
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("WallpaperLink")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("WallpaperLink")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 

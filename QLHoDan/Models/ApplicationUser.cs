@@ -11,6 +11,6 @@ public class ApplicationUser : IdentityUser
     //nếu là tổ trưởng thì tổ trưởng quản lý tổ 1
     public int Scope { get; set; }
     public string? Note { get; set; }
-    public int? AvatarLink { get; set; }
-    public int? WallpaperLink { get; set; }
+    public string? AvatarLink { get; set; }
+    public string? WallpaperLink { get; set; }
 }
