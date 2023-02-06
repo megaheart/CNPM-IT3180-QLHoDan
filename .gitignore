@@ -365,3 +365,4 @@ FodyWeavers.xsd
 .gitignore
 QLHoDan/ClientApp/src/index.js
 QLHoDan/ClientApp/build
+QLHoDan/app.db

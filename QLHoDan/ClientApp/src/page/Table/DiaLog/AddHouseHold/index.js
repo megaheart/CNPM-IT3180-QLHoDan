@@ -278,7 +278,7 @@ export default function AddHouseholDialog({ open, onClose }) {
                     </div>
                 </div>
                 <TableContainer sx={{ padding: '0 20px' }} component={Paper}>
-                    <Table sx={{ minWidth: 1000 }} aria-label="customized table">
+                    <Table stickyHeader sx={{ minWidth: 1000 }} aria-label="customized table">
                         <TableHead>
                             <TableRow>
                                 <TableCell sx={{ fontSize: 20 }} align="left" colSpan={9}>
@@ -317,6 +317,26 @@ export default function AddHouseholDialog({ open, onClose }) {
                                     </StyledTableCell>
                                 </StyledTableRow>
                             ))}
+                            {
+                                people.length === 0 &&
+                                (
+                                    <div>
+                                        <StyledTableRow>
+                                            <StyledTableCell align="center" component="th" scope="row" >
+                                            </StyledTableCell>
+                                        </StyledTableRow>
+                                        <StyledTableRow>
+                                            <StyledTableCell align="center" component="th" scope="row">
+                                                Chưa có thành viên nào
+                                            </StyledTableCell>
+                                        </StyledTableRow>
+                                        <StyledTableRow>
+                                            <StyledTableCell align="center" component="th" scope="row" >
+                                            </StyledTableCell>
+                                        </StyledTableRow>
+                                    </div>
+                                )
+                            }
                         </TableBody>
                     </Table>
                 </TableContainer>

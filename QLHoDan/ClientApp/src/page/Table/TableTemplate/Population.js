@@ -186,23 +186,11 @@ export default function Population({ editMode }) {
                             inputProps={{ style: { fontSize: 15 } }}
                             InputLabelProps={{ style: { fontSize: 20 } }}
                             required
-                            label="CCCD/CMND"
-                            value={identification}
-                            onChange={(e) => setIdentification(e.target.value)}
-                            variant="standard"
-                        />
-                        <TextField
-                            sx={{ width: '600px' }}
-                            inputProps={{ style: { fontSize: 15 } }}
-                            InputLabelProps={{ style: { fontSize: 20 } }}
-                            required
                             label="Họ và tên"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             variant="standard"
                         />
-                    </div>
-                    <div>
                         <TextField
                             sx={{ width: '600px' }}
                             inputProps={{ style: { fontSize: 15 } }}
@@ -213,6 +201,8 @@ export default function Population({ editMode }) {
                             onChange={(e) => setBirthday(e.target.value)}
                             variant="standard"
                         />
+                    </div>
+                    <div>
                         <TextField
                             sx={{ width: '400px' }}
                             inputProps={{ style: { fontSize: 15 } }}
@@ -223,8 +213,6 @@ export default function Population({ editMode }) {
                             onChange={(e) => setGender(e.target.value)}
                             variant="standard"
                         />
-                    </div>
-                    <div>
                         <TextField
                             sx={{ width: '400px' }}
                             inputProps={{ style: { fontSize: 15 } }}
@@ -233,16 +221,6 @@ export default function Population({ editMode }) {
                             label="Quan hệ với chủ hộ"
                             value={relationship}
                             onChange={(e) => setRelationship(e.target.value)}
-                            variant="standard"
-                        />
-                        <TextField
-                            sx={{ width: '400px' }}
-                            inputProps={{ style: { fontSize: 15 } }}
-                            InputLabelProps={{ style: { fontSize: 20 } }}
-                            required
-                            label="Sổ hộ khẩu"
-                            value={soHoKhau}
-                            onChange={(e) => setSoHoKhau(e.target.value)}
                             variant="standard"
                         />
                     </div>

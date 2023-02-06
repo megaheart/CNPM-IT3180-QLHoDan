@@ -9,13 +9,7 @@
 .header-paper-population {
     display: flex;
     justify-content: flex-end;
-    padding: 0 20px;
-}
-.identification-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
+    padding: 0 1px;
 }
 
 .line-form {
@@ -36,11 +30,13 @@ h3 {
     text-align: left;
     padding-left: 5px;
 }
-.iden {
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    padding: 2px;
-    margin: 1px 4px;
+.account-paper {
+    margin: 13px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 5px;
 }
 
 .err-mes {
@@ -48,20 +44,16 @@ h3 {
     color: red;
     padding-left: 5px;
 }
-.household-paper {
-    margin: 13px;
-    //     display: flex;
-    //     gap: 10px;
-}
+
 .title-household {
     margin-bottom: 10px;
     text-align: center;
     font-size: 40px;
 }
-.household-detail {
+.account-household-detail {
     margin: 6px;
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    flex-direction: column;
+    justify-content: flex-start;
     gap: 10px;
 }

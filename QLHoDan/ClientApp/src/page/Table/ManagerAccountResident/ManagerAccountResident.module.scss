@@ -1,0 +1,9 @@
+.tool-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+.item-tool {
+    width: 300px;
+}
