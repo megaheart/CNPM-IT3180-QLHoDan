@@ -44,7 +44,7 @@ const buttons = [
     },
     { icon: <AccountBoxIcon />, title: 'Tài khoản', link: '/profile', id: 'profile' },
     { icon: <NotificationsNoneIcon />, title: 'Thông báo', link: '/notification', id: 'notification' },
-    { icon: <LogoutIcon />, title: 'Đăng xuất', link: '/', id: 'logout', isLogout: true, action: loggout },
+    { icon: <LogoutIcon />, title: 'Đăng xuất', link: '/login', id: 'logout', isLogout: true, action: loggout },
 ]
 const navForResident = [
     { icon: <DashboardIcon />, title: 'Hệ thống', link: '/dashboard', id: 'dashboard' },
@@ -65,7 +65,7 @@ const navForResident = [
     },
     { icon: <AccountBoxIcon />, title: 'Tài khoản', link: '/profile', id: 'profile' },
     { icon: <NotificationsNoneIcon />, title: 'Thông báo', link: '/notification', id: 'notification' },
-    { icon: <LogoutIcon />, title: 'Đăng xuất', link: '/', id: 'logout', isLogout: true, action: loggout },
+    { icon: <LogoutIcon />, title: 'Đăng xuất', link: '/login', id: 'logout', isLogout: true, action: loggout },
 ];
 const navForAdmin = [
     { icon: <DashboardIcon />, title: 'Hệ thống', link: '/dashboard', id: 'dashboard' },
@@ -88,7 +88,7 @@ const navForAdmin = [
     },
     { icon: <AccountBoxIcon />, title: 'Tài khoản', link: '/profile', id: 'profile' },
     { icon: <NotificationsNoneIcon />, title: 'Thông báo', link: '/notification', id: 'notification' },
-    { icon: <LogoutIcon />, title: 'Đăng xuất', link: '/', id: 'logout', isLogout: true, action: loggout },
+    { icon: <LogoutIcon />, title: 'Đăng xuất', link: '/login', id: 'logout', isLogout: true, action: loggout },
 ];
 
 const navForEmplyee = [
@@ -110,7 +110,7 @@ const navForEmplyee = [
     },
     { icon: <AccountBoxIcon />, title: 'Tài khoản', link: '/profile', id: 'profile' },
     { icon: <NotificationsNoneIcon />, title: 'Thông báo', link: '/notification', id: 'notification' },
-    { icon: <LogoutIcon />, title: 'Đăng xuất', link: '/', id: 'logout', isLogout: true, action: loggout },
+    { icon: <LogoutIcon />, title: 'Đăng xuất', link: '/login', id: 'logout', isLogout: true, action: loggout },
 ];
 
 export default buttons;

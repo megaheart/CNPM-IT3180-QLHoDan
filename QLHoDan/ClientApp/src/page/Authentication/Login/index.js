@@ -11,19 +11,19 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
-
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 //validation
 import validation from '~/services/validate';
 
-// //api
-// import Reaptcha from 'reaptcha';
-import accountApi from '~/services/api/accountApi';
+
+//
+import { PasswordTooltip, UsernameTooltip } from '~/components/component/Tooltip';
+//
 import authenticationService from '~/services/account/authentication';
 //sass
 import styles from './Login.module.scss'
 import classNames from 'classnames/bind'
 const cx = classNames.bind(styles);
-//const REACT_APP_SITE_KEY = "6LcpTdwjAAAAAAKuHebI2kb4q1i2wXcDur3aL8kK"
 
 export default function Login() {
     //auth context
@@ -41,14 +41,6 @@ export default function Login() {
     const [errMsg, setErrMsg] = useState('');
     const [start, setStart] = useState(false);
     const navigate = useNavigate();
-    //capcha
-    //capcha
-    // const [captchaToken, setCaptchaToken] = useState('');
-    // const verify = async () => {
-    //     const res = await captchaRef.current.getResponse();
-    //     setCaptchaToken(res);
-    // }
-    // const captchaRef = useRef(null)
     //handle loading
     const [loading, setLoading] = useState(false);
     useEffect(() => {
@@ -56,7 +48,14 @@ export default function Login() {
     }, [])
     useEffect(() => {
         setErrMsg('');
-    }, [username, password])
+        setUsernameError('');
+        setStart(false);
+    }, [username])
+    useEffect(() => {
+        setErrMsg('');
+        setPasswordError('');
+        setStart(false);
+    }, [password])
     //effect
     //handle login
     const handleSubmit = async (e) => {
@@ -69,21 +68,22 @@ export default function Login() {
             console.log(checkUser, checkPass)
             if (!checkUser.isValid) {
                 setUsernameError(checkUser.message);
+                setPasswordError(checkPass.message);
                 userRef.current.focus();
                 setStart(true);
+                setLoading(false);
             }
             else if (!checkPass.isValid) {
                 setUsernameError('');
                 setPasswordError(checkPass.message);
                 passRef.current.focus();
                 setStart(true);
+                setLoading(false);
             }
             else {
                 setUsernameError('');
                 setPasswordError('');
-                console.log(username, password)
                 authenticationService.signIn(username, password).then(() => {
-                    console.log(1);
                     if (authenticationService.isAuthenticated()) {
                         const userData = authenticationService.User;
                         console.log(userData);
@@ -93,33 +93,14 @@ export default function Login() {
                     navigate('/dashboard');
                 }).catch(
                     (e) => {
-                        console.log('ERROR')
-                        console.log(e)
+                        setStart(true);
+                        setErrMsg('Tài khoản hoặc mật khẩu không đúng');
                     }
                 ).finally(
                     () => {
                         setLoading(false);
                     }
                 );
-                //if (user.length === 0) {
-                //    setStart(true);
-                //    setErrMsg('Tài khoản không tồn tại');
-                //    userRef.current.focus();
-                //}
-                //else if (user[0].password !== password) {
-                //    setStart(true);
-                //    setErrMsg('Mật khẩu không đúng');
-                //    userRef.current.focus();
-                //}
-                //else if (captchaToken === '' || captchaToken === null) {
-                //    setStart(true);
-                //    setErrMsg('Vui lòng xác nhận bạn không phải là robot');
-                //}
-                //else {
-                //    setAuth(user[0]);
-                //    navigate('/profile');
-                //}
-
             }
         }
         catch (err) {
@@ -170,9 +151,12 @@ export default function Login() {
         <div className={cx('login')}>
             <div className={cx('login-form')}>
                 <div className={cx('login-form__input')} >
-                    <FormControl sx={{ margin: '10px 0' }} className={cx('input-login')} variant="standard">
+                    <FormControl error={usernameError.length > 0} sx={{ margin: '10px 0' }} className={cx('input-login')} variant="standard">
                         <InputLabel sx={{ fontSize: 20 }} htmlFor="input_login_account">
                             Tên đăng nhập
+                            <UsernameTooltip>
+                                <span className={cx('icon-label')}><ErrorOutlineIcon /></span>
+                            </UsernameTooltip>
                         </InputLabel>
                         <Input
                             inputRef={userRef}
@@ -190,9 +174,12 @@ export default function Login() {
                         />
                         {start && <FormHelperText sx={{ fontSize: 10, color: 'red' }}>{usernameError}</FormHelperText>}
                     </FormControl>
-                    <FormControl sx={{ margin: '10px 0' }} variant="standard">
+                    <FormControl error={passwordError.length > 0} sx={{ margin: '10px 0' }} variant="standard">
                         <InputLabel sx={{ fontSize: 20 }} htmlFor="input_login_password">
                             Mật khẩu
+                            <PasswordTooltip>
+                                <span className={cx('icon-label')}><ErrorOutlineIcon /></span>
+                            </PasswordTooltip>
                         </InputLabel>
                         <Input
                             inputRef={passRef}

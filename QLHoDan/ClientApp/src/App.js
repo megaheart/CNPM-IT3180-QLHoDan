@@ -1,14 +1,11 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { routes, loginRoute } from '~/routes';
-import useAuth from "~/hooks/useAuth";
+
 import RequireAuth from './services/ProtectedRoute/requireAuth';
+
 /* A constant that is used to define the roles of the users. */
-const ROLES = {
-  ADMIN: "CommitteeChairman",
-  MANAGER: "Accountant" | "ScopeLeader",
-  USER: "Household"
-}
+
 const theme = createTheme({
   components: {
     MuiButton: {
@@ -27,6 +24,8 @@ const theme = createTheme({
     },
   },
 });
+
+
 /**
  * It renders a Route for each route in the routes array, and a Route for each route in the loginRoute
  * array. 
@@ -48,7 +47,6 @@ const theme = createTheme({
  * @returns The routes are being returned.
  */
 function App() {
-  const { auth } = useAuth();
   return (
     <ThemeProvider theme={theme}>
       <Routes>

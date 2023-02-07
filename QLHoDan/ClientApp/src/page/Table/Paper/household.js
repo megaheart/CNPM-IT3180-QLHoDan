@@ -11,7 +11,7 @@ function Household({ editMode }) {
             <h2 className={cx('title-household')}>Thông tin sổ hộ khẩu</h2>
             <div className={cx('household-detail')}>
                 <TextField
-                    disabled={!editMode}
+                    disabled={true}
                     sx={{ width: '400px' }}
                     inputProps={{ style: { fontSize: 15 } }}
                     InputLabelProps={{ style: { fontSize: 20 } }}
