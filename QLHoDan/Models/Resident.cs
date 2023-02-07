@@ -38,10 +38,11 @@ namespace QLHoDan.Models
 		public string CriminalRecord{set;get;} //Tiền án
         public DateTime MoveInDate{set;get;} //  ngày chuyển đến
         public string MoveInReason{set;get;} // lý do chuyển đến
+        public int Scope { set; get; } // tổ quản lý
 
-		//Foreign Key
-		
-		public Household Household { set;get;}
+        //Foreign Key
+        public Household? Household { set;get;}
+		public string? HouseholdId{ set; get; }
     }
 
 }

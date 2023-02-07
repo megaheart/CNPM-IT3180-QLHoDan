@@ -12,7 +12,7 @@ namespace QLHoDan.Services
 
     public class JwtService : ITokenCreationService
     {
-        private const int EXPIRATION_MINUTES = 5;
+        private const int EXPIRATION_MINUTES = 60 * 24;
 
         private readonly IConfiguration _configuration;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -22,7 +22,11 @@ namespace QLHoDan.Services
             _configuration = configuration;
             _userManager = userManager;
         }
-
+        /// <summary>
+        /// Tạo Jwt Token từ thông tin tài khoản người dùng và token này được sử dụng để xác thực tài khoản truy cập
+        /// </summary>
+        /// <param name="user">Tài khoản người muốn tạo Jwt token</param>
+        /// <returns>Jwt Token được tạo từ thông tin tài khoản người dùng</returns>
         public async Task<BearerToken> CreateToken(ApplicationUser user)
         {
             var expiration = DateTime.UtcNow.AddMinutes(EXPIRATION_MINUTES);
@@ -50,7 +54,12 @@ namespace QLHoDan.Services
                 expires: expiration,
                 signingCredentials: credentials
             );
-
+        /// <summary>
+        /// Lấy ra các thông tin quan trọng phục vụ cho việc xác minh truy cập
+        /// </summary>
+        /// <param name="user">Thông tin người dùng</param>
+        /// <param name="expiration">Ngày token hết hạn</param>
+        /// <returns>Danh sách các thông tin quan trọng phục vụ cho việc xác minh truy cập</returns>
         private async Task<List<Claim>> CreateClaims(ApplicationUser user, DateTime expiration)
         {
             List<Claim> claims = new List<Claim>(8) {
@@ -66,8 +75,11 @@ namespace QLHoDan.Services
             }
             return claims;
         }
-            
 
+        /// <summary>
+        /// Lấy ra chữ kí phục vụ cho việc xác minh truy cập
+        /// </summary>
+        /// <returns>Chữ kí phục vụ cho việc xác minh truy cập</returns>
         private SigningCredentials CreateSigningCredentials() =>
             new SigningCredentials(
                 new SymmetricSecurityKey(

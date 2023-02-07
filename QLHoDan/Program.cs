@@ -6,10 +6,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.IdentityModel.Tokens;
+using QLHoDan;
 using QLHoDan.Data;
 using QLHoDan.Models;
 using QLHoDan.Services;
 using System.Text;
+using IdentityServer4;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,14 +25,17 @@ builder.Services.AddCors(options =>
 
 //Add custom Services
 builder.Services.AddScoped<QLHoDan.Services.ITokenCreationService, JwtService>();
+builder.Services.AddSingleton<QLHoDan.Services.Storage>();
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
             ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-var sqliteConnectionString = builder.Configuration.GetConnectionString("SQLite")
-            ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+var connection2String = builder.Configuration.GetConnectionString("Connection2")
+            ?? throw new InvalidOperationException("Connection string 'Connection2' not found.");
+var sqliteString = builder.Configuration.GetConnectionString("SQLite")
+            ?? throw new InvalidOperationException("Connection string 'SQLite' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    //options.UseSqlite(identityDataConnectionString)
-    options.UseSqlServer(connectionString)
+//options.UseSqlServer(connection2String)
+options.UseSqlite(sqliteString)
 );
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
@@ -48,7 +54,10 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddIdentityServer()
-    .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
+    .AddInMemoryIdentityResources(Config.IdentityResources)
+    .AddInMemoryApiScopes(Config.ApiScopes)
+    .AddInMemoryClients(Config.Clients)
+    .AddAspNetIdentity<ApplicationUser>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -86,6 +95,11 @@ using (var scope = app.Services.CreateScope())
     {
         ApplicationDbContext applicationDbContext = services.GetRequiredService<ApplicationDbContext>();
         applicationDbContext.Database.EnsureCreated();
+        //if (!applicationDbContext.Household.Any())
+        //{
+        //    string init_db_sql = File.ReadAllText("data_init.sql");
+        //    applicationDbContext.Database.ExecuteSqlRaw(init_db_sql);
+        //}
     }
     catch (Microsoft.Data.SqlClient.SqlException ex)
     {

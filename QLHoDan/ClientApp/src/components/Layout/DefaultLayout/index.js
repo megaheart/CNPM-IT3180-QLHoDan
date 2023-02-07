@@ -10,7 +10,7 @@ const cx = classNames.bind(styles);
 const TitleContext = React.createContext();
 
 function DefaultLayout({ children }) {
-    const [headText, setHeadText] = useState('Dashboard');
+    const [headText, setHeadText] = useState('Hello world');
     return (
         <TitleContext.Provider value={setHeadText}>
             <div className={cx('wrapper')} >

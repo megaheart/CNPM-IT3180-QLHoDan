@@ -1,6 +1,7 @@
 import { useState, useRef, useContext, useEffect } from 'react';
 import { AuthContext } from '~/components/AuthenProvider';
 
+import { deepOrange, deepPurple } from '@mui/material/colors';
 import styles from './Header.module.scss';
 import classNames from 'classnames/bind';
 import { NavLink } from "react-router-dom";
@@ -11,12 +12,10 @@ import ActionItem from '~/components/component/Action';
 //services
 import accountService from '~/services/account';
 //icons
-import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-import CircularProgress from '@mui/material/CircularProgress';
 import HomeIcon from '@mui/icons-material/Home';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleXmark, faSpinner, faMagnifyingGlass, faUser, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { faCircleXmark, faMagnifyingGlass, faUser, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { Avatar, Badge, Alert, Stack } from '@mui/material';
 import MailIcon from '@mui/icons-material/Mail';
 //search
@@ -29,20 +28,19 @@ function Header({ text }) {
     //tippy for avatar button
     const tippy = useRef();
     const [tippyAvatar, setTippyAvatar] = useState(null);
-    const turnOnTippy = (e) => {
+    const turnOnTippy = () => {
         setTippyAvatar(true);
     }
     //tippy for message button
     const tippyMessage = useRef();
     const [messageVisible, setMessageVisible] = useState(null);
-    const turnOnTippyMessage = (e) => {
+    const turnOnTippyMessage = () => {
         setMessageVisible(true);
     }
     //tippy and event for search bar
     const tippySearch = useRef();
     const searchBar = useRef();
     const [search, setSearch] = useState('');
-    const [searchResult, setSearchResult] = useState([]);
     const handleSearch = (e) => {
         setSearch(e.target.value);
     }
@@ -52,17 +50,6 @@ function Header({ text }) {
     useEffect(() => {
         searchBar.current.focus();
     }, [search])
-    const handleSearchResult = () => {
-        if (search === '') {
-            setSearchResult([]);
-        }
-        else {
-            setSearchResult(filterByTitle(FormsAction, search));
-        }
-    }
-    useEffect(() => {
-        handleSearchResult();
-    }, [search]);
     //logout
     const handleLogout = () => {
         accountService.logout(setAuth);
@@ -82,6 +69,7 @@ function Header({ text }) {
                 setSearch('');
             }
         }
+        console.log(1)
         document.addEventListener("mousedown", handleClickOutside);
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
@@ -92,7 +80,7 @@ function Header({ text }) {
             <div className={cx('header-head')}>
                 <div className={cx('header-1')}>
                     <div className={cx('header-1-2')}>
-                        <span><NavLink className={cx('nav-item')} to='/dashboard'><HomeIcon /></NavLink></span>
+                        <span><NavLink className={cx('nav-item')} to='/profile'><HomeIcon /></NavLink></span>
                         <span><KeyboardArrowRightIcon className={cx('nav-item')} /></span>
                         <span>{text}</span>
                     </div>
@@ -101,13 +89,13 @@ function Header({ text }) {
             </div>
             <Tippy
                 interactive
-                visible={searchResult.length > 0}
+                visible={filterByTitle(FormsAction, search).length > 0 && search.length > 0}
                 render={attrs => (
                     <div ref={tippySearch} className={cx('search-result')} tabIndex="-1" {...attrs}>
                         <PopperWrapper>
                             <h4 className={cx('search-title')}>Kết quả tìm kiếm</h4>
                             {
-                                searchResult.map(
+                                filterByTitle(FormsAction, search).map(
                                     item => {
                                         return <ActionItem onClick={() => setSearch('')} key={item.link} item={item} />
                                     }
@@ -184,7 +172,9 @@ function Header({ text }) {
                         </div>
                     )}
                 >
-                    <Avatar sx={{ cursor: 'pointer', border: '2px solid transparent', '&:hover': { borderColor: 'green' } }} src={fuhua} onClick={turnOnTippy} />
+                    <Avatar sx={{ cursor: 'pointer', border: '2px solid transparent', '&:hover': { borderColor: 'green' }, bgcolor: deepOrange[500] }}
+                        onClick={turnOnTippy} >Đức</Avatar>
+                    {/* <Avatar sx={{ cursor: 'pointer', border: '2px solid transparent', '&:hover': { borderColor: 'green' } }} src={fuhua} onClick={turnOnTippy} /> */}
                 </Tippy>
             </div>
         </ header>

@@ -45,12 +45,13 @@ export default function FormNKComponent() {
                 component="form"
                 sx={{
                     '& .MuiTextField-root': { m: 1, width: '25ch' },
+                    width: '100%',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'stretch',
                     border: '1px solid #ccc',
                     borderRadius: '5px',
-                    padding: 5
+                    padding: 5,
                 }}
                 noValidate
                 autoComplete="off"
@@ -98,7 +99,7 @@ export default function FormNKComponent() {
                             }}
                             renderInput={({ inputRef, inputProps, InputProps }) =>
                                 <FormControl sx={{ m: 1, width: 270 }} variant="standard">
-                                    <InputLabel sx={{ fontSize: 22 }} htmlFor="input_login_account">
+                                    <InputLabel sx={{ fontSize: 20 }} htmlFor="input_login_account">
                                         Ngày sinh
                                     </InputLabel>
                                     <Input
@@ -203,8 +204,7 @@ export default function FormNKComponent() {
                             </MenuItem>
                         </Select>
                     </FormControl>
-
-                    <TextField sx={{ m: 1, width: 270 }} label="Quan hệ với chủ hộ" inputProps={{
+                    <TextField sx={{ m: 1, width: 270 }} label="Trình độ học vấn" inputProps={{
                         style: { fontSize: 20 }
                     }}
                         InputLabelProps={{
@@ -213,13 +213,6 @@ export default function FormNKComponent() {
                         variant="standard" />
                 </div>
                 <div className={cx('line-form')}>
-                    <TextField sx={{ m: 1, width: 270 }} label="Trình độ học vấn" inputProps={{
-                        style: { fontSize: 20 }
-                    }}
-                        InputLabelProps={{
-                            style: { fontSize: 20 }
-                        }}
-                        variant="standard" />
                     <TextField sx={{ m: 1, width: 270 }} label="Tiền án" inputProps={{
                         style: { fontSize: 20 }
                     }}
@@ -227,13 +220,14 @@ export default function FormNKComponent() {
                             style: { fontSize: 20 }
                         }}
                         variant="standard" />
-                    <TextField sx={{ m: 1, width: 270 }} label="Lý do chuyển đến" inputProps={{
+                    <TextField sx={{ m: 1, flex: 0.8 }} label="Lý do chuyển đến" inputProps={{
                         style: { fontSize: 20 }
                     }}
                         InputLabelProps={{
                             style: { fontSize: 20 }
                         }}
                         variant="standard" />
+                    {/* <span style={{ width: 290, fontSize: 20 }}></span> */}
                 </div>
                 <div className={cx('line-start')} >
                     <label htmlFor="upload-photo" style={{ marginLeft: 10 }}>

@@ -1,6 +1,4 @@
-﻿using Duende.IdentityServer.Services;
-using Duende.IdentityServer.Stores;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
@@ -14,46 +12,48 @@ using Microsoft.IdentityModel.Tokens;
 using Azure.Core;
 using QLHoDan.Models.Api;
 using Microsoft.AspNetCore.Cors;
+using SQLitePCL;
 
 namespace QLHoDan.Controllers
 {
     [Route("api/account")]
     [ApiController]
     //[EnableCors("DevOnly_AllowSpecificOrigins")]
+
     public class AccountController : ControllerBase
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IIdentityServerInteractionService _interaction;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
-        private readonly IClientStore _clientStore;
-        private readonly IEventService _events;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly QLHoDan.Services.ITokenCreationService _jwtService;
+        private readonly QLHoDan.Services.Storage _storage;
         public AccountController(SignInManager<ApplicationUser> signInManager,
                                     UserManager<ApplicationUser> userManager,
-                                    IIdentityServerInteractionService interaction,
                                     IAuthenticationSchemeProvider schemeProvider,
-                                    IClientStore clientStore,
-                                    IEventService events,
                                     RoleManager<IdentityRole> roleManager,
-                                    QLHoDan.Services.ITokenCreationService jwtService)
+                                    QLHoDan.Services.ITokenCreationService jwtService,
+                                    Storage storage)
         {
             _userManager = userManager;
-            _interaction = interaction;
             _schemeProvider = schemeProvider;
-            _clientStore = clientStore;
-            _events = events;
             _signInManager = signInManager;
             _roleManager = roleManager;
             _jwtService = jwtService;
+            _storage = storage;
         }
         // POST api/account/signin
         /// <summary>
-        /// 
+        /// Đăng nhập vào hệ thống
         /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
+        /// <param name="model">
+        /// Bao gồm tên đăng nhập và mật khẩu của tài khoản muốn đăng nhập
+        /// </param>
+        /// <returns>
+        /// Nếu thành công sẽ trả về một đối tượng JSON có trường token lưu trữ đoạn mã dùng để xác minh truy cập.
+        /// Còn nếu thất bại thì trả về <seealso cref="ControllerBase.ModelState"/> khi request sai format hoặc
+        /// <seealso cref="RequestError"/> khi request bao gồm những thông tin không hợp lệ
+        /// </returns>
         [HttpPost("signin")]
         [AllowAnonymous]
         public async Task<IActionResult> SignIn([FromBody] SignInRequestModel model)
@@ -168,9 +168,20 @@ namespace QLHoDan.Controllers
 
         }
         //POST api/account/changepassword
+        /// <summary>
+        /// Thay đổi mật khẩu người dùng
+        /// </summary>
+        /// <param name="model">Mật khẩu cũ để xem xem có phải người sở hữu tài khoản thực hiện thay đổi không 
+        /// và mật khẩu mới mà người sở hữu tài khoản muốn đổi thành</param>
+        /// <returns>
+        /// Nếu thành công sẽ trả về một đối tượng JSON có trường token lưu trữ đoạn mã dùng để xác minh truy cập.
+        /// Còn nếu thất bại thì trả về <seealso cref="ControllerBase.ModelState"/> khi request sai format hoặc
+        /// <seealso cref="RequestError"/> khi request bao gồm những thông tin không hợp lệ
+        /// </returns>
         [HttpPost("changepassword")]
         [Authorize]
         //[ValidateAntiForgeryToken]
+        
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequestModel model)
         {
             if (!ModelState.IsValid)
@@ -178,7 +189,10 @@ namespace QLHoDan.Controllers
                 return BadRequest(ModelState);
             }
             var user = await _userManager.FindByIdAsync(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-
+            if(user== null)
+            {
+                return Unauthorized("Invalid Token");
+            }
             IdentityResult result =
                 await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
 
@@ -263,7 +277,6 @@ namespace QLHoDan.Controllers
         /// <summary>
         /// Get user's profile such as full name, scope
         /// </summary>
-        /// <returns><code>ProfileResponseModel</code></returns>
         [HttpGet("profile")]
         [Authorize]
         public async Task<IActionResult> GetProfile(/*[FromBody] DeleteAccountRequestModel model*/)
@@ -276,11 +289,66 @@ namespace QLHoDan.Controllers
             var user = await _userManager.FindByIdAsync(id);
             if(user == null)
             {
-                return BadRequest(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
+                return Unauthorized(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
             }
 
-            return Ok(new ProfileResponseModel { FullName = user.FullName, Scope = user.Scope });
+            return Ok(new ProfileResponseModel { 
+                FullName = user.FullName, 
+                Scope = user.Scope, 
+                AvatarLink = user.AvatarLink,
+                WallpaperLink = user.WallpaperLink,
+            });
         }
+        //GET api/account/changeAvatar
+        /// <summary>
+        /// Dùng để cập nhật hình đại diện của tài khoản người dùng
+        /// </summary>
+        [HttpPost("changeAvatar")]
+        [Authorize]
+        public async Task<IActionResult> ChangeAvatar([FromForm(Name = "file")]IFormFile file)
+        {
+            var id = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return Unauthorized(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
+            }
+            user.AvatarLink = await _storage.SaveImage(file, "avatar_" + user.UserName);
+            IdentityResult result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                if (result.Errors != null)
+                    return BadRequest(result.Errors);
+                return BadRequest(new[] { new RequestError("IdS_ChangeAvatarUnknown", "Unknown Error") });
+            }
+            return Ok(user.AvatarLink);
+        }
+        //GET api/account/changeWallpaper
+        /// <summary>
+        /// 
+        /// </summary>
+        [HttpGet("changeWallpaper")]
+        [Authorize]
+        public async Task<IActionResult> ChangeWallpaper([FromForm(Name = "file")] IFormFile file)
+        {
+            var id = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return Unauthorized(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
+            }
+            user.WallpaperLink = await _storage.SaveImage(file, "wallpaper_" + user.UserName);
+            IdentityResult result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                if (result.Errors != null)
+                    return BadRequest(result.Errors);
+                return BadRequest(new[] { new RequestError("IdS_ChangeWallpaperUnknown", "Unknown Error") });
+            }
+            return Ok(user.WallpaperLink);
+
+        }
+
         //POST api/account/admin/changeAccountProfile
         /// <summary>
         /// Thay đổi thông tin tài khoản bất kì
@@ -298,7 +366,7 @@ namespace QLHoDan.Controllers
             //var manager = await _userManager.FindByIdAsync(id);
             //if (manager == null)
             //{
-            //    return BadRequest(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
+            //    return Unauthorized(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
             //}
             var user = await _userManager.FindByNameAsync(model.UserName);
             if (user == null)
@@ -321,7 +389,8 @@ namespace QLHoDan.Controllers
         }
         //GET api/account/household/AccountList
         /// <summary>
-        /// Lấy ra tất cả danh sách tài khoản hộ dân
+        /// Lấy ra tất cả danh sách tài khoản hộ dân, chỉ người dùng cấp độ đặc biệt 
+        /// (Tổ trưởng, thư kí, chủ tịch xã) mới dùng được.
         /// </summary>
         /// <returns></returns>
         [HttpGet("household/AccountList")]
@@ -337,7 +406,7 @@ namespace QLHoDan.Controllers
             var user = await _userManager.FindByIdAsync(id);
             if (user == null)
             {
-                return BadRequest(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
+                return Unauthorized(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
             }
 
             if(await _userManager.IsInRoleAsync(user, "ScopeLeader"))
@@ -366,12 +435,8 @@ namespace QLHoDan.Controllers
         }
         //POST api/account/household/addAccount
         /// <summary>
-        /// Thêm tài khoản hộ dân
+        /// Thêm tài khoản hộ dân, chỉ người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch xã) mới dùng được.
         /// </summary>
-        /// <returns>
-        /// Một danh sách các lỗi, 
-        /// Nếu không có lỗi thì trả về danh sách rỗng (danh sách có 0 phần tử)
-        /// </returns>
         [HttpPost("household/addAccount")]
         [Authorize(Roles = "CommitteeChairman, Accountant, ScopeLeader")]
         public async Task<IActionResult> Household_AddAccount([FromBody] AddingHouseholdAccountRequestModel model)
@@ -384,7 +449,7 @@ namespace QLHoDan.Controllers
             var manager = await _userManager.FindByIdAsync(id);
             if (manager == null)
             {
-                return BadRequest(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
+                return Unauthorized(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
             }
             var isScopeLeader = await _userManager.IsInRoleAsync(manager, "ScopeLeader");
             if(isScopeLeader && manager.Scope != model.Scope)
@@ -427,7 +492,7 @@ namespace QLHoDan.Controllers
         }
         //POST api/account/household/changeAccountProfile
         /// <summary>
-        /// Thay đổi thông tin tài khoản hộ dân
+        /// Thay đổi thông tin tài khoản hộ dân, chỉ người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch xã) mới dùng được.
         /// </summary>
         /// <returns></returns>
         [HttpPost("household/changeAccountProfile")]
@@ -442,7 +507,7 @@ namespace QLHoDan.Controllers
             var manager = await _userManager.FindByIdAsync(id);
             if (manager == null)
             {
-                return BadRequest(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
+                return Unauthorized(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
             }
             var user = await _userManager.FindByNameAsync(model.UserName);
             if (user == null)
@@ -485,7 +550,7 @@ namespace QLHoDan.Controllers
         //    var manager = await _userManager.FindByIdAsync(id);
         //    if (manager == null)
         //    {
-        //        return BadRequest(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
+        //        return Unauthorized(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
         //    }
         //    var isScopeLeader = await _userManager.IsInRoleAsync(manager, "ScopeLeader");
         //    var user = await _userManager.FindByIdAsync(model.UserName);
@@ -525,7 +590,7 @@ namespace QLHoDan.Controllers
             var user = await _userManager.FindByIdAsync(id);
             if (user == null)
             {
-                return BadRequest(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
+                return Unauthorized(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
             }
             //System.Diagnostics.Debugger.Break();
             if (await _userManager.IsInRoleAsync(user, "Accountant"))
@@ -574,7 +639,7 @@ namespace QLHoDan.Controllers
             var manager = await _userManager.FindByIdAsync(id);
             if (manager == null)
             {
-                return BadRequest(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
+                return Unauthorized(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
             }
             if(model.Role == 1)
             {
@@ -654,7 +719,7 @@ namespace QLHoDan.Controllers
             var manager = await _userManager.FindByIdAsync(id);
             if (manager == null)
             {
-                return BadRequest(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
+                return Unauthorized(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
             }
             var user = await _userManager.FindByNameAsync(model.UserName);
             if (user == null)

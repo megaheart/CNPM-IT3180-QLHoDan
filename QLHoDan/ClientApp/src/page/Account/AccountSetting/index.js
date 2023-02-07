@@ -56,37 +56,37 @@ export default function AccountSetting() {
                     <InputLabel sx={{ fontSize: 20 }} htmlFor="component-simple1">First name</InputLabel>
                     <Input sx={{ fontSize: 15 }}
                         id="component-simple1"
-                        defaultValue="Nguyễn Thanh"
+                        defaultValue="Bùi Trọng"
                         readOnly={isChange}
                     />
                 </FormControl>
                 <FormControl sx={{ width: '30%' }} variant="standard">
-                    <InputLabel sx={{ fontSize: 20 }} >Last name</InputLabel>
-                    <Input readOnly={isChange} sx={{ fontSize: 15 }} defaultValue="Lâm" />
+                    <InputLabel sx={{ fontSize: 20 }} >Họ </InputLabel>
+                    <Input readOnly={isChange} sx={{ fontSize: 15 }} defaultValue="Đức" />
                 </FormControl>
                 <FormControl sx={{ width: '30%' }} variant="standard">
-                    <InputLabel sx={{ fontSize: 20 }} >Phone number</InputLabel>
-                    <Input readOnly={isChange} sx={{ fontSize: 15 }} defaultValue="375928856" />
+                    <InputLabel sx={{ fontSize: 20 }} >Số điện thoại</InputLabel>
+                    <Input readOnly={isChange} sx={{ fontSize: 15 }} defaultValue="3243243423" />
                 </FormControl>
                 <FormControl sx={{ width: '30%' }} variant="standard">
-                    <InputLabel sx={{ fontSize: 20 }} >Email address</InputLabel>
-                    <Input readOnly={isChange} sx={{ fontSize: 15 }} defaultValue="thanhlam0241@gmail.com" />
+                    <InputLabel sx={{ fontSize: 20 }} >Email</InputLabel>
+                    <Input readOnly={isChange} sx={{ fontSize: 15 }} defaultValue="helloworld123@gmail.com" />
                 </FormControl>
                 <FormControl sx={{ width: '30%' }} variant="standard">
-                    <InputLabel sx={{ fontSize: 20 }} >City</InputLabel>
-                    <Input readOnly={isChange} sx={{ fontSize: 15 }} defaultValue="Hưng Yên" />
+                    <InputLabel sx={{ fontSize: 20 }} >Thành phố</InputLabel>
+                    <Input readOnly={isChange} sx={{ fontSize: 15 }} defaultValue="Hà Nội" />
                 </FormControl>
                 <FormControl sx={{ width: '30%' }} variant="standard">
-                    <InputLabel sx={{ fontSize: 20 }} >Country</InputLabel>
+                    <InputLabel sx={{ fontSize: 20 }} >Quốc gia</InputLabel>
                     <Input readOnly={isChange} sx={{ fontSize: 15 }} defaultValue="Việt Nam" />
                 </FormControl>
                 <FormControl sx={{ width: '30%' }} variant="standard">
-                    <InputLabel sx={{ fontSize: 20 }} >Address</InputLabel>
+                    <InputLabel sx={{ fontSize: 20 }} >Địa chỉ</InputLabel>
                     <Input readOnly={isChange} sx={{ fontSize: 15 }} defaultValue="Việt Nam" />
                 </FormControl>
                 <FormControl sx={{ width: '30%' }} variant="standard">
-                    <InputLabel sx={{ fontSize: 20 }} >Career</InputLabel>
-                    <Input readOnly={isChange} sx={{ fontSize: 15 }} defaultValue="Việt Nam" />
+                    <InputLabel sx={{ fontSize: 20 }} >Nghề nghiệp</InputLabel>
+                    <Input readOnly={isChange} sx={{ fontSize: 15 }} defaultValue="Remote" />
                 </FormControl>
             </div>
             <Button color='primary' variant="contained" sx={{ marginTop: 20, fontSize: 15, zIndex: 1 }} disabled={isChange} onClick={handleUpdate}>Cập nhật</Button>

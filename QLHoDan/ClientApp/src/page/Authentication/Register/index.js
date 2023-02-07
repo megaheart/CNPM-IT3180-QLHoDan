@@ -1,5 +1,8 @@
 import { useNavigate } from 'react-router-dom';
-import { useState, useContext } from 'react'
+import { useState } from 'react';
+import useAuth from "~/hooks/useAuth";
+//router
+import { Link } from 'react-router-dom'
 //material-ui
 import { Button, FormControl, CircularProgress, InputLabel, InputAdornment, Input, FormHelperText } from '@mui/material'
 //icons
@@ -8,8 +11,6 @@ import VpnKeyIcon from '@mui/icons-material/VpnKey';
 //api
 import accountApi from '../../../services/api/accountApi'
 import validation from '~/services/validate';
-//context 
-import { AuthContext } from '~/components/AuthenProvider'
 //style
 import styles from './Register.module.scss'
 import classNames from 'classnames/bind'
@@ -25,7 +26,7 @@ export default function Signup() {
     const [loading, setLoading] = useState(false);
 
     //auth context
-    const { setAuth } = useContext(AuthContext);
+    const { setAuth } = useAuth();
 
     //user state to register
     const [username, setUserName] = useState('');
@@ -78,7 +79,7 @@ export default function Signup() {
                     }
                     setAuth(data);
                     await accountApi.addAccount(data);
-                    setTimeout(() => navigate('/profile'), 100);
+                    setTimeout(() => navigate('/dashboard'), 100);
                 }
             }
 
@@ -168,7 +169,7 @@ export default function Signup() {
                     thickness={4} />}
                 {status && <p style={{ marginTop: 10, color: 'red' }}>{msg}</p>}
                 <hr className={cx('hr-login')} />
-                <p style={{ fontSize: 18 }}>Đã có tài khoản? <span className={cx('signin-btn')}>Đăng nhập</span></p>
+                <p style={{ fontSize: 18 }}>Đã có tài khoản? <Link to='/login'> <span className={cx('signin-btn')}>Đăng nhập</span></Link> </p>
             </div>
         </div>
     )

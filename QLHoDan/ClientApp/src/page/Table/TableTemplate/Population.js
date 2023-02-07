@@ -135,20 +135,21 @@ export default function Population({ editMode }) {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {rows.map((row) => (
+                        {rows.map((row, index) => (
                             <StyledTableRow key={row.idenftification}>
                                 {Object.keys(row).map((key) => {
                                     if (key !== 'id') {
                                         return (
-                                            <StyledTableCell align="center" component="th" scope="row">
+                                            <StyledTableCell key={key} align="center" component="th" scope="row">
                                                 {row[key]}
                                             </StyledTableCell>
                                         )
                                     }
                                     return null;
                                 })}
-                                <StyledTableCell align="center" component="th" scope="row">
-                                    <Button disabled={!editMode}
+                                <StyledTableCell key={row.idenftification + index} align="center" component="th" scope="row">
+                                    <Button key={row.identification + 'fix'}
+                                        disabled={!editMode}
                                         onClick={() => {
                                             handleEditRowData(row.id);
                                             handleEditField(row.idenftification, row.name, row.birthday, row.gender, row.relationship, row.soHoKhau, row.toPhuTrach);
@@ -157,7 +158,9 @@ export default function Population({ editMode }) {
                                     >
                                         Sửa
                                     </Button>
-                                    <Button disabled={!editMode} onClick={() => { handleDeleteRowsData(row.id) }}>Xóa</Button>
+                                    <Button
+                                        key={row.identification + 'delete'}
+                                        disabled={!editMode} onClick={() => { handleDeleteRowsData(row.id) }}>Xóa</Button>
                                 </StyledTableCell>
                             </StyledTableRow>
                         ))}

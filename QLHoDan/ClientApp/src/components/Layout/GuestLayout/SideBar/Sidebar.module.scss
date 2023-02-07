@@ -6,6 +6,7 @@
 }
 
 .side-bar {
+    min-width: 56px;
     padding: 20px 10px 10px 10px;
     transition: width 3s ease-in-out;
     height: calc(100vh - 2 * var(--margin-side-bar));
@@ -50,6 +51,11 @@
 }
 .hide-btn {
     width: 0;
+}
+@media only screen and (max-width: 1211px) {
+    .normal-btn {
+        display: none;
+    }
 }
 .btn-side-active {
     max-width: 25rem;

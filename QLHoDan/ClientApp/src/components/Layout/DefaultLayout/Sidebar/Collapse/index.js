@@ -14,11 +14,11 @@ function CollapseButton({ buttonObject, isOpen }) {
     const [visible, setVisible] = useState(false);
     const toggle = useCallback(() => setVisible(prev => !prev), []);
     return (
-        <>
+        <div className={cx('nav-div')}>
             <NavLink className={cx('btn-side')} onClick={toggle}>
                 <span>{buttonObject.icon}</span>
                 <span className={isOpen ? cx('normal-btn') : cx('hide-btn')} >{isOpen && (buttonObject.title)}</span>
-                <span>{isOpen && (!visible ? <KeyboardArrowDown /> : <KeyboardArrowUp />)}</span>
+                <span className={cx('icon-collapse')}>{isOpen && (!visible ? <KeyboardArrowDown /> : <KeyboardArrowUp />)}</span>
             </NavLink>
             {isOpen && (
                 <SmoothCollapse
@@ -46,7 +46,7 @@ function CollapseButton({ buttonObject, isOpen }) {
                     </div>
                 </SmoothCollapse>)
             }
-        </>
+        </div>
     )
 }
 

@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { PushPinOutlined } from '@mui/icons-material';
-
+import DashboardIcon from '@mui/icons-material/Dashboard';
 import styles from './Sidebar.module.scss';
 import classNames from 'classnames/bind';
 import { NavLink } from 'react-router-dom';
@@ -29,6 +29,17 @@ function SideBar() {
                 <span className={open ? cx('normal-btn') : cx('hide-btn')} >{open && 'Ghim'}</span>
             </NavLink>
             <hr />
+            <NavLink className={({ isActive }) => {
+                if (isActive) {
+                    return cx('btn-side-active');
+                }
+                else {
+                    return cx('btn-side');
+                }
+            }} to='/'  >
+                <span><DashboardIcon /></span>
+                <span className={open ? cx('normal-btn') : cx('hide-btn')}>{open && 'Trang chủ'}</span>
+            </NavLink>
             <NavLink className={({ isActive }) => {
                 if (isActive) {
                     return cx('btn-side-active');

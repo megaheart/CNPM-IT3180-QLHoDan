@@ -190,7 +190,7 @@ export default function ChangePopulation() {
                         }}
                         variant="standard" />
                 </div>
-                <div className={cx('line-start')}>
+                <div className={cx('line-form')}>
                     <TextField sx={{ m: 1, width: 270 }} label="Tiền án" inputProps={{
                         style: { fontSize: 20 }
                     }}
@@ -198,7 +198,7 @@ export default function ChangePopulation() {
                             style: { fontSize: 20 }
                         }}
                         variant="standard" />
-                    <TextField sx={{ m: 1, width: 270 }} label="Lý do thay đổi" inputProps={{
+                    <TextField sx={{ m: 1, flex: 0.79 }} label="Lý do thay đổi" inputProps={{
                         style: { fontSize: 20 }
                     }}
                         InputLabelProps={{

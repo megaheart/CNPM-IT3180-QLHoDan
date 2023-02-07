@@ -5,3 +5,5 @@ export { default as DeathConfirm } from './DeathComfirm';
 export { default as SeparateHousehold } from './SeparateHousehold';
 export { default as ChangePopulation } from './ChangePopulation';
 export { default as ChangeHousehold } from './ChangeHousehold';
+export { default as FixHouseholdNumber } from './FixHousehold';
+export { default as ConfirmAchievement } from './ConfirmAchievement';

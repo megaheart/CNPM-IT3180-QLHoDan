@@ -1,8 +1,11 @@
 //hooks
-import { useCallback, useState, useEffect, useRef, useContext } from 'react'
+import { useCallback, useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom';
+import useAuth from "~/hooks/useAuth";
 //material-ui
-import { Button, CircularProgress, FormHelperText, InputLabel, InputAdornment, IconButton, Input, FormControl } from '@mui/material'
+import { Button, CircularProgress, FormHelperText, InputLabel, InputAdornment, IconButton, Input, FormControl } from '@mui/material';
+//router
+import { Link } from 'react-router-dom'
 //icons
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
@@ -12,19 +15,19 @@ import VpnKeyIcon from '@mui/icons-material/VpnKey';
 //validation
 import validation from '~/services/validate';
 
-//api
-import Reaptcha from 'reaptcha';
-import { AuthContext } from '~/components/AuthenProvider'
-import accountApi from '~/services/api/accountApi'
+// //api
+// import Reaptcha from 'reaptcha';
+import accountApi from '~/services/api/accountApi';
+import authenticationService from '~/services/account/authentication';
 //sass
 import styles from './Login.module.scss'
 import classNames from 'classnames/bind'
 const cx = classNames.bind(styles);
-const REACT_APP_SITE_KEY = "6LcpTdwjAAAAAAKuHebI2kb4q1i2wXcDur3aL8kK"
+//const REACT_APP_SITE_KEY = "6LcpTdwjAAAAAAKuHebI2kb4q1i2wXcDur3aL8kK"
 
 export default function Login() {
     //auth context
-    const { setAuth } = useContext(AuthContext);
+    const { setAuth } = useAuth();
     //user state
     const [username, setUserName] = useState('');
     const [password, setPassword] = useState('');
@@ -40,12 +43,12 @@ export default function Login() {
     const navigate = useNavigate();
     //capcha
     //capcha
-    const [captchaToken, setCaptchaToken] = useState('');
-    const verify = async () => {
-        const res = await captchaRef.current.getResponse();
-        setCaptchaToken(res);
-    }
-    const captchaRef = useRef(null)
+    // const [captchaToken, setCaptchaToken] = useState('');
+    // const verify = async () => {
+    //     const res = await captchaRef.current.getResponse();
+    //     setCaptchaToken(res);
+    // }
+    // const captchaRef = useRef(null)
     //handle loading
     const [loading, setLoading] = useState(false);
     useEffect(() => {
@@ -78,25 +81,41 @@ export default function Login() {
             else {
                 setUsernameError('');
                 setPasswordError('');
-                const user = await accountApi.checkLogin({ username });
-                if (user.length === 0) {
-                    setStart(true);
-                    setErrMsg('Tài khoản không tồn tại');
-                    userRef.current.focus();
-                }
-                else if (user[0].password !== password) {
-                    setStart(true);
-                    setErrMsg('Mật khẩu không đúng');
-                    userRef.current.focus();
-                }
-                else if (captchaToken === '' || captchaToken === null) {
-                    setStart(true);
-                    setErrMsg('Vui lòng xác nhận bạn không phải là robot');
-                }
-                else {
-                    setAuth(user[0]);
-                    navigate('/profile');
-                }
+                console.log(username, password)
+                authenticationService.signIn(username, password).then(() => {
+                    const userData = authenticationService.User;
+                    console.log(userData)
+                    setAuth(userData);
+                    navigate('/dashboard');
+                    console.log(loading)
+                }).catch(
+                    (e) => {
+                        console.log(e)
+                    }
+                ).finally(
+                    () => {
+                        setLoading(false);
+                    }
+                );
+                //if (user.length === 0) {
+                //    setStart(true);
+                //    setErrMsg('Tài khoản không tồn tại');
+                //    userRef.current.focus();
+                //}
+                //else if (user[0].password !== password) {
+                //    setStart(true);
+                //    setErrMsg('Mật khẩu không đúng');
+                //    userRef.current.focus();
+                //}
+                //else if (captchaToken === '' || captchaToken === null) {
+                //    setStart(true);
+                //    setErrMsg('Vui lòng xác nhận bạn không phải là robot');
+                //}
+                //else {
+                //    setAuth(user[0]);
+                //    navigate('/profile');
+                //}
+
             }
         }
         catch (err) {
@@ -112,9 +131,7 @@ export default function Login() {
             else {
                 setErrMsg('Something went wrong');
             }
-            errRef.current.focus();
         }
-        setLoading(false);
     }
 
     const handleForgetPassword = () => {
@@ -203,7 +220,7 @@ export default function Login() {
                         {start && <FormHelperText sx={{ fontSize: 10, color: 'red' }}>{passwordError}</FormHelperText>}
                     </FormControl>
                     <span onClick={handleForgetPassword} className={cx('btn-text')}>Quên mật khẩu?</span>
-                    {<div style={{ margin: '0 auto' }}>
+                    {/* {<div style={{ margin: '0 auto' }}>
                         <Reaptcha sitekey={REACT_APP_SITE_KEY} onVerify={verify} ref={captchaRef} />
                     </div> || <CircularProgress
                             sx={{
@@ -211,7 +228,7 @@ export default function Login() {
                                 animationDuration: '550ms',
                             }}
                             size={20}
-                            thickness={4} />}
+                            thickness={4} />} */}
                 </div>
                 <Button
                     variant="contained"
@@ -230,7 +247,7 @@ export default function Login() {
                         thickness={4} />}
                 {start && <p ref={errRef} style={{ marginTop: 10, color: 'red' }}>{errMsg}</p>}
                 <hr className={cx('hr-login')} />
-                <p style={{ fontSize: 18 }}>Chưa có tài khoản? <span className={cx('signup-btn')}>Đăng ký</span></p>
+                <p style={{ fontSize: 18 }}>Chưa có tài khoản? <Link to='/register'><span className={cx('signup-btn')}>Đăng ký</span></Link></p>
                 <div>
                     <span></span>
                 </div>

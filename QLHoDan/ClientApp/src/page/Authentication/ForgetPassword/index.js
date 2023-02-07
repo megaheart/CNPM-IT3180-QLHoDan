@@ -1,6 +1,7 @@
 //hooks
-import { useCallback, useState, useEffect, useRef, useContext } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate, NavLink } from 'react-router-dom';
+import useAuth from "~/hooks/useAuth";
 //material-ui
 import { Button, CircularProgress, FormHelperText, InputLabel, InputAdornment, Input, FormControl } from '@mui/material'
 //icons
@@ -11,7 +12,7 @@ import PaymentIcon from '@mui/icons-material/Payment';
 import validation from '~/services/validate';
 
 //api
-import { AuthContext } from '~/components/AuthenProvider'
+
 import accountApi from '~/services/api/accountApi'
 //sass
 import styles from './ForgetPassword.module.scss'
@@ -20,7 +21,7 @@ const cx = classNames.bind(styles);
 
 export default function ForgetPassword() {
     //auth context
-    const { setAuth } = useContext(AuthContext);
+    const { setAuth } = useAuth();
     //user state
     const [username, setUserName] = useState('');
     const [password, setPassword] = useState('');
@@ -181,7 +182,7 @@ export default function ForgetPassword() {
                 {start && <p ref={errRef} style={{ marginTop: 10, color: 'red' }}>{errMsg}</p>}
                 <hr className={cx('hr-login')} />
             </div>
-            <h4><NavLink className={cx('go_to_authen')} to='/authenticate'>Quay lại trang đăng nhập</NavLink></h4>
+            <h4><NavLink className={cx('go_to_authen')} to='/login'>Quay lại trang đăng nhập</NavLink></h4>
         </div>
     )
 }
