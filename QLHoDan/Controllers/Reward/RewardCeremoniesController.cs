@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using QLHoDan.Models;
 
 namespace QLHoDan.Controllers.Reward
 {
@@ -7,5 +8,6 @@ namespace QLHoDan.Controllers.Reward
     [ApiController]
     public class RewardCeremoniesController : ControllerBase
     {
+        
     }
 }

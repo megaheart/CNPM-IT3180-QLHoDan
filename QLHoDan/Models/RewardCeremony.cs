@@ -8,10 +8,12 @@ namespace QLHoDan.Models
 	{
 
 		public int Id { get; set; }
+        //Tên đợt thưởng
+        public string Title { get; set; }
         //Ngày giờ phút giây chủ tịch đề xuất kế hoạch phát thưởng
         public DateTime Time { get; set; }
         //(TTHT – phát thưởng cho thành tích học tập, TT – phát thưởng trung thu)
-        public String Type { get; set; }
+        public string Type { get; set; }
         //Tổng tiền cho việc phát thưởng
         public double TotalValue{set;get;}
         //Bảng chuyển đổi loại thành tích thành giá trị phần thưởng
@@ -26,6 +28,8 @@ namespace QLHoDan.Models
         //Đã phát thưởng chưa
         public bool IsDone { set;get;}
         //-	Ngày đóng nhận form minh chứng
-        public DateTime ClosingFormDate{set;get;} 
-	}
+        public DateTime ClosingFormDate{set;get; }
+        //-	Thời gian nhận thưởng
+        public DateTime RewardDate { set; get; }
+    }
 }
