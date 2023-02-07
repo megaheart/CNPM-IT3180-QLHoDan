@@ -26,19 +26,24 @@ class HouseholdAccountManager {
         }
         else {
             console.log("Lỗi xảy ra khi thêm tài khoản");
+            return response.status;
         }
     }
     async changeAccountInfo(token, info) {
-        const response = await fetch(API_ACCOUNTMANAGEMENT_HOUSEHOLD_CHANGEACCOUNTPROFILE, {
-            method: 'POST',
-            headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(info)
-        });
-        if (response.status !== 200) return Promise.reject(await response.json());
-        //return await response.json();
+        const response = await axios.post(API_ACCOUNTMANAGEMENT_HOUSEHOLD_CHANGEACCOUNTPROFILE,
+            info,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+        if (response.status !== 200) {
+            return response.data;
+        }
+        else {
+            console.log("Lỗi xảy ra khi sửa tài khoản");
+        }
     }
 }
 const householdAccountManager = new HouseholdAccountManager();

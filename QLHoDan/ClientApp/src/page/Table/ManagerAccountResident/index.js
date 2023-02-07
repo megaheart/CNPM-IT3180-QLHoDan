@@ -1,23 +1,25 @@
+//hooks
 import { useState } from 'react';
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import Button from '@mui/material/Button';
-import householdAccountManager from '~/services/api/householdApi';
 import useAuth from '~/hooks/useAuth';
-import TableSkeleton from '~/page/Skeleton';
+
+//pages
+import householdAccountManager from '~/services/api/householdApi';
 import AddHouseholAcccount from '../DiaLog/AddHouseholdAccount';
-import Input from '@mui/material/Input';
-import InputAdornment from '@mui/material/InputAdornment';
+import ChangeHouseholdAccount from '../DiaLog/ChangeHouseholdAccount';
+import ConfirmBox from '../DiaLog/ConfirmBox';
+//icon
+import TableSkeleton from '~/page/Skeleton';
 import SearchIcon from '@mui/icons-material/Search';
+//css
 import styles from './ManagerAccountResident.module.scss';
 import classNames from 'classnames';
-import ConfirmBox from '../DiaLog/ConfirmBox';
+
+import {
+    Snackbar, Alert, Button, TableRow, TablePagination, TableHead,
+    TableContainer, TableCell, TableBody, Table, Paper, Input, InputAdornment
+    , Backdrop, CircularProgress
+} from '@mui/material';
+
 import {
     useQuery,
     useMutation,
@@ -38,26 +40,77 @@ export default function ManagerAccountResident() {
     const { auth } = useAuth();
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
-
+    //handle save button
+    const [message, setMessage] = useState('');
+    const [success, setSuccess] = useState(false);
     // Comfirm box dialog
     const [isClose, setIsClose] = useState(false);
 
     // Add new household account dialog
     const [open, setOpen] = useState(false);
+    const [accountInfo, setAccountInfo] = useState({});
+
+    //loading
+    const [openBackdrop, setOpenBackdrop] = useState(false);
+
+    //change account resident
+    const [isChange, setIsChange] = useState(false);
     // Access the client
     const queryClient = useQueryClient()
 
     // Queries
-    const { isLoading, isError, data, error } = useQuery({ queryKey: ['householdAccounts', auth.token], queryFn: async () => householdAccountManager.getAllAccounts(auth.token) });
-
+    const { isLoading, isError, data, error } = useQuery({ queryKey: ['householdAccounts'], queryFn: async () => householdAccountManager.getAllAccounts(auth.token) });
     // Mutations
     const mutation = useMutation({
         mutationFn: (account) => householdAccountManager.addAccount(auth.token, account),
-        onSuccess: () => {
-            // Invalidate and refetch
-            queryClient.invalidateQueries({ queryKey: ['householdAccounts'] })
+        onMutate: async (newInfo) => {
+            setOpenBackdrop(true);
+            // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+            queryClient.cancelQueries({ queryKey: ['householdAccounts'] });
+            // Snapshot the previous value
+            const previousInfo = queryClient.getQueryData(['householdAccounts']);
+            queryClient.setQueryData(['householdAccounts'], (old) => [...old, newInfo]);
+            // Return a context object with the snapshotted value
+            return { previousInfo };
         },
-    })
+        onError: (err, newTodo, context) => {
+            queryClient.setQueryData(['householdAccounts'], context.previousTodos);
+        },
+        onSettled: () => {
+            setOpenBackdrop(false);
+            setMessage('Tạo mới');
+            setSuccess(true);
+            // Invalidate and refetch
+            // queryClient.invalidateQueries({ queryKey: ['householdAccounts'] })
+        },
+    });
+    const handleSuccess = () => {
+        setSuccess(false);
+    };
+    const mutationChange = useMutation({
+        mutationFn: (info) => householdAccountManager.changeAccountInfo(auth.token, info),
+        onMutate: async (newInfoChanged) => {
+            setOpenBackdrop(true);
+            // Cancel any outgoing refetches
+            // (so they don't overwrite our optimistic update)
+            await queryClient.cancelQueries({ queryKey: ['householdAccounts', newInfoChanged.userName] })
+
+            // Snapshot the previous value
+            const previousInfo = queryClient.getQueryData(['householdAccounts', newInfoChanged.userName])
+
+            // Optimistically update to the new value
+            queryClient.setQueryData(['householdAccounts', newInfoChanged.id], newInfoChanged)
+
+            // Return a context with the previous and new todo
+            return { previousInfo, newInfoChanged }
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['householdAccounts'] });
+            setOpenBackdrop(false);
+            setMessage('Cập nhật thông tin');
+            setSuccess(true);
+        },
+    });
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -80,8 +133,9 @@ export default function ManagerAccountResident() {
         setIsClose(false);
     }
 
-    const handleChangeAccount = () => {
-
+    const handleChangeAccount = (row) => {
+        setIsChange(true);
+        setAccountInfo(row);
     };
 
     const handleDeleteAccount = () => {
@@ -90,6 +144,18 @@ export default function ManagerAccountResident() {
 
     return (
         <Paper sx={{ width: '100%' }}>
+            <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 10 }}
+                open={openBackdrop}
+                onClick={() => { setOpenBackdrop(false) }}
+            >
+                <CircularProgress color="inherit" />
+            </Backdrop>
+            <Snackbar open={success} autoHideDuration={3000} onClose={handleSuccess} >
+                <Alert onClose={handleSuccess} severity="success" sx={{ width: '100%', fontSize: 15 }}>
+                    {message + ' '} tài khoản thành công !
+                </Alert>
+            </Snackbar>
             <ConfirmBox sx={{ marginLeft: 10 }} open={isClose} onClose={handleCloseConfirmBox} onAgree={handleAgree} />
             <div className={cx('tool-bar')}>
                 <div className={cx('item-tool')}>
@@ -139,7 +205,7 @@ export default function ManagerAccountResident() {
                                             );
                                         })}
                                         <TableCell align="right">
-                                            <Button variant='contained' onClick={handleChangeAccount} >Sửa</Button>
+                                            <Button variant='contained' onClick={() => handleChangeAccount(row)} >Sửa</Button>
                                             <Button variant='contained' color='error' onClick={startConfirmBox} >Xóa</Button>
                                         </TableCell>
                                     </TableRow>
@@ -159,6 +225,7 @@ export default function ManagerAccountResident() {
                 onRowsPerPageChange={handleChangeRowsPerPage}
             />}
             <AddHouseholAcccount mutation={mutation || null} open={open} onClose={setOpen} />
+            <ChangeHouseholdAccount open={isChange} onClose={setIsChange} info={accountInfo} mutation={mutationChange} />
         </Paper>
     );
 }

@@ -1,4 +1,4 @@
-import { forwardRef, useState, useRef } from 'react';
+import { forwardRef, useState, useRef, useEffect } from 'react';
 //validate
 import validation from '~/services/validate/index.js';
 //material components
@@ -6,30 +6,54 @@ import {
     Button, Dialog, Slide,
     TextField
 } from '@mui/material';
+// import ListItemText from '@mui/material/ListItemText';
+// import ListItem from '@mui/material/ListItem';
+// import List from '@mui/material/List';
+// import Divider from '@mui/material/Divider';
+// import AppBar from '@mui/material/AppBar';
+// import Toolbar from '@mui/material/Toolbar';
+// import IconButton from '@mui/material/IconButton';
+// import Typography from '@mui/material/Typography';
+// import CloseIcon from '@mui/icons-material/Close';
 import classNames from 'classnames/bind';
 import styles from './AddHousehold.module.scss';
 import ConfirmBox from '../ConfirmBox';
-
+import {
+    useQuery,
+    useMutation,
+    useQueryClient,
+    QueryClient,
+    QueryClientProvider,
+} from '@tanstack/react-query';
+import householdAccountManager from '~/services/api/householdApi';
 const cx = classNames.bind(styles);
 const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
-export default function AddHouseholAcccount({ mutation, open, onClose }) {
+export default function ChangeHouseholdAccount({ mutation, open, onClose, info }) {
+
+
+    const { userName, fullName, scope, note } = info;
+
     const usernameRef = useRef();
-    const passwordRef = useRef();
     const fullnameRef = useRef();
     const scopeRef = useRef();
     const noteRef = useRef();
 
     const [usernameError, setUsernameError] = useState('');
-    const [passwordError, setPasswordError] = useState('');
     const [fullnameError, setFullnameError] = useState('');
     const [scopeError, setScopeError] = useState('');
+
+
+
+    console.log(mutation)
+
     //handle when clode this dislog
     const [isClose, setIsClose] = useState(false);
     const handleCloseConfirmBox = () => {
         setIsClose(false);
     };
+
     //handle close this dialog
     const handleClose = () => {
         onClose(false);
@@ -37,11 +61,10 @@ export default function AddHouseholAcccount({ mutation, open, onClose }) {
     };
     const handlStartClose = () => {
         if (
-            usernameRef.current.value !== '' ||
-            passwordRef.current.value !== '' ||
-            fullnameRef.current.value !== '' ||
-            scopeRef.current.value !== '' ||
-            noteRef.current.value !== ''
+            usernameRef.current.value !== userName ||
+            fullnameRef.current.value !== fullName ||
+            scopeRef.current.value !== scope ||
+            noteRef.current.value !== note
         ) {
             setIsClose(true);
         }
@@ -51,34 +74,31 @@ export default function AddHouseholAcccount({ mutation, open, onClose }) {
     };
     // handle submit form
     const handleSubmit = async () => {
+
         const usernameTest = validation.checkUsername(usernameRef.current.value);
-        const passwordTest = validation.checkPassword(passwordRef.current.value);
         const fullnameTest = validation.checkName(fullnameRef.current.value);
         const scopeTest = validation.checkScope(scopeRef.current.value);
-        console.log(usernameTest, passwordTest, fullnameTest, scopeTest)
         if (
             usernameTest.isValid !== true ||
-            passwordTest.isValid !== true ||
             fullnameTest.isValid !== true ||
             scopeTest.isValid !== true
         ) {
             setUsernameError(usernameTest.message);
-            setPasswordError(passwordTest.message);
             setFullnameError(fullnameTest.message);
             setScopeError(scopeTest.message);
+
         }
         else {
             setFullnameError('');
             setUsernameError('');
-            setPasswordError('');
             setScopeError('');
             await mutation.mutate({
                 userName: usernameRef.current.value,
-                password: passwordRef.current.value,
                 fullName: fullnameRef.current.value,
                 scope: scopeRef.current.value,
                 note: noteRef.current.value || ''
             });
+
             onClose(false);
         }
     }
@@ -94,7 +114,7 @@ export default function AddHouseholAcccount({ mutation, open, onClose }) {
                     <Button variant="contained" color="error" onClick={handlStartClose}>Đóng</Button>
                 </div>
                 <div className={cx('account-paper')}>
-                    <h2 className={cx('title-household')}>Thêm tài khoản hộ dân</h2>
+                    <h2 className={cx('title-household')}>Sửa thông tin tài khoản hộ dân</h2>
                     <div className={cx('account-household-detail')}>
                         <TextField
                             inputRef={usernameRef}
@@ -103,23 +123,17 @@ export default function AddHouseholAcccount({ mutation, open, onClose }) {
                             InputLabelProps={{
                                 fontSize: 20
                             }}
+                            defaultValue={userName}
                             variant="standard"
                             error={usernameError.length > 0}
                             helperText={usernameError}
-                        />
-                        <TextField
-                            inputRef={passwordRef}
-                            sx={{ width: '400px' }}
-                            label="Mật khẩu*"
-                            variant="standard"
-                            error={passwordError.length > 0}
-                            helperText={passwordError}
                         />
                         <TextField
                             inputRef={fullnameRef}
                             sx={{ width: '400px' }}
                             label="Họ và tên*"
                             variant="standard"
+                            defaultValue={fullName}
                             error={fullnameError.length > 0}
                             helperText={fullnameError}
                         />
@@ -128,6 +142,7 @@ export default function AddHouseholAcccount({ mutation, open, onClose }) {
                             sx={{ width: '400px' }}
                             label="Tổ phụ trách*"
                             variant="standard"
+                            defaultValue={scope}
                             error={scopeError.length > 0}
                             helperText={scopeError}
                         />
@@ -135,11 +150,13 @@ export default function AddHouseholAcccount({ mutation, open, onClose }) {
                             inputRef={noteRef}
                             sx={{ width: '400px' }}
                             label="Ghi chú"
+                            defaultValue={note || ''}
                             variant="standard"
                         />
                     </div>
-                    <Button onClick={handleSubmit} sx={{ margin: '0 auto' }} variant='contained'>Tạo</Button>
+                    <Button onClick={handleSubmit} sx={{ margin: '0 auto' }} variant='contained'>Thay đổi</Button>
                 </div>
+
             </Dialog>
             <ConfirmBox sx={{ marginLeft: 10 }} open={isClose} onClose={handleCloseConfirmBox} onAgree={handleClose} />
 

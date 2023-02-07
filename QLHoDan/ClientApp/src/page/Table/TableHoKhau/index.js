@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar, GridToolbarContainer, GridToolbarExport } from '@mui/x-data-grid';
 import { Button, Alert, Snackbar, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import FullScreenDialog from '../DiaLog/fullScreen';
 import AddHouseholDialog from '../DiaLog/AddHouseHold';
-import TableSkeleton from '../../Skeleton/index'
+import TableSkeleton from '../../Skeleton/index';
+
+import CustomToolbarExport from '../ComponentExport';
 // import styles from './Table1.module.scss';
 // import classNames from 'classnames/bind';
 
@@ -15,7 +17,7 @@ const columns = [
     { field: 'id', headerName: 'ID', width: 40, align: 'center', headerAlign: 'center' },
     { field: 'soHoKhau', headerName: 'Số hộ khẩu', align: 'center', headerAlign: 'center', width: 200 },
     { field: 'noiThuongTru', headerName: 'Nơi thường trú', align: 'center', headerAlign: 'center', width: 200 },
-    { field: 'thanhVien', headerName: 'Danh sách các thành viên', align: 'center', headerAlign: 'center', width: 300 },
+    { field: 'thanhVien', headerName: 'Danh sách các thành viên', align: 'center', headerAlign: 'center', width: 300, disableExport: true },
     { field: 'chuHo', headerName: 'Chủ hộ', align: 'center', headerAlign: 'center', width: 200 },
     { field: 'toPhuTrach', headerName: 'Tổ phụ trách', type: 'number', width: 150, align: 'center', headerAlign: 'center' },
 ]
@@ -97,6 +99,7 @@ export default function TableHoKhau() {
                     width: 220,
                     headerAlign: 'center',
                     align: 'center',
+                    disableExport: true,
                     renderCell: (params) => {
                         const onClick = (e) => {
                             e.stopPropagation();
@@ -123,6 +126,7 @@ export default function TableHoKhau() {
                     field: 'action',
                     headerName: '',
                     width: 220,
+                    disableExport: true,
                     renderCell: (params) => {
                         // const onClick = (e) => {
                         //     e.stopPropagation();
@@ -205,7 +209,7 @@ export default function TableHoKhau() {
                     rows={rows}
                     columns={columnsTable}
                     components={{
-                        Toolbar: GridToolbar,
+                        Toolbar: CustomToolbarExport,
                     }}
                     componentsProps={{
                         toolbar: {

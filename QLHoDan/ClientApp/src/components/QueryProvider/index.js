@@ -3,7 +3,13 @@ import {
     QueryClientProvider,
 } from '@tanstack/react-query';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            refetchOnWindowFocus: false, // default: true
+        },
+    },
+});
 
 function QueryProvider({ children }) {
     return (
