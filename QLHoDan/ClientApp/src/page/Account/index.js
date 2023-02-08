@@ -1,5 +1,5 @@
 import { useState } from 'react';
-
+// import useAuth from '~/hooks/useAuth';
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
@@ -13,14 +13,25 @@ import AccountSetting from './AccountSetting';
 import Header from './Header';
 import User from './ProfileUser';
 
+// import householdAccountManager from '~/services/api';
+// import {
+//     useQuery,
+//     useMutation,
+//     useQueryClient
+// } from '@tanstack/react-query';
+
 const cx = classNames.bind(styles);
 
 export default function Profile() {
     const [value, setValue] = useState('1');
+    // const { auth } = useAuth();
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
+
+    // const { isLoading, isError, data, error } = useQuery({ queryKey: ['profile'], queryFn: async () => householdAccountManager.getAllAccounts(auth.token) });
+
 
     return (
         <div className={cx('account-wrapper')}>

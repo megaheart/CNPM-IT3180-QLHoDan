@@ -1,57 +1,162 @@
-import * as React from 'react';
 import { forwardRef, useState, useRef, useEffect, useCallback } from 'react';
+import useAuth from '~/hooks/useAuth';
 //validate
 import validation from '~/services/validate/index.js';
 //material components
 import {
-    Button, Dialog, CircularProgress, Box, Fab, Slide, Snackbar, Alert,
-    TextField, MenuItem, InputLabel, InputAdornment, IconButton, Input, FormControl, Select
+    Button, Dialog, Slide, Snackbar, Alert,
+    TextField, MenuItem, InputLabel, InputAdornment, Input, FormControl, Select, styled
 } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers';
-
-import { Add } from '@mui/icons-material';
-// import ListItemText from '@mui/material/ListItemText';
-// import ListItem from '@mui/material/ListItem';
-// import List from '@mui/material/List';
-// import Divider from '@mui/material/Divider';
-// import AppBar from '@mui/material/AppBar';
-// import Toolbar from '@mui/material/Toolbar';
-// import IconButton from '@mui/material/IconButton';
-// import Typography from '@mui/material/Typography';
-// import CloseIcon from '@mui/icons-material/Close';
-import { green } from '@mui/material/colors';
-//icons material
-import CheckIcon from '@mui/icons-material/Check';
-import SaveIcon from '@mui/icons-material/Save';
+import LinearProgress from '@mui/material/LinearProgress';
 //style
 import classNames from 'classnames/bind';
 import styles from './AddResident.module.scss';
 import ConfirmBox from '../ConfirmBox';
-
+import residentManager from '~/services/api/residentManager';
+import {
+    useQuery,
+    useMutation,
+    useQueryClient
+} from '@tanstack/react-query';
 const cx = classNames.bind(styles);
 const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
-
-export default function AddResidentDialog({ open, onClose }) {
+const CustomTextField = styled(TextField)({
+    '& .MuiInputBase-root.Mui-disabled': {
+        backgroundColor: '#f0f0f0',
+    },
+});
+export default function AddResidentDialog({ open, onClose, type }) {
+    const { auth } = useAuth();
     //handle save button
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const timer = useRef();
-    const [errorMessage, setErrorMessage] = useState('');
-    const [checkErrorStatus, setCheckErrorStatus] = useState(false);
-    const [errorMessageMain, setErrorMessageMain] = useState('');
-    const [checkErrorMainStatus, setCheckErrorMainStatus] = useState(false);
-    const buttonSx = {
-        ...(success && {
-            bgcolor: green[500],
-            '&:hover': {
-                bgcolor: green[700],
-            },
-        }),
-    };
+    const [identityCodeError, setIdentityCodeError] = useState('');
+
+    const academicLevelRef = useRef();
+    const aliasRef = useRef();
+    const birthPlaceRef = useRef();
+    const criminalRecordRef = useRef();
+    const dateOfBirthRef = useRef();
+    const ethnicRef = useRef();
+    const fullNameRef = useRef();
+    const householdIdRef = useRef();
+    const idCardDateRef = useRef();
+    const idCardPlaceRef = useRef();
+    const identityCodeRef = useRef();
+    const isDeadRef = useRef();
+    const isMaleRef = useRef();
+    const isManagedRef = useRef();
+    const jobRef = useRef();
+    const moveInDateRef = useRef();
+    const moveInReasonRef = useRef();
+    const moveOutDateRef = useRef();
+    const moveOutPlaceRef = useRef();
+    const moveOutReasonRef = useRef();
+    const nationRef = useRef();
+    const nativeLandRef = useRef();
+    const relationShipRef = useRef();
+    const scopeRef = useRef();
+    const workplaceRef = useRef();
+    console.log(type.data)
+    const {
+        academicLevel,
+        alias,
+        birthPlace,
+        criminalRecord,
+        dateOfBirth,
+        ethnic,
+        fullName,
+        householdId,
+        idCardDate,
+        idCardPlace,
+        identityCode,
+        isDead,
+        isMale,
+        isManaged,
+        job,
+        moveInDate,
+        moveInReason,
+        moveOutDate,
+        moveOutPlace,
+        moveOutReason,
+        nation,
+        nativeLand,
+        relationShip,
+        scope,
+        workplace
+    } = type.data ? type.data : {
+        academicLevel: '',
+        alias: '',
+        birthPlace: '',
+        criminalRecord: '',
+        dateOfBirth: '',
+        ethnic: '',
+        fullName: '',
+        householdId: '',
+        idCardDate: '',
+        idCardPlace: '',
+        identityCode: '',
+        isDead: '',
+        isMale: '',
+        isManaged: '',
+        job: '',
+        moveInDate: '',
+        moveInReason: '',
+        moveOutDate: '',
+        moveOutPlace: '',
+        moveOutReason: '',
+        nation: '',
+        nativeLand: '',
+        relationShip: '',
+        scope: '',
+        workplace: ''
+    }
+
+    const handleAddOrUpdate = async () => {
+        const currentData = {
+            academicLevel: academicLevelRef.current.value,
+            alias: aliasRef.current.value,
+            birthPlace: birthPlaceRef.current.value,
+            criminalRecord: criminalRecordRef.current.value,
+            dateOfBirth: dateOfBirthRef.current.value,
+            ethnic: ethnicRef.current.value,
+            fullName: fullNameRef.current.value,
+            householdId: householdIdRef.current.value,
+            identityCode: identityCodeRef.current.value,
+            isDead: isDeadRef.current.value === 'is' ? true : false,
+            isMale: isMaleRef.current.value === 'male' ? true : false,
+            job: jobRef.current.value,
+            moveInReason: moveInReasonRef.current.value,
+            moveOutDate: moveOutDateRef.current.value,
+            moveOutPlace: moveOutPlaceRef.current.value,
+            moveOutReason: moveOutReasonRef.current.value,
+            nation: nationRef.current.value,
+            nativeLand: nativeLandRef.current.value,
+            relationShip: relationShipRef.current.value,
+            workplace: workplaceRef.current.value
+        }
+        const identityCodeCheck = validation.checkIdentifi(currentData.identityCode);
+        if (!identityCodeCheck.isValid) {
+            setIdentityCodeError(identityCodeCheck.message);
+            return;
+        }
+        else {
+            setIdentityCodeError('');
+            if (type.type === 'ADD') {
+                type.mutation.mutate(currentData);
+            }
+            else {
+                type.mutation.mutate(currentData);
+            }
+        }
+    }
+
     //các dữ liệu form cần điền
     const [value, setValue] = useState(null);
 
@@ -76,6 +181,10 @@ export default function AddResidentDialog({ open, onClose }) {
         setIsClose(false);
     }, []);
 
+    //start close this dialog
+    const handlStartClose = () => {
+        onClose(!open);
+    };
     // const [open, setOpen] = React.useState(false);
     const handleSuccess = () => {
         setSuccess(false);
@@ -85,65 +194,60 @@ export default function AddResidentDialog({ open, onClose }) {
         onClose(!open);
         setIsClose(false);
     };
-    const handleInput = useCallback(
-        (e) => {
-            if (checkErrorStatus) {
-                setCheckErrorStatus(false)
-            }
-        }, []);
-
-    const handlStartClose = () => {
-        onClose(!open);
-    };
     return (
         <div>
-            <Snackbar open={success} autoHideDuration={6000} onClose={handleSuccess} >
+            <Snackbar open={success} autoHideDuration={3000} onClose={handleSuccess} >
                 <Alert onClose={handleSuccess} severity="success" sx={{ width: '100%', fontSize: 15 }}>
-                    Thên hộ khẩu mới thành công !
+                    {type.type === 'ADD' ? 'Thêm' : 'Cập nhật'} hộ khẩu mới thành công !
                 </Alert>
             </Snackbar>
             <Dialog
-                fullScreen
+                fullWidth={true}
+                maxWidth='600'
                 open={open}
                 onClose={handleClose}
                 TransitionComponent={Transition}
             >
                 <div className={cx('header-paper-resident')}>
-                    <Button variant="contained" color="error" sx={{ fontSize: '1.5rem', margin: '2 0', textAlign: 'right', width: 50 }} onClick={handlStartClose}>Đóng</Button>
-                </div>
-                <div className={cx('resident-paper')}>
-                    <h2 className={cx('title-resident')}>Thêm nhân khẩu mới</h2>
-                    <div className={cx('resident-detail')}>
-                        <div className={cx('line-form')}>
-                            <TextField sx={{ m: 1, width: 270 }} label="Họ và tên" inputProps={{
-                                style: { fontSize: 20 }
-                            }}
-                                InputLabelProps={{
-                                    style: { fontSize: 20 }
-                                }}
-                                variant="standard" />
-                            <TextField sx={{ m: 1, width: 270 }} label="Bí danh" inputProps={{
-                                style: { fontSize: 20 }
-                            }}
-                                InputLabelProps={{
-                                    style: { fontSize: 20 }
-                                }}
-                                variant="standard" />
 
+                    <Button variant="contained" color="success"
+                        sx={{ fontSize: 15, margin: '2 0', textAlign: 'right', width: 50 }} onClick={handleSave}>{type.type === 'ADD' ? 'Thêm' : 'Sửa'}</Button>
+
+                    <Button variant="contained" color="error"
+                        sx={{ fontSize: 15, margin: '2 0', textAlign: 'right', width: 50 }} onClick={handlStartClose}>Đóng</Button>
+
+                </div>
+
+                <div className={cx('resident-paper')}>
+                    {loading && <LinearProgress color="success" />}
+                    <h2 className={cx('title-resident')}>{type.type === 'ADD' ? 'Thêm nhân khẩu mới' : 'Chi tiết nhân khẩu'}</h2>
+                    <div className={cx('resident-detail')}>
+                        <div>
+                            <TextField sx={{ m: 1, width: 270 }} label="Họ và tên"
+                                inputRef={fullNameRef}
+                                variant="standard"
+                                defaultValue={fullName}
+                                aria-readonly={true}
+                            />
+                            <TextField sx={{ m: 1, width: 270 }} label="Bí danh"
+                                variant="standard"
+                                inputRef={aliasRef}
+                                defaultValue={alias}
+                            />
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                                 <DatePicker
-                                    value={value}
+                                    defaultValue={dateOfBirth}
                                     onChange={(newValue) => {
-                                        setValue(newValue);
+                                        // setValue(newValue);
                                     }}
+                                    inputRef={dateOfBirthRef}
                                     renderInput={({ inputRef, inputProps, InputProps }) =>
                                         <FormControl sx={{ m: 1, width: 270 }} variant="standard">
-                                            <InputLabel sx={{ fontSize: 20 }} htmlFor="input_login_account">
+                                            <InputLabel htmlFor="input_login_account">
                                                 Ngày sinh
                                             </InputLabel>
                                             <Input
                                                 inputRef={inputRef}
-                                                sx={{ fontSize: 20 }}
                                                 id="input_login_account"
                                                 endAdornment={
                                                     <InputAdornment position="start">
@@ -156,153 +260,179 @@ export default function AddResidentDialog({ open, onClose }) {
                                     }
                                 />
                             </LocalizationProvider>
+                            <TextField sx={{ m: 1, width: 270 }} label="Dân tộc"
+                                inputRef={ethnicRef}
+                                variant="standard"
+                                defaultValue={ethnic} />
                         </div>
-                        <div className={cx('line-form')} >
-                            <TextField sx={{ m: 1, width: 270 }} label="Nơi sinh" inputProps={{
-                                style: { fontSize: 20 }
-                            }}
-                                InputLabelProps={{
-                                    style: { fontSize: 20 }
-                                }}
-                                variant="standard" />
-                            <TextField sx={{ m: 1, width: 270 }} label="Nguyên quán" inputProps={{
-                                style: { fontSize: 20 }
-                            }}
-                                InputLabelProps={{
-                                    style: { fontSize: 20 }
-                                }}
-                                variant="standard" />
-                            <TextField sx={{ m: 1, width: 270 }} label="Dân tộc" inputProps={{
-                                style: { fontSize: 20 }
-                            }}
-                                InputLabelProps={{
-                                    style: { fontSize: 20 }
-                                }}
+                        <div>
+                            <TextField sx={{ m: 1, width: 556 }} label="Nơi sinh"
+                                variant="standard"
+                                inputRef={birthPlaceRef}
+                                defaultValue={birthPlace}
+                            />
+                            <TextField sx={{ m: 1, width: 270 }} label="Nguyên quán"
+                                variant="standard"
+                                inputRef={nativeLandRef}
+                                defaultValue={nativeLand}
+                            />
+                            <TextField sx={{ m: 1, width: 270 }} label="Quốc tịch"
+                                inputRef={nationRef}
+                                defaultValue={nation}
                                 variant="standard" />
                         </div>
-                        <div className={cx('line-form')}>
-                            <TextField sx={{ m: 1, width: 270 }} label="Quốc tịch" inputProps={{
-                                style: { fontSize: 20 }
-                            }}
-                                InputLabelProps={{
-                                    style: { fontSize: 20 }
-                                }}
-                                variant="standard" />
-                            <TextField sx={{ m: 1, width: 270 }} label="Nghề nghiệp" inputProps={{
-                                style: { fontSize: 20 }
-                            }}
-                                InputLabelProps={{
-                                    style: { fontSize: 20 }
-                                }}
-                                variant="standard" />
-                            <TextField sx={{ m: 1, width: 270 }} label="Nơi làm việc" inputProps={{
-                                style: { fontSize: 20 }
-                            }}
-                                InputLabelProps={{
-                                    style: { fontSize: 20 }
-                                }}
-                                variant="standard" />
-                        </div>
-                        <div className={cx('line-form')}>
-                            <TextField sx={{ m: 1, width: 270 }} label="CMND/CCCD" inputProps={{
-                                style: { fontSize: 20 }
-                            }}
-                                InputLabelProps={{
-                                    style: { fontSize: 20 }
-                                }}
-                                variant="standard" />
-                            <TextField sx={{ m: 1, width: 270 }} label="Quan hệ với chủ hộ" inputProps={{
-                                style: { fontSize: 20 }
-                            }}
-                                InputLabelProps={{
-                                    style: { fontSize: 20 }
-                                }}
-                                variant="standard" />
-                            <TextField label="Sổ hộ khẩu thuộc về"
-                                sx={{ m: 1, width: 270 }}
-                                inputProps={{
-                                    style: { fontSize: 20 }
-                                }}
-                                InputLabelProps={{
-                                    style: { fontSize: 20 }
-                                }}
-                                variant="standard" />
-                        </div>
-                        <div className={cx('line-form')} >
+                        <div>
                             <FormControl sx={{ m: 1, width: 270 }} variant="standard">
-                                <InputLabel sx={{ fontSize: 22 }} htmlFor="input_login_account">
+                                <InputLabel htmlFor="input_login_account">
                                     Giới tính
                                 </InputLabel>
                                 <Select
-                                    defaultValue='male'
-                                    sx={{ fontSize: 20 }}
+                                    inputRef={isMaleRef}
+                                    defaultValue={isMale ? 'male' : 'femake'}
                                     id="input_login_account"
                                 >
-                                    <MenuItem sx={{ fontSize: 20 }} value='male'>
+                                    <MenuItem value='male'>
                                         Nam
                                     </MenuItem>
-                                    <MenuItem sx={{ fontSize: 20 }} value='femake'>
+                                    <MenuItem value='femake'>
                                         Nữ
                                     </MenuItem>
                                 </Select>
                             </FormControl>
-                            <TextField sx={{ m: 1, width: 270 }} label="Trình độ học vấn" inputProps={{
-                                style: { fontSize: 20 }
-                            }}
-                                InputLabelProps={{
-                                    style: { fontSize: 20 }
-                                }}
+                            <TextField sx={{ m: 1, width: 270 }} label="Nghề nghiệp"
+                                defaultValue={job}
+                                inputRef={jobRef}
                                 variant="standard" />
-                            <TextField sx={{ m: 1, width: 270 }} label="Tiền án" inputProps={{
-                                style: { fontSize: 20 }
-                            }}
-                                InputLabelProps={{
-                                    style: { fontSize: 20 }
-                                }}
+                            <TextField sx={{ m: 1, width: 556 }} label="Nơi làm việc"
+                                defaultValue={workplace}
+                                inputRef={workplaceRef}
                                 variant="standard" />
                         </div>
-                        <div className={cx('line-form')}>
-
+                        <div>
+                            <TextField sx={{ m: 1, width: 270 }} label="CMND/CCCD"
+                                error={identityCodeError.length > 0}
+                                defaultValue={identityCode}
+                                inputRef={identityCodeRef}
+                                variant="standard"
+                                helperText={identityCodeError}
+                            />
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DatePicker
+                                    defaultValue={idCardDate}
+                                    onChange={(newValue) => {
+                                        // setValue(newValue);
+                                    }}
+                                    inputRef={idCardDateRef}
+                                    renderInput={({ inputRef, inputProps, InputProps }) =>
+                                        <FormControl sx={{ m: 1, width: 270 }} variant="standard">
+                                            <InputLabel htmlFor="input_login_account">
+                                                Ngày cấp CMND/CCCD
+                                            </InputLabel>
+                                            <Input
+                                                inputRef={inputRef}
+                                                id="input_login_account"
+                                                endAdornment={
+                                                    <InputAdornment position="start">
+                                                        {InputProps?.endAdornment}
+                                                    </InputAdornment>
+                                                }
+                                                {...inputProps}
+                                            />
+                                        </FormControl>
+                                    }
+                                />
+                            </LocalizationProvider>
+                            <TextField sx={{ m: 1, width: 270 }} label="Nơi cấp CMND/CCCD"
+                                defaultValue={idCardPlace}
+                                inputRef={idCardPlaceRef}
+                                variant="standard"
+                                helperText={identityCodeError}
+                            />
                             <FormControl sx={{ m: 1, width: 270 }} variant="standard">
-                                <InputLabel sx={{ fontSize: 22 }} htmlFor="input_login_account">
+                                <InputLabel htmlFor="input_login_account">
                                     Trạng thái (Sống hay chết)
                                 </InputLabel>
                                 <Select
-                                    defaultValue='no'
-                                    sx={{ fontSize: 20 }}
+                                    defaultValue={isDead ? 'yes' : 'no'}
+                                    inputRef={isDeadRef}
+
                                     id="input_login_account"
                                 >
-                                    <MenuItem sx={{ fontSize: 20 }} value='yes'>
+                                    <MenuItem value='yes'>
                                         Đã
                                     </MenuItem>
-                                    <MenuItem sx={{ fontSize: 20 }} value='no'>
+                                    <MenuItem value='no'>
                                         Chưa
                                     </MenuItem>
                                 </Select>
                             </FormControl>
-                            <TextField sx={{ m: 1, width: 270 }}
-                                label="Nơi chuyển đi"
-                                inputProps={{
-                                    style: { fontSize: 20 }
-                                }}
-                                InputLabelProps={{
-                                    style: { fontSize: 20 }
-                                }}
+                        </div>
+                        <div>
+                            <TextField sx={{ m: 1, width: 270 }} label="Quan hệ với chủ hộ"
+                                defaultValue={relationShip}
+                                inputRef={relationShipRef}
                                 variant="standard" />
+                            <TextField label="Sổ hộ khẩu thuộc về"
+                                defaultValue={householdId}
+                                inputRef={householdIdRef}
+                                sx={{ m: 1, width: 270 }}
+                                variant="standard" />
+                            <TextField sx={{ m: 1, width: 270 }} label="Trình độ học vấn"
+                                defaultValue={academicLevel}
+                                inputRef={academicLevelRef}
+                                variant="standard" />
+                            <TextField sx={{ m: 1, width: 270 }} label="Tiền án"
+                                defaultValue={criminalRecord}
+                                inputRef={criminalRecordRef}
+                                variant="standard" />
+                        </div>
+                        <div>
+                            <TextField sx={{ m: 1, width: 270 }}
+                                inputRef={moveOutPlaceRef}
+                                defaultValue={moveOutPlace}
+                                label="Nơi chuyển đi"
+                                variant="standard" />
+
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                                 <DatePicker
-                                    value={value}
+                                    defaultValue={moveOutDate}
+                                    inputRef={moveOutDateRef}
                                     onChange={(newValue) => {
-                                        setValue(newValue);
+                                        // setValue(newValue);
                                     }}
                                     renderInput={({ inputRef, inputProps, InputProps }) =>
                                         <FormControl sx={{ m: 1, width: 270 }} variant="standard">
-                                            <InputLabel sx={{ fontSize: 20 }} htmlFor="input_date_account">
+                                            <InputLabel htmlFor="input_date_account">
                                                 Ngày chuyển đi
                                             </InputLabel>
                                             <Input
                                                 inputRef={inputRef}
-                                                sx={{ fontSize: 20 }}
+                                                id="input_date_account"
+                                                endAdornment={
+                                                    <InputAdornment position="start">
+                                                        {InputProps?.endAdornment}
+                                                    </InputAdornment>
+                                                }
+                                                {...inputProps}
+                                            />
+                                        </FormControl>
+                                    }
+                                />
+                            </LocalizationProvider>
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DatePicker
+                                    defaultValue={moveInDate}
+                                    inputRef={moveInDateRef}
+                                    onChange={(newValue) => {
+                                        // setValue(newValue);
+                                    }}
+                                    renderInput={({ inputRef, inputProps, InputProps }) =>
+                                        <FormControl sx={{ m: 1, width: 270 }} variant="standard">
+                                            <InputLabel htmlFor="input_date_account">
+                                                Ngày chuyển đến
+                                            </InputLabel>
+                                            <Input
+                                                inputRef={inputRef}
                                                 id="input_date_account"
                                                 endAdornment={
                                                     <InputAdornment position="start">
@@ -316,51 +446,18 @@ export default function AddResidentDialog({ open, onClose }) {
                                 />
                             </LocalizationProvider>
                         </div>
-                        <div className={cx('line-start')}>
-                            <TextField sx={{ m: 1, width: 1230 }} label="Lý do chuyển đến" inputProps={{
-                                style: { fontSize: 20 }
-                            }}
-                                InputLabelProps={{
-                                    style: { fontSize: 20 }
-                                }}
-                                variant="standard" />
-                        </div>
-                        <div className={cx('line-start')}>
-                            <TextField sx={{ m: 1, width: 1230 }} label="Lý do chuyển đi" inputProps={{
-                                style: { fontSize: 20 }
-                            }}
-                                InputLabelProps={{
-                                    style: { fontSize: 20 }
-                                }}
+                        <div>
+                            <TextField multiline sx={{ m: 1, width: 1130 }} label="Lý do chuyển đi"
+                                defaultValue={moveOutReason}
+                                inputRef={moveOutReasonRef}
                                 variant="standard" />
 
+                            <TextField multiline sx={{ m: 1, width: 1130 }} label="Lý do chuyển đến"
+                                defaultValue={moveInReason}
+                                inputRef={moveInReasonRef}
+                                variant="standard" />
                         </div>
                     </div>
-                </div>
-                <div>
-                    <Box sx={{ m: 1, position: 'relative' }}>
-                        <Fab
-                            aria-label="save"
-                            color="primary"
-                            sx={buttonSx}
-                            onClick={handleSave}
-                        >
-                            {success ? <CheckIcon /> : <SaveIcon />}
-                        </Fab>
-                        {loading && (
-                            <CircularProgress
-                                size={68}
-                                sx={{
-                                    color: green[500],
-                                    position: 'absolute',
-                                    top: -6,
-                                    left: -6,
-                                    zIndex: 1,
-                                }}
-                            />
-                        )}
-                    </Box>
-
                 </div>
             </Dialog>
             <ConfirmBox open={isClose} onClose={handleCloseConfirmBox} onAgree={handleClose} />

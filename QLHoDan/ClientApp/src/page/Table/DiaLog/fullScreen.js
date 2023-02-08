@@ -1,17 +1,7 @@
-import * as React from 'react';
-import { forwardRef, useState, useRef, useEffect, useCallback } from 'react';
-
+import { forwardRef, useState, useRef, useEffect, useCallback, Fragment } from 'react';
+import useAuth from '~/hooks/useAuth';
 //material components
-import { Button, Dialog, CircularProgress, Box, Fab, Slide, Snackbar, Alert, TextField, Collapse } from '@mui/material';
-// import ListItemText from '@mui/material/ListItemText';
-// import ListItem from '@mui/material/ListItem';
-// import List from '@mui/material/List';
-// import Divider from '@mui/material/Divider';
-// import AppBar from '@mui/material/AppBar';
-// import Toolbar from '@mui/material/Toolbar';
-// import IconButton from '@mui/material/IconButton';
-// import Typography from '@mui/material/Typography';
-// import CloseIcon from '@mui/icons-material/Close';
+import { Button, Dialog, CircularProgress, Box, Fab, Slide, Snackbar, Alert, TextField } from '@mui/material';
 import { green } from '@mui/material/colors';
 //icons material
 import CheckIcon from '@mui/icons-material/Check';
@@ -22,29 +12,34 @@ import styles from './FullScreenDialog.module.scss';
 //components
 import Population from '../TableTemplate/Population';
 import Household from '../Paper/household';
+import LinearProgress from '@mui/material/LinearProgress';
+import Skeleton from '../../Skeleton';
 import ConfirmBox from './ConfirmBox';
+//api
+import {
+    useQuery,
+    useMutation,
+    useQueryClient
+} from '@tanstack/react-query';
+import householdManager from '~/services/api/householdManager';
 
 const cx = classNames.bind(styles);
 const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function FullScreenDialog({ open, onClose }) {
+export default function FullScreenDialog({ open, onClose, idHousehold }) {
     //handle save button
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const timer = useRef();
+
+    const { auth } = useAuth();
+
+    const { data, isLoading, error } = useQuery(['householdDetail'], () => householdManager.getHousehold(auth.token, idHousehold));
+    console.log(data);
     //edit mode
     const [editMode, setEditMode] = useState(false);
-
-    const buttonSx = {
-        ...(success && {
-            bgcolor: green[500],
-            '&:hover': {
-                bgcolor: green[700],
-            },
-        }),
-    };
 
     useEffect(() => {
         return () => {
@@ -67,8 +62,6 @@ export default function FullScreenDialog({ open, onClose }) {
     const handleCloseConfirmBox = useCallback(() => {
         setIsClose(false);
     }, []);
-
-
 
     // const [open, setOpen] = React.useState(false);
     const handleSuccess = () => {
@@ -108,38 +101,89 @@ export default function FullScreenDialog({ open, onClose }) {
                 onClose={handleClose}
                 TransitionComponent={Transition}
             >
-                <div className={cx('header-paper-population')}>
-                    <Button variant="contained" disabled={editMode} color="primary" sx={{ fontSize: '1rem' }} onClick={handleEdit}>Chỉnh sửa</Button>
-                    <Button variant="contained" color="error" sx={{ fontSize: '1rem' }} onClick={handlStartClose}>Đóng</Button>
-                </div>
-                <Household editMode={editMode} />
-                <Population editMode={editMode} />
-                <div>
-                    <Box sx={{ m: 1, position: 'relative' }}>
-                        <Fab
-                            aria-label="save"
-                            color="primary"
-                            sx={buttonSx}
-                            onClick={handleSave}
-                            disabled={!editMode}
-                        >
-                            {success ? <CheckIcon /> : <SaveIcon />}
-                        </Fab>
-                        {loading && (
-                            <CircularProgress
-                                size={68}
-                                sx={{
-                                    color: green[500],
-                                    position: 'absolute',
-                                    top: -6,
-                                    left: -6,
-                                    zIndex: 1,
-                                }}
-                            />
-                        )}
-                    </Box>
+                {loading && <LinearProgress />}
+                {isLoading ? <Skeleton /> :
+                    <Fragment>
+                        <div className={cx('header-paper-population')}>
+                            <div className={cx('change-and-save')}>
+                                <Button variant="contained" disabled={editMode} color="primary" sx={{ fontSize: '1rem' }} onClick={handleEdit}>Chỉnh sửa</Button>
+                                <Button variant="outlined" disabled={!editMode} color='success'
+                                    sx={{ fontSize: '1rem' }} onClick={handleSave}>Lưu</Button>
+                            </div>
 
-                </div>
+                            <Button variant="contained" color="error" sx={{ fontSize: '1rem' }} onClick={handlStartClose}>Đóng</Button>
+                        </div>
+                        <div className={cx('household-paper')}>
+                            <h2 className={cx('title-household')}>Thông tin sổ hộ khẩu</h2>
+                            <div className={cx('household-detail')}>
+                                <TextField
+                                    disabled={true}
+                                    sx={{ width: 200 }}
+                                    inputProps={{ style: { fontSize: 15 } }}
+                                    InputLabelProps={{ style: { fontSize: 20 } }}
+                                    label="Số hộ khẩu"
+                                    defaultValue={idHousehold}
+                                    variant="standard"
+                                />
+                                <TextField
+                                    disabled={true}
+                                    sx={{ width: 200 }}
+                                    inputProps={{ style: { fontSize: 15 } }}
+                                    InputLabelProps={{ style: { fontSize: 20 } }}
+                                    label="Ngày tạo"
+                                    defaultValue={data.createdTime}
+                                    variant="standard"
+                                />
+                                <TextField
+                                    disabled={!editMode}
+                                    sx={{ width: 400 }}
+                                    inputProps={{ style: { fontSize: 15 } }}
+                                    InputLabelProps={{ style: { fontSize: 20 } }}
+                                    label="Nơi thường trú"
+                                    defaultValue={data.address}
+                                    variant="standard"
+                                />
+                                <TextField
+                                    disabled={!editMode}
+                                    sx={{ width: 200 }}
+                                    inputProps={{ style: { fontSize: 15 } }}
+                                    InputLabelProps={{ style: { fontSize: 20 } }}
+                                    label="Ngày chuyển "
+                                    defaultValue={data.moveOutDate || 'Không có'}
+                                    variant="standard"
+                                />
+                                <TextField
+                                    disabled={!editMode}
+                                    sx={{ width: 200 }}
+                                    inputProps={{ style: { fontSize: 15 } }}
+                                    InputLabelProps={{ style: { fontSize: 20 } }}
+                                    label="Nơi chuyển "
+                                    defaultValue={data.moveOutPlace || 'Không có'}
+                                    variant="standard"
+                                />
+                                <TextField
+                                    disabled={!editMode}
+                                    sx={{ width: 200 }}
+                                    inputProps={{ style: { fontSize: 15 } }}
+                                    InputLabelProps={{ style: { fontSize: 20 } }}
+                                    label="Lý do chuyển "
+                                    defaultValue={data.moveOutReason || 'Không có'}
+                                    variant="standard"
+                                />
+                                <TextField
+                                    disabled={!editMode}
+                                    sx={{ width: 200 }}
+                                    inputProps={{ style: { fontSize: 15 } }}
+                                    InputLabelProps={{ style: { fontSize: 20 } }}
+                                    label="Tổ phụ trách"
+                                    defaultValue={data.scope}
+                                    variant="standard"
+                                />
+                            </div>
+                        </div>
+                        <Population editMode={editMode} />
+                    </Fragment>
+                }
             </Dialog>
             <ConfirmBox open={isClose} onClose={handleCloseConfirmBox} onAgree={handleClose} />
         </div >

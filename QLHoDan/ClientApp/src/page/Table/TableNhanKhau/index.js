@@ -1,47 +1,136 @@
-import { useState, useEffect } from 'react';
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import { Button, DialogContentText, DialogContent, DialogTitle, Dialog, Alert, DialogActions, Snackbar } from '@mui/material';
+import { useState, useMemo } from 'react';
+import useAuth from '~/hooks/useAuth';
+
+import {
+    Button, DialogContentText, DialogContent,
+    DialogTitle, Dialog, Alert, DialogActions,
+    Snackbar, TableRow, TablePagination, TableHead,
+    TableContainer, TableCell, TableBody, Table,
+    Backdrop, CircularProgress
+} from '@mui/material';
 import TableSkeleton from '../../Skeleton/index'
 import AddResidentDialog from '../DiaLog/AddResident';
-// import styles from './Table1.module.scss';
-// import classNames from 'classnames/bind';
 
-// const cx = classNames.bind(styles);
+//api
+import residentManager from '~/services/api/residentManager';
+import {
+    useQuery,
+    useMutation,
+    useQueryClient
+} from '@tanstack/react-query';
 
 //column field
 const columns = [
-    { field: 'idenftification', headerName: 'CMND/CCCD', width: 140 },
-    { field: 'name', headerName: 'Họ và tên', width: 160 },
-    { field: 'birthday', headerName: 'Ngày sinh', type: 'date', width: 100 },
-    { field: 'gender', headerName: 'Giới tính', width: 70 },
-    { field: 'relationship', headerName: 'Quan hệ với chủ hộ', width: 150 },
-    { field: 'soHoKhau', headerName: 'Sổ hộ khẩu', type: 'number', width: 150 },
-    { field: 'toPhuTrach', headerName: 'Tổ phụ trách', type: 'number', width: 130 },
-]
-//data in each row
-const rowsInit = [
-    { id: 1, idenftification: '123456755389', name: 'Nguyễn Văn A', birthday: '01/01/2002', gender: 'Nam', relationship: 'Chủ hộ', soHoKhau: '125623456789', toPhuTrach: '123456789' },
-    { id: 2, idenftification: '125623456789', name: 'Nguyễn Văn B', birthday: '01/01/2002', gender: 'Nam', relationship: 'Chủ hộ', soHoKhau: '178323456789', toPhuTrach: '123456789' },
-    { id: 3, idenftification: '123456453789', name: 'Nguyễn Văn C', birthday: '01/01/2002', gender: 'Nam', relationship: 'Chủ hộ', soHoKhau: '123456755389', toPhuTrach: '123456789' },
-    { id: 4, idenftification: '178323456789', name: 'Nguyễn Văn D', birthday: '01/01/2002', gender: 'Nam', relationship: 'Chủ hộ', soHoKhau: '123456453789', toPhuTrach: '123456789' },
+    { id: 'identityCode', label: 'CMND/CCCD', width: 150, align: 'center', headerAlign: 'center' },
+    { id: 'fullName', label: 'Họ và tên', width: 200, align: 'center', headerAlign: 'center' },
+    { id: 'dateOfBirth', label: 'Ngày sinh', type: 'date', width: 150, align: 'center', headerAlign: 'center' },
+    { id: 'isMale', label: 'Giới tính', width: 100, align: 'center', headerAlign: 'center' },
+    { id: 'householdId', label: 'Sổ hộ khẩu', width: 150, align: 'center', headerAlign: 'center' },
+    { id: 'relationShip', label: 'Quan hệ với chủ hộ', width: 170, align: 'center', headerAlign: 'center' },
+    { id: 'scope', label: 'Tổ phụ trách', width: 130, align: 'center', headerAlign: 'center' },
 ]
 
+
+
 export default function TableNhanKhau() {
-    const [rows, setRows] = useState(rowsInit);
-    const [loadData, setLoadData] = useState(false);
-    const [selectedRow, setSelectedRow] = useState();
-    const [columnsTable, setColumsTable] = useState(columns);
+
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const columsInit = useMemo(
+        () => columns, []
+    );
     // dialog tạo 1 hộ khẩu
     const [isCreateMode, setIsCreateMode] = useState(false);
     const closeCreateMode = () => {
         setIsCreateMode(false);
     }
+    // state global
+    const { auth } = useAuth();
     //trạng thái thành công khi xóa 1 nhân khẩu
     const [success, setSuccess] = useState(false);
     //confirm box xóa 1 nhân khẩu, xuất hiện khi nhấn nút xóa
     const [openDialog, setOpenDialog] = useState(false);
+
+    //backdrop
+    const [openBackdrop, setOpenBackdrop] = useState(false);
+
     //id của nhân khẩu cần xóa
     const [deleteId, setDeleteId] = useState(null);
+
+
+    //datas from database
+    const { data, isLoading, error } = useQuery(['residents'], () => residentManager.getAllResident(auth.token));
+
+    const queryClient = useQueryClient();
+
+    const mutationAdd = useMutation({
+        mutationFn: async (resident) => residentManager.createResident(auth.token, resident),
+        onSuccess: async (newResident) => {
+            await queryClient.setQueryData(['residents'], (old) => [...old, newResident]);
+        }
+    });
+
+    const mutationUpdate = useMutation(
+        {
+            mutationFn: async (resident) => residentManager.updateResident(auth.token, resident),
+            onSuccess: async (newResident) => {
+                await queryClient.setQueryData(['residents'], (old) => {
+                    const index = old.findIndex((resident) => resident.id === newResident.id);
+                    if (index !== -1) {
+                        const updated = [...old];
+                        updated[index] = newResident;
+                        return updated;
+                    }
+                    return old;
+                });
+            }
+        }
+    )
+
+    //
+    const [type, setType] = useState(
+
+    );
+
+    const viewResidentDetail = async (identification) => {
+        setOpenBackdrop(true);
+        const data = await residentManager.getResident(auth.token, identification);
+        setType(
+            {
+                type: 'VIEW_AND_UPDATE',
+                mutation: mutationUpdate,
+                data: data
+            }
+        );
+        setOpenBackdrop(false);
+        setIsCreateMode(true);
+    }
+
+    //chuyển trang
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(+event.target.value);
+        setPage(0);
+    };
+
+    //start to create a resident
+    const handleCreateResident = () => {
+        setType(
+            {
+                type: 'ADD',
+                mutation: mutationAdd
+            }
+        )
+        setIsCreateMode(true);
+    }
+
+    //bắt đầu xóa hộ khẩu
+    const handleClickOpen = () => {
+        setOpenDialog(true);
+    };
     //không xóa nữa
     const handleClose = () => {
         setDeleteId(null);
@@ -49,12 +138,6 @@ export default function TableNhanKhau() {
     };
     //đồng ý xóa
     const handleAgree = () => {
-        //call api
-
-        //
-        setRows(prev => {
-            return prev.filter(row => row.idenftification !== deleteId)
-        });
         setSuccess(true);
         setDeleteId(null);
         setOpenDialog(false);
@@ -67,80 +150,22 @@ export default function TableNhanKhau() {
         }
         setSuccess(false);
     };
-    useEffect(() => {
-        //call api
-
-        //
-        setLoadData(true);
-        const actionFirst = setTimeout(() => {
-            setColumsTable([
-                ...columns,
-                {
-                    field: 'action',
-                    headerName: '  ',
-                    width: 220,
-                    renderCell: (params) => {
-                        const onClick = (e) => {
-                            e.stopPropagation();
-                            const api = params.api;
-                            const thisRow = {};
-                            api.getAllColumns()
-                                .filter((c) => c.field !== '__check__' && !!c)
-                                .forEach(
-                                    (c) => (thisRow[c.field] = params.getValue(params.id, c.field)),
-                                );
-                            console.log(thisRow);
-                            setSelectedRow(thisRow);
-                        };
-                        const onClickDelete = (e) => {
-                            e.stopPropagation();
-                            const api = params.api;
-                            const thisRow = {};
-                            api.getAllColumns()
-                                .filter((c) => c.field !== '__check__' && !!c)
-                                .forEach(
-                                    (c) => (thisRow[c.field] = params.getValue(params.id, c.field)),
-                                );
-                            setDeleteId(thisRow.idenftification);
-                            setOpenDialog(true);
-                        };
-                        return (< div style={{ display: 'flex', gap: 5, alignItems: 'stretch', flexDirection: 'row', padding: '2px 0', margin: '0px 2px' }}>
-                            <Button variant="contained" color="primary" onClick={onClick}>
-                                Sửa
-                            </Button>
-                            <Button variant="contained" color="error" onClick={onClickDelete}>
-                                Xóa
-                            </Button>
-                        </ div >)
-                    }
-                }
-            ]);
-            setLoadData(false);
-        }, 1000)
-
-        return () => {
-            clearTimeout(actionFirst)
-        }
-    }, []);
-
 
     return (
         <div style={{ height: '90%', width: '100%', margin: '10' }}>
-            <AddResidentDialog open={isCreateMode} onClose={closeCreateMode} />
-            {/* <div>
-                <Button sx={{ margin: '0 5px 1px 0' }} variant="contained" color="primary" onClick={() => setVisible(!visible)}>
-                    Edit
-                </Button>
-                <Button sx={{ margin: '0 5px 1px 0' }} variant="contained" color="primary" onClick={() => setVisible(!visible)}>
-                    Save
-                </Button>
-            </div> */}
-
+            {(type && type.mutation) && <AddResidentDialog open={isCreateMode} onClose={closeCreateMode} type={type} />}
             <Snackbar open={success} autoHideDuration={6000} onClose={handleCloseSnackbar}>
                 <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%', fontSize: 15 }}>
-                    Xoá lịch sử thành công!
+                    Xoá nhân khẩu thành công!
                 </Alert>
             </Snackbar>
+            <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 10 }}
+                open={openBackdrop}
+                onClick={() => { setOpenBackdrop(false) }}
+            >
+                <CircularProgress color="inherit" />
+            </Backdrop>
             <Dialog
                 open={openDialog}
                 onClose={handleClose}
@@ -162,22 +187,70 @@ export default function TableNhanKhau() {
                     </Button>
                 </DialogActions>
             </Dialog>
-            {loadData ? <TableSkeleton /> : <DataGrid
-                sx={{ fontSize: 15 }}
-                rows={rows}
-                columns={columnsTable}
-                components={{
-                    Toolbar: GridToolbar,
-                }}
-                componentsProps={{
-                    toolbar: {
-                        showQuickFilter: true,
-                        quickFilterProps: { debounceMs: 500 },
-                    },
-                }}
-                disableSelectionOnClick
+            {isLoading || <Button variant='contained' sx={{ fontSize: 16 }} onClick={handleCreateResident}>Thêm nhân khẩu</Button>}
+            {isLoading ? <TableSkeleton /> : <TableContainer sx={{ maxHeight: 500, backgroundColor: '#fff' }}>
+                <Table stickyHeader aria-label="sticky table">
+                    <TableHead >
+                        <TableRow>
+                            {columsInit.map((column) => (
+                                <TableCell
+                                    key={column.id}
+                                    align={column.align}
+                                    style={{ minWidth: column.minWidth, fontSize: 15 }}
+                                >
+                                    <span>
+                                        {column.label}
+                                    </span>
+                                </TableCell>
+                            ))}
+                            <TableCell>{' '}</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody >
+                        {data
+                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            .map((row, index) => {
+                                return (
+                                    <TableRow key={index + 'tablerow'} hover role="checkbox" tabIndex={-1} >
+                                        {columsInit.map((column, i) => {
+                                            let value = row[column.id];
+                                            if (column.id === 'isMale') {
+                                                value = value ? 'Nam' : 'Nữ';
+                                            }
+                                            return (
+                                                <TableCell key={`${value}-${i}-tablecell`} align={column.align} style={{ fontSize: 15 }}>
+                                                    <span>
+                                                        {column.format && typeof value === 'number'
+                                                            ? column.format(value)
+                                                            : value}
+                                                    </span>
+                                                </TableCell>
+                                            );
+                                        })}
+                                        <TableCell key={`${index}-button`} align="right">
+                                            <Button sx={{ marginRight: 1 }} variant='contained' onClick={() => {
+                                                viewResidentDetail(row.identityCode);
+                                            }} >Chi tiết</Button>
+                                            <Button variant='contained' color='error' onClick={handleClickOpen} >Xóa</Button>
+                                        </TableCell>
+                                    </TableRow>
+                                );
+                            })}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+            }
+            {!isLoading && <TablePagination
+                sx={{ backgroundColor: '#fff' }}
+                rowsPerPageOptions={[5, 10, 20]}
+                component="div"
+                count={data.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
             />}
-            <Button variant='contained' sx={{ fontSize: 16 }} onClick={() => setIsCreateMode(true)}>Thêm nhân khẩu</Button>
+
         </div >
     );
 }

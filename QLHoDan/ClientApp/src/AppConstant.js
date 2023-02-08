@@ -3,6 +3,8 @@ export const API_URL = `${SERVER_URL}/api`;
 
 export const API_ACCOUNT_URL = `${API_URL}/account`;
 export const API_ACCOUNT_LOGIN_URL = `${API_ACCOUNT_URL}/signin`;
+
+
 //export const API_ACCOUNT_LOGOUT_URL = `${API_ACCOUNT_URL}/logout`;
 export const API_ACCOUNT_PROFILE_URL = `${API_ACCOUNT_URL}/profile`;
 export const API_ACCOUNT_REGISTER_URL = `${API_ACCOUNT_URL}/register`;
@@ -20,3 +22,8 @@ export const API_ACCOUNTMANAGEMENT_HOUSEHOLD_CHANGEACCOUNTPROFILE = `${API_ACCOU
 export const API_ACCOUNTMANAGEMENT_SPECIAL_GETACCOUNTLIST_URL = `${API_ACCOUNTMANAGEMENT_URL}/special/AccountList`;
 export const API_ACCOUNTMANAGEMENT_SPECIAL_ADDACCOUNT_URL = `${API_ACCOUNTMANAGEMENT_URL}/special/addAccount`;
 export const API_ACCOUNTMANAGEMENT_SPECIAL_CHANGEACCOUNTPROFILE = `${API_ACCOUNTMANAGEMENT_URL}/special/changeAccountProfile`;
+
+
+export const API_HOUSEHOLDS = `${API_URL}/Households`;
+
+export const API_GET_ALL_RESIDENT = `${API_URL}/Residents`

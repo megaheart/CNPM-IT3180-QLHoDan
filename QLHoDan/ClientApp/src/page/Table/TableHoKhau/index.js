@@ -1,46 +1,61 @@
-import { useState, useEffect } from 'react';
-import { DataGrid, GridToolbar, GridToolbarContainer, GridToolbarExport } from '@mui/x-data-grid';
-import { Button, Alert, Snackbar, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import { useState, useMemo } from 'react';
+
+//mui
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import {
+    Snackbar, Alert, Button, TableRow, TablePagination, TableHead,
+    TableContainer, TableCell, TableBody, Table
+} from '@mui/material';
+//page
 import FullScreenDialog from '../DiaLog/fullScreen';
 import AddHouseholDialog from '../DiaLog/AddHouseHold';
 import TableSkeleton from '../../Skeleton/index';
-
 import CustomToolbarExport from '../ComponentExport';
-// import styles from './Table1.module.scss';
-// import classNames from 'classnames/bind';
 
-// const cx = classNames.bind(styles);
-
+//call api
+import householdManager from '~/services/api/householdManager';
+import useAuth from '~/hooks/useAuth';
+import {
+    useQuery,
+    useMutation,
+    useQueryClient
+} from '@tanstack/react-query';
 //column field
 const columns = [
-    { field: 'id', headerName: 'ID', width: 40, align: 'center', headerAlign: 'center' },
-    { field: 'soHoKhau', headerName: 'Số hộ khẩu', align: 'center', headerAlign: 'center', width: 200 },
-    { field: 'noiThuongTru', headerName: 'Nơi thường trú', align: 'center', headerAlign: 'center', width: 200 },
-    { field: 'thanhVien', headerName: 'Danh sách các thành viên', align: 'center', headerAlign: 'center', width: 300, disableExport: true },
-    { field: 'chuHo', headerName: 'Chủ hộ', align: 'center', headerAlign: 'center', width: 200 },
-    { field: 'toPhuTrach', headerName: 'Tổ phụ trách', type: 'number', width: 150, align: 'center', headerAlign: 'center' },
-]
+    { id: 'householdId', label: 'Số hộ khẩu', width: 40, align: 'center', headerAlign: 'center' },
+    { id: 'ownerFullName', label: 'Chủ hộ', align: 'center', headerAlign: 'center', width: 200 },
+    { id: 'ownerIDCode', label: 'CMND/CCCD của chủ hộ', align: 'center', headerAlign: 'center', width: 200 },
+    { id: 'scope', label: 'Tổ phụ trách', type: 'number', width: 150, align: 'center', headerAlign: 'center' },
+];
+
+
 //data in each row
-const rowInit = [
-    { id: 1, soHoKhau: '4534345', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Văn Thanh', toPhuTrach: 1 },
-    { id: 2, soHoKhau: '1234432', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Trần Ngọc Cường', toPhuTrach: 6 },
-    { id: 3, soHoKhau: '5123432', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Đức Minh', toPhuTrach: 1 },
-    { id: 4, soHoKhau: '1234329', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Văn Minh', toPhuTrach: 2 },
-    { id: 5, soHoKhau: '1234323', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Văn Nam', toPhuTrach: 4 },
-    { id: 6, soHoKhau: '1234332', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Văn Khánh', toPhuTrach: 1 },
-    { id: 7, soHoKhau: '1423432', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Quốc Duy', toPhuTrach: 1 },
-    { id: 8, soHoKhau: '9023432', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Phạm Đình Quân', toPhuTrach: 6 }
-]
+// const rowInit = [
+//     { id: 1, noiThuongTru: 'Hà Nội', chuHo: 'Nguyễn Văn Thanh', iden: '123456789012', toPhuTrach: 1 },
+//     { id: 2, noiThuongTru: 'Hà Nội', chuHo: 'Trần Ngọc Cường', iden: '123456789012', toPhuTrach: 6 },
+//     { id: 3, noiThuongTru: 'Hà Nội', chuHo: 'Nguyễn Đức Minh', iden: '123456789012', toPhuTrach: 1 },
+//     { id: 4, noiThuongTru: 'Hà Nội', chuHo: 'Nguyễn Văn Minh', iden: '123456789012', toPhuTrach: 2 },
+//     { id: 5, noiThuongTru: 'Hà Nội', chuHo: 'Nguyễn Văn Nam', iden: '123456789012', toPhuTrach: 4 },
+//     { id: 6, noiThuongTru: 'Hà Nội', chuHo: 'Nguyễn Văn Khánh', iden: '123456789012', toPhuTrach: 1 },
+//     { id: 7, noiThuongTru: 'Hà Nội', chuHo: 'Nguyễn Quốc Duy', iden: '123456789012', toPhuTrach: 1 },
+//     { id: 8, noiThuongTru: 'Hà Nội', chuHo: 'Phạm Đình Quân', iden: '123456789012', toPhuTrach: 6 }
+// ]
 
 export default function TableHoKhau() {
     //các dữ liệu từng dòng được khởi tạo trong bảng, sẽ gọi bằng api
-    const [rows, setRows] = useState(rowInit);
-    //
-    const [loadData, setLoadData] = useState(false);
+
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+
+    //dialog
+    const [isCreateMode, setIsCreateMode] = useState(false);
 
     //các trường dữ liệu trong bảng
-    const [columnsTable, setColumsTable] = useState(columns);
+    const columsInit = useMemo(
+        () => columns, []
+    );
+    const { auth } = useAuth();
+    const { data, isLoading, error } = useQuery(['households'], () => householdManager.getHouseholdList(auth.token));
 
     //trường dữ liệu từng cột
     //...
@@ -51,12 +66,14 @@ export default function TableHoKhau() {
 
     //id của hộ khẩu cần xóa
     const [deleteId, setDeleteId] = useState();
+    const [infoId, setInfoId] = useState();
 
     //1 dialog hiển thị chi tiết hộ khẩu khi nhấn vào nút 'chi tiết'
     const [dialogInfo, setDialogInfo] = useState(false);
 
     //trạng thái thành công khi xóa 1 hộ khẩu
     const [success, setSuccess] = useState(false);
+
     const handleCloseSnackbar = (event, reason) => {
         if (reason === 'clickaway') {
             return;
@@ -64,7 +81,18 @@ export default function TableHoKhau() {
 
         setSuccess(false);
     };
-    //bắt đầu sửa hộ khẩu
+
+    //chuyển trang
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(+event.target.value);
+        setPage(0);
+    };
+
+    //bắt đầu xóa hộ khẩu
     const handleClickOpen = () => {
         setOpenAlert(true);
     };
@@ -75,103 +103,20 @@ export default function TableHoKhau() {
     };
     //đồng ý xóa
     const handleAgree = () => {
-        setRows(prev => {
-            return prev.filter(row => row.id !== deleteId)
-        });
         setSuccess(true);
         setDeleteId(null);
         setOpenAlert(false);
     };
+    // dialog hiển thị chi tiết hộ khẩu
+    const handleViewHousehold = (id) => {
+        console.log(id);
+        setInfoId(id);
+        setDialogInfo(true);
+    }
     // dialog tạo 1 hộ khẩu
-    const [isCreateMode, setIsCreateMode] = useState(false);
     const closeCreateMode = () => {
         setIsCreateMode(false);
     }
-    //thêm trạng thái các nút cho từng dòng: sưa, xóa, chi tiết
-    useEffect(() => {
-        setLoadData(true);
-        const a = setTimeout(() => {
-            setColumsTable([
-                ...columns.filter((c) => c.field !== 'thanhVien'),
-                {
-                    field: 'thanhVien',
-                    headerName: 'Danh sách các thành viên',
-                    width: 220,
-                    headerAlign: 'center',
-                    align: 'center',
-                    disableExport: true,
-                    renderCell: (params) => {
-                        const onClick = (e) => {
-                            e.stopPropagation();
-                            // const api = params.api;
-                            // const thisRow = {};
-
-                            // api.getAllColumns()
-                            //     .filter((c) => c.field !== '__check__' && !!c)
-                            //     .forEach(
-                            //         (c) => (thisRow[c.field] = params.getValue(params.id, c.field)),
-                            //     );
-                            setDialogInfo(true);
-                        };
-                        return (
-
-                            <Button variant="contained" color="primary" onClick={onClick}>
-                                Chi tiết <ErrorOutlineIcon sx={{ marginLeft: 1 }} />
-                            </Button>
-
-                        )
-                    }
-                },
-                {
-                    field: 'action',
-                    headerName: '',
-                    width: 220,
-                    disableExport: true,
-                    renderCell: (params) => {
-                        // const onClick = (e) => {
-                        //     e.stopPropagation();
-
-                        //     const api = params.api;
-                        //     const thisRow = {};
-
-                        //     api.getAllColumns()
-                        //         .filter((c) => c.field !== '__check__' && !!c)
-                        //         .forEach(
-                        //             (c) => (thisRow[c.field] = params.getValue(params.id, c.field)),
-                        //         );
-                        //     setVisible(true);
-                        //     setIdField(thisRow.id);
-                        //     setDeskField(thisRow.desk);
-                        // };
-                        const onClickRemove = (e) => {
-
-                            console.log('...')
-                            e.stopPropagation();
-                            const api = params.api;
-                            const thisRow = {};
-                            api.getAllColumns()
-                                .filter((c) => c.field !== '__check__' && !!c)
-                                .forEach(
-                                    (c) => (thisRow[c.field] = params.getValue(params.id, c.field)),
-                                );
-                            setDeleteId(thisRow.id);
-                            handleClickOpen();
-                        }
-                        return (< div style={{ display: 'flex', alignItems: 'stretch', flexDirection: 'row', padding: '2px 0', margin: '0px 2px' }}>
-                            {/* <Button variant="contained" color="primary" onClick={onClick}>
-                                Sửa
-                            </Button> */}
-                            <Button variant="contained" color="error" onClick={onClickRemove}>
-                                Xóa
-                            </Button>
-                        </ div >)
-                    }
-                }
-            ]);
-            setLoadData(false);
-        }, 1000);
-        return () => clearTimeout(a);
-    }, [])
     return (
         <div style={{ height: '90%', width: '100%', margin: '10' }}>
             <AddHouseholDialog open={isCreateMode} onClose={closeCreateMode} />
@@ -180,47 +125,71 @@ export default function TableHoKhau() {
                     Xoá hộ khẩu thành công!
                 </Alert>
             </Snackbar>
-            <FullScreenDialog
-                open={dialogInfo}
-                onClose={setDialogInfo}
-            />
-            {/* <div>
-                <Button sx={{ margin: '0 5px 1px 0' }} variant="contained" color="primary" onClick={() => setVisible(!visible)}>
-                    Edit
-                </Button>
-                <Button sx={{ margin: '0 5px 1px 0' }} variant="contained" color="primary" onClick={() => setVisible(!visible)}>
-                    Save
-                </Button>
-            </div> */}
-
-            {/* <Collapse sx={{ margin: '5px 0' }} in={visible} timeout="auto" >
-                <div>
-                    <TextField sx={{ margin: '0 5px 0 0' }} id="outlined-basic" label={columns[0].headerName}
-                        variant='filled' value={idField} disabled />
-                    <TextField sx={{ margin: '0 5px 0 0' }} id="outlined-basic" label={columns[1].headerName}
-                        variant='filled' value={deskField} onChange={(e) => setDeskField(e.target.value)} />
-                </div>
-            </Collapse> */}
-
             {
-                loadData ? <TableSkeleton /> : <DataGrid
-                    sx={{ fontSize: 15 }}
-                    editMode="row"
-                    rows={rows}
-                    columns={columnsTable}
-                    components={{
-                        Toolbar: CustomToolbarExport,
-                    }}
-                    componentsProps={{
-                        toolbar: {
-                            showQuickFilter: true,
-                            quickFilterProps: { debounceMs: 500 },
-                        },
-                    }}
-                    disableSelectionOnClick
+                infoId &&
+                <FullScreenDialog
+                    open={dialogInfo}
+                    onClose={setDialogInfo}
+                    idHousehold={infoId}
                 />
             }
-            <Button sx={{ fontSize: 16 }} variant='contained' onClick={() => setIsCreateMode(true)}>Thêm hộ khẩu</Button>
+
+            {!isLoading && <div>
+                <Button sx={{ fontSize: 16 }} variant='contained' onClick={() => setIsCreateMode(true)}>Thêm hộ khẩu</Button>
+            </div>}
+            {isLoading ? <TableSkeleton /> : <TableContainer sx={{ maxHeight: 500, backgroundColor: '#fff' }}>
+                <Table stickyHeader aria-label="sticky table">
+                    <TableHead >
+                        <TableRow>
+                            {columsInit.map((column) => (
+                                <TableCell
+                                    key={column.id}
+                                    align={column.align}
+                                    style={{ minWidth: column.minWidth, fontSize: 15 }}
+                                >
+                                    {column.label}
+                                </TableCell>
+                            ))}
+                            <TableCell></TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody >
+                        {data
+                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            .map((row, index) => {
+                                return (
+                                    <TableRow key={index + 'tablerow'} hover role="checkbox" tabIndex={-1} >
+                                        {columsInit.map((column, i) => {
+                                            const value = row[column.id];
+                                            return (
+                                                <TableCell key={`${value}-${i}-tablecell`} align={column.align} style={{ fontSize: 15 }}>
+                                                    {column.format && typeof value === 'number'
+                                                        ? column.format(value)
+                                                        : value}
+                                                </TableCell>
+                                            );
+                                        })}
+                                        <TableCell key={`${index}-button`} align="right">
+                                            <Button sx={{ marginRight: 1 }} variant='contained' onClick={() => handleViewHousehold(row.householdId)} >Chi tiết</Button>
+                                            <Button variant='contained' color='error' onClick={handleClickOpen} >Xóa</Button>
+                                        </TableCell>
+                                    </TableRow>
+                                );
+                            })}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+            }
+            {!isLoading && <TablePagination
+                rowsPerPageOptions={[5, 10, 20]}
+                component="div"
+                count={data.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+            />}
+
             <Dialog
                 open={openAlert}
                 onClose={handleClose}

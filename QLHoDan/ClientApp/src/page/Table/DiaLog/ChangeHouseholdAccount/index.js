@@ -44,10 +44,6 @@ export default function ChangeHouseholdAccount({ mutation, open, onClose, info }
     const [fullnameError, setFullnameError] = useState('');
     const [scopeError, setScopeError] = useState('');
 
-
-
-    console.log(mutation)
-
     //handle when clode this dislog
     const [isClose, setIsClose] = useState(false);
     const handleCloseConfirmBox = () => {
@@ -63,7 +59,7 @@ export default function ChangeHouseholdAccount({ mutation, open, onClose, info }
         if (
             usernameRef.current.value !== userName ||
             fullnameRef.current.value !== fullName ||
-            scopeRef.current.value !== scope ||
+            scopeRef.current.value != scope ||
             noteRef.current.value !== note
         ) {
             setIsClose(true);

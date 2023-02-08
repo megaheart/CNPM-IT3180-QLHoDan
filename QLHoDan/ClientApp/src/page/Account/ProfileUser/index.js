@@ -54,7 +54,6 @@ export default function User() {
         }
 
         else {
-            console.log(auth)
             // call api to change passwrod, waiting....
             accountApi.changePassword(
                 auth.token,
@@ -62,7 +61,6 @@ export default function User() {
                 newPassword
             )
                 .then((res) => {
-                    console.log(res);
                     //finish
                     setSuccess(true);
                     setErrorCur(false);
@@ -74,10 +72,9 @@ export default function User() {
                     setConfirmPassword('');
                 }
                 )
-                .catch((err) => console.log('Error in change password'))
-                .finally(() => setLoading(false));
+                .catch((err) => console.log('Error in change password'));
         }
-
+        setLoading(false)
     }
 
     const handleChangeInputCur = (e) => {

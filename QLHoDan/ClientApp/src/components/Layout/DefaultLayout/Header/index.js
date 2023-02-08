@@ -70,7 +70,6 @@ function Header({ text }) {
                 setSearch('');
             }
         }
-        console.log(1)
         document.addEventListener("mousedown", handleClickOutside);
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);

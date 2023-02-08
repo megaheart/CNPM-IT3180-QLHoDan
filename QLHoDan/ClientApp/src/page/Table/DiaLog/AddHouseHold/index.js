@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { forwardRef, useState, useRef, useEffect, useCallback } from 'react';
+import { forwardRef, useState, useRef, useEffect, useCallback, Fragment } from 'react';
 //validate
 import validation from '~/services/validate/index.js';
 //material components
@@ -320,7 +320,7 @@ export default function AddHouseholDialog({ open, onClose }) {
                             {
                                 people.length === 0 &&
                                 (
-                                    <div>
+                                    <Fragment>
                                         <StyledTableRow>
                                             <StyledTableCell align="center" component="th" scope="row" >
                                             </StyledTableCell>
@@ -334,7 +334,7 @@ export default function AddHouseholDialog({ open, onClose }) {
                                             <StyledTableCell align="center" component="th" scope="row" >
                                             </StyledTableCell>
                                         </StyledTableRow>
-                                    </div>
+                                    </Fragment>
                                 )
                             }
                         </TableBody>
