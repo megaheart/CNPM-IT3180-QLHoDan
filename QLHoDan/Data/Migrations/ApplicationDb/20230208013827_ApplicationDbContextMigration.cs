@@ -115,12 +115,14 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    Title = table.Column<string>(type: "TEXT", nullable: false),
                     Time = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Type = table.Column<string>(type: "TEXT", nullable: false),
                     TotalValue = table.Column<double>(type: "REAL", nullable: false),
                     IsAccepted = table.Column<bool>(type: "INTEGER", nullable: false),
                     IsDone = table.Column<bool>(type: "INTEGER", nullable: false),
-                    ClosingFormDate = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    ClosingFormDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    RewardDate = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {

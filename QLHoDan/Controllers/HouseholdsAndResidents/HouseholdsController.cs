@@ -60,6 +60,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
                         Scope = u.Scope,
                         OwnerFullName = u.Members.First(m => m.RelationShip == ownerRelationShip).FullName,
                         OwnerIDCode = u.Members.First(m => m.RelationShip == ownerRelationShip).IdentityCode,
+                        CreatedTime= u.CreatedTime,
                     }));
             }
             else
@@ -72,6 +73,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
                         Scope = u.Scope,
                         OwnerFullName = u.Members.First(m => m.RelationShip == ownerRelationShip).FullName,
                         OwnerIDCode = u.Members.First(m => m.RelationShip == ownerRelationShip).IdentityCode,
+                        CreatedTime = u.CreatedTime,
                     }));
             }
         }
@@ -124,7 +126,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             });
         }
 
-        // PUT: api/Households
+        // POST: api/Households
         /// <summary>
         /// Thêm hộ khẩu mới, chỉ người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch phường) mới dùng được.
         /// Tổ trưởng chỉ thêm được hộ khẩu mới thuộc tổ quản lý.
@@ -337,7 +339,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
                 return NotFound();
             }
             //household.IsManaged = false;
-            _context.Resident.Where(x => x.HouseholdId == householdId).ExecuteDelete();
+            await _context.Resident.Where(x => x.HouseholdId == householdId).ExecuteDeleteAsync();
             _context.Household.Remove(household);
             try
             {

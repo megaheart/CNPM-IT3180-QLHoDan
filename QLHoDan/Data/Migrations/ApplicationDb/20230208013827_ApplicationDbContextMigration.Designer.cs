@@ -11,7 +11,7 @@ using QLHoDan.Data;
 namespace QLHoDan.Data.Migrations.ApplicationDb
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230205131728_ApplicationDbContextMigration")]
+    [Migration("20230208013827_ApplicationDbContextMigration")]
     partial class ApplicationDbContextMigration
     {
         /// <inheritdoc />
@@ -880,7 +880,14 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                     b.Property<bool>("IsDone")
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime>("RewardDate")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("Time")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<double>("TotalValue")

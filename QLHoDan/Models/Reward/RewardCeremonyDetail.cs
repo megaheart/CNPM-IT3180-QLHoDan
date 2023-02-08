@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-namespace QLHoDan.Models
+﻿namespace QLHoDan.Models.Reward
 {
-
-
-	public class RewardCeremony
-	{
-
+    public class RewardCeremonyDetail
+    {
         public int Id { get; set; }
         //Tên đợt thưởng
         public string Title { get; set; }
@@ -24,7 +19,7 @@ namespace QLHoDan.Models
         //cho tất cả những đứa trẻ đều có thành tích là 0, bảng chuyển đổi
         //thành tích sẽ chuyển đổi từ 0 sang giá trị phần quà mà các em được
         //nhận trong dịp đó
-        public List<AchievementRewardPair> AchievementRewardPairs { set; get; } = new List<AchievementRewardPair>();
+        public IEnumerable<AchievementReward> AchievementRewardPairs { set; get; } 
         //Chủ tịch phường đã duyệt danh sách phát thưởng chưa
         public bool IsAccepted { set; get; }
         //Đã phát thưởng chưa
