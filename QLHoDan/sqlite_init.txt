@@ -85,7 +85,6 @@ VALUES
 	(4, 'Rewards Ceremony 4', 'A ceremony to reward achievements', '2022-12-31 13:00:00', 'TT', 30000, 0, 0, '2022-12-04', '2022-12-28'),
 	(5, 'Rewards Ceremony 5', 'A ceremony to reward achievements', '2022-12-31 14:00:00', 'TTHT', 90000, 1, 1, '2022-12-04', '2022-12-31');
 
-
 --Thêm AchievementRewardPair
 insert into AchievementRewardPair(RewardCeremonyId,AchievementType,AchievementName,RewardName,RewardValue)
 values (1, 1, 'Trẻ em dưới 15 tuổi', 'Quà nhân dịp trung thu', 50000),

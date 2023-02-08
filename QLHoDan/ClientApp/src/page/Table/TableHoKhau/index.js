@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar, GridToolbarContainer, GridToolbarExport } from '@mui/x-data-grid';
 import { Button, Alert, Snackbar, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import FullScreenDialog from '../DiaLog/fullScreen';
 import AddHouseholDialog from '../DiaLog/AddHouseHold';
-import TableSkeleton from '../../Skeleton/index'
+import TableSkeleton from '../../Skeleton/index';
+
+import CustomToolbarExport from '../ComponentExport';
 // import styles from './Table1.module.scss';
 // import classNames from 'classnames/bind';
 
@@ -15,20 +17,20 @@ const columns = [
     { field: 'id', headerName: 'ID', width: 40, align: 'center', headerAlign: 'center' },
     { field: 'soHoKhau', headerName: 'Số hộ khẩu', align: 'center', headerAlign: 'center', width: 200 },
     { field: 'noiThuongTru', headerName: 'Nơi thường trú', align: 'center', headerAlign: 'center', width: 200 },
-    { field: 'thanhVien', headerName: 'Danh sách các thành viên', align: 'center', headerAlign: 'center', width: 300 },
+    { field: 'thanhVien', headerName: 'Danh sách các thành viên', align: 'center', headerAlign: 'center', width: 300, disableExport: true },
     { field: 'chuHo', headerName: 'Chủ hộ', align: 'center', headerAlign: 'center', width: 200 },
     { field: 'toPhuTrach', headerName: 'Tổ phụ trách', type: 'number', width: 150, align: 'center', headerAlign: 'center' },
 ]
 //data in each row
 const rowInit = [
-    { id: 1, soHoKhau: '123432', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Văn C', toPhuTrach: 1 },
-    { id: 2, soHoKhau: '123432', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Văn C', toPhuTrach: 1 },
-    { id: 3, soHoKhau: '123432', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Văn C', toPhuTrach: 1 },
-    { id: 4, soHoKhau: '123432', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Văn C', toPhuTrach: 1 },
-    { id: 5, soHoKhau: '123432', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Văn C', toPhuTrach: 1 },
-    { id: 6, soHoKhau: '123432', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Văn C', toPhuTrach: 1 },
-    { id: 7, soHoKhau: '123432', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Văn C', toPhuTrach: 1 },
-    { id: 8, soHoKhau: '123432', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Văn C', toPhuTrach: 1 }
+    { id: 1, soHoKhau: '4534345', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Văn Thanh', toPhuTrach: 1 },
+    { id: 2, soHoKhau: '1234432', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Trần Ngọc Cường', toPhuTrach: 6 },
+    { id: 3, soHoKhau: '5123432', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Đức Minh', toPhuTrach: 1 },
+    { id: 4, soHoKhau: '1234329', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Văn Minh', toPhuTrach: 2 },
+    { id: 5, soHoKhau: '1234323', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Văn Nam', toPhuTrach: 4 },
+    { id: 6, soHoKhau: '1234332', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Văn Khánh', toPhuTrach: 1 },
+    { id: 7, soHoKhau: '1423432', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Nguyễn Quốc Duy', toPhuTrach: 1 },
+    { id: 8, soHoKhau: '9023432', noiThuongTru: 'Hà Nội', thanhVien: 'Nguyễn Văn A, Nguyễn Văn B', chuHo: 'Phạm Đình Quân', toPhuTrach: 6 }
 ]
 
 export default function TableHoKhau() {
@@ -97,6 +99,7 @@ export default function TableHoKhau() {
                     width: 220,
                     headerAlign: 'center',
                     align: 'center',
+                    disableExport: true,
                     renderCell: (params) => {
                         const onClick = (e) => {
                             e.stopPropagation();
@@ -123,6 +126,7 @@ export default function TableHoKhau() {
                     field: 'action',
                     headerName: '',
                     width: 220,
+                    disableExport: true,
                     renderCell: (params) => {
                         // const onClick = (e) => {
                         //     e.stopPropagation();
@@ -205,7 +209,7 @@ export default function TableHoKhau() {
                     rows={rows}
                     columns={columnsTable}
                     components={{
-                        Toolbar: GridToolbar,
+                        Toolbar: CustomToolbarExport,
                     }}
                     componentsProps={{
                         toolbar: {

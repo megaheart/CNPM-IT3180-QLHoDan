@@ -40,11 +40,7 @@ export default function User() {
             setErrorMessageCurrentPassword('Vui lòng nhập mật khẩu hiện tại');
             setErrorCur(true);
         }
-        else if (currentPassword !== auth.password) {
-            setErrorMessageCurrentPassword('Mật khẩu không đúng');
-            setErrorCur(true);
-        }
-        if (newPassword === '') {
+        else if (newPassword === '') {
             setErrorMessageNewPassword('Vui lòng nhập mật khẩu mới');
             setErrorNew(true);
         }
@@ -57,25 +53,31 @@ export default function User() {
             setErrorNew(true);
         }
 
-        if (currentPassword === auth.password && newPassword === confirmPassword) {
-            setAuth({ ...auth, password: newPassword });
+        else {
+            console.log(auth)
             // call api to change passwrod, waiting....
-            await accountApi.changePassword(
-                auth.id,
-                newPassword,
-                auth
-            );
-            //finish
-            setSuccess(true);
-            setErrorCur(false);
-            setErrorNew(false);
-            setErrorMessageCurrentPassword('');
-            setErrorMessageNewPassword('');
-            setCurrentPassword('');
-            setNewPassword('');
-            setConfirmPassword('');
+            accountApi.changePassword(
+                auth.token,
+                currentPassword,
+                newPassword
+            )
+                .then((res) => {
+                    console.log(res);
+                    //finish
+                    setSuccess(true);
+                    setErrorCur(false);
+                    setErrorNew(false);
+                    setErrorMessageCurrentPassword('');
+                    setErrorMessageNewPassword('');
+                    setCurrentPassword('');
+                    setNewPassword('');
+                    setConfirmPassword('');
+                }
+                )
+                .catch((err) => console.log('Error in change password'))
+                .finally(() => setLoading(false));
         }
-        setLoading(false);
+
     }
 
     const handleChangeInputCur = (e) => {
@@ -101,7 +103,7 @@ export default function User() {
             >
                 <CircularProgress color="inherit" />
             </Backdrop>
-            <Snackbar open={success} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+            <Snackbar open={success} autoHideDuration={3000} onClose={handleCloseSnackbar}>
                 <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%', fontSize: 15 }}>
                     Đổi mật khẩu thành công!
                 </Alert>

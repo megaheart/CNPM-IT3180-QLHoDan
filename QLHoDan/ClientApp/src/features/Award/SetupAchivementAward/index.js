@@ -22,7 +22,7 @@ const columns = [
 
 ];
 
-function ListSpecialAward() {
+function ListAchievementAward() {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const refTypeAward = useRef(null);
@@ -53,33 +53,13 @@ function ListSpecialAward() {
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
             <div className={cx('add-type-award')}>
                 <div className={cx('input-type-award')}>
-                    <TextField inputRef={refTypeAward} sx={{ m: 1, width: 200 }} label="Loại thành tích" inputProps={{
-                        style: { fontSize: 20 }
-                    }}
-                        InputLabelProps={{
-                            style: { fontSize: 20 }
-                        }}
+                    <TextField inputRef={refTypeAward} sx={{ width: 200 }} label="Loại thành tích"
                         variant="standard" />
-                    <TextField inputRef={refDescription} sx={{ m: 1, width: 200 }} label="Miêu tả" inputProps={{
-                        style: { fontSize: 20 }
-                    }}
-                        InputLabelProps={{
-                            style: { fontSize: 20 }
-                        }}
+                    <TextField inputRef={refDescription} sx={{ width: 200 }} label="Miêu tả"
                         variant="standard" />
-                    <TextField inputRef={refNameAward} sx={{ m: 1, width: 200 }} label="Tên phần thưởng" inputProps={{
-                        style: { fontSize: 20 }
-                    }}
-                        InputLabelProps={{
-                            style: { fontSize: 20 }
-                        }}
+                    <TextField inputRef={refNameAward} sx={{ width: 200 }} label="Tên phần thưởng"
                         variant="standard" />
-                    <TextField inputRef={refValueAward} sx={{ m: 1, width: 200 }} label="Giá trị phần thưởng " inputProps={{
-                        style: { fontSize: 20 }
-                    }}
-                        InputLabelProps={{
-                            style: { fontSize: 20 }
-                        }}
+                    <TextField inputRef={refValueAward} sx={{ width: 200 }} label="Giá trị phần thưởng "
                         variant="standard" />
                 </div>
                 <Fab
@@ -93,7 +73,7 @@ function ListSpecialAward() {
                     <Add /> Thêm loại phần thưởng
                 </Fab>
             </div>
-            <TableContainer sx={{ maxHeight: 440 }}>
+            <TableContainer sx={{ height: 200 }}>
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead>
                         <TableRow>
@@ -125,8 +105,9 @@ function ListSpecialAward() {
                                                 </TableCell>
                                             );
                                         })}
-                                        <TableCell align="right">
-                                            <Button variant='contained' >Xóa</Button>
+                                        <TableCell align="right" sx={{ display: 'flex', flexDirection: 'row', gap: 1 }}>
+                                            <Button variant='contained' >Sửa</Button>
+                                            <Button variant='contained' color='error' >Xóa</Button>
                                         </TableCell>
                                     </TableRow>
                                 );
@@ -147,4 +128,4 @@ function ListSpecialAward() {
     );
 }
 
-export default ListSpecialAward;
+export default ListAchievementAward;

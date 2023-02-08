@@ -102,14 +102,15 @@ export default function FullScreenDialog({ open, onClose }) {
                 </Alert>
             </Snackbar>
             <Dialog
-                fullScreen
+                fullWidth={true}
+                maxWidth='1000'
                 open={open}
                 onClose={handleClose}
                 TransitionComponent={Transition}
             >
                 <div className={cx('header-paper-population')}>
-                    <Button variant="contained" disabled={editMode} color="primary" sx={{ fontSize: '1.5rem', margin: '2 0', textAlign: 'right', width: 150 }} onClick={handleEdit}>Chỉnh sửa</Button>
-                    <Button variant="contained" color="error" sx={{ fontSize: '1.5rem', margin: '2 0', textAlign: 'right', width: 50 }} onClick={handlStartClose}>Đóng</Button>
+                    <Button variant="contained" disabled={editMode} color="primary" sx={{ fontSize: '1rem' }} onClick={handleEdit}>Chỉnh sửa</Button>
+                    <Button variant="contained" color="error" sx={{ fontSize: '1rem' }} onClick={handlStartClose}>Đóng</Button>
                 </div>
                 <Household editMode={editMode} />
                 <Population editMode={editMode} />

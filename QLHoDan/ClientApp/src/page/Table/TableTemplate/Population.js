@@ -31,10 +31,10 @@ function createData(idenftification, name, birthday, gender, relationship, soHoK
     return { idenftification, name, birthday, gender, relationship, soHoKhau, toPhuTrach };
 }
 const rowData = [
-    { idenftification: '123466769', name: 'Nguyễn Văn D', birthday: '01/01/1990', gender: 'Nam', relationship: 'Chủ hộ', soHoKhau: '123456789', toPhuTrach: '1' },
-    { idenftification: '123454785', name: 'Nguyễn Văn C', birthday: '01/01/1990', gender: 'Nam', relationship: 'Vợ', soHoKhau: '123456789', toPhuTrach: '1' },
-    { idenftification: '123456789', name: 'Nguyễn Văn A', birthday: '01/01/2002', gender: 'Nam', relationship: 'Con trai', soHoKhau: '123456789', toPhuTrach: '1' },
-    { idenftification: '123456767', name: 'Nguyễn Văn B', birthday: '01/01/2002', gender: 'Nam', relationship: 'Con gái', soHoKhau: '123456789', toPhuTrach: '1' },
+    { idenftification: '00123466769', name: 'Phạm Đình Quân', birthday: '01/01/1990', gender: 'Nam', relationship: 'Chủ hộ', soHoKhau: '123456789', toPhuTrach: '1' },
+    { idenftification: '00123454785', name: 'Nguyễn Văn Nam', birthday: '01/01/1990', gender: 'Nam', relationship: 'Vợ', soHoKhau: '123456789', toPhuTrach: '1' },
+    { idenftification: '00123456789', name: 'Nguyễn Văn Khánh', birthday: '01/01/2002', gender: 'Nam', relationship: 'Con trai', soHoKhau: '123456789', toPhuTrach: '1' },
+    { idenftification: '00123456767', name: 'Nguyễn Văn Trọng', birthday: '01/01/2002', gender: 'Nam', relationship: 'Con gái', soHoKhau: '123456789', toPhuTrach: '1' },
 ]
 const Rows = [
     ...rowData.map((item, index) => {
@@ -148,7 +148,7 @@ export default function Population({ editMode }) {
                                     return null;
                                 })}
                                 <StyledTableCell key={row.idenftification + index} align="center" component="th" scope="row">
-                                    <Button key={row.identification + 'fix'}
+                                    <Button
                                         disabled={!editMode}
                                         onClick={() => {
                                             handleEditRowData(row.id);
@@ -186,23 +186,11 @@ export default function Population({ editMode }) {
                             inputProps={{ style: { fontSize: 15 } }}
                             InputLabelProps={{ style: { fontSize: 20 } }}
                             required
-                            label="CCCD/CMND"
-                            value={identification}
-                            onChange={(e) => setIdentification(e.target.value)}
-                            variant="standard"
-                        />
-                        <TextField
-                            sx={{ width: '600px' }}
-                            inputProps={{ style: { fontSize: 15 } }}
-                            InputLabelProps={{ style: { fontSize: 20 } }}
-                            required
                             label="Họ và tên"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             variant="standard"
                         />
-                    </div>
-                    <div>
                         <TextField
                             sx={{ width: '600px' }}
                             inputProps={{ style: { fontSize: 15 } }}
@@ -213,6 +201,8 @@ export default function Population({ editMode }) {
                             onChange={(e) => setBirthday(e.target.value)}
                             variant="standard"
                         />
+                    </div>
+                    <div>
                         <TextField
                             sx={{ width: '400px' }}
                             inputProps={{ style: { fontSize: 15 } }}
@@ -223,8 +213,6 @@ export default function Population({ editMode }) {
                             onChange={(e) => setGender(e.target.value)}
                             variant="standard"
                         />
-                    </div>
-                    <div>
                         <TextField
                             sx={{ width: '400px' }}
                             inputProps={{ style: { fontSize: 15 } }}
@@ -233,16 +221,6 @@ export default function Population({ editMode }) {
                             label="Quan hệ với chủ hộ"
                             value={relationship}
                             onChange={(e) => setRelationship(e.target.value)}
-                            variant="standard"
-                        />
-                        <TextField
-                            sx={{ width: '400px' }}
-                            inputProps={{ style: { fontSize: 15 } }}
-                            InputLabelProps={{ style: { fontSize: 20 } }}
-                            required
-                            label="Sổ hộ khẩu"
-                            value={soHoKhau}
-                            onChange={(e) => setSoHoKhau(e.target.value)}
                             variant="standard"
                         />
                     </div>

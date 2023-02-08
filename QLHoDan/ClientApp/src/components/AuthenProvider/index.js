@@ -3,13 +3,14 @@ import authenticationService from '~/services/account/authentication';
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
+    /* Setting the initial state of the auth context. */
     const [auth, setAuth] = useState(
         () => {
-            console.log('hello')
             let a = authenticationService.isAuthenticated();
-            console.log(a)
+            console.log(a);
+            console.log(authenticationService)
             if (a) {
-                return authenticationService.User
+                return authenticationService.user
             }
             else {
                 return {}

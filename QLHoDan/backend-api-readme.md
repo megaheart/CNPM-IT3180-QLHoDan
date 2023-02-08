@@ -254,6 +254,10 @@
 
         *Tài khoản không đủ quyền để truy cập. Tài khoản không phải người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch phường)*
 
+    - [400 BadRequest] IdS_DuplicateUserName
+
+        *Tên đăng nhập đã tồn tại*
+
     - [400 BadRequest] IdS_ScopeOutOfManagement
 
         *Tổ trưởng không thể tạo tài khoản hộ dân thuộc phạm vi quản lý của tổ khác*
@@ -387,6 +391,10 @@
     - [403 Forbidden]
 
         *Tài khoản không đủ quyền để truy cập. Tài khoản không phải thư kí, chủ tịch phường.*
+            
+    - [400 BadRequest] IdS_DuplicateUserName
+
+        *Tên đăng nhập đã tồn tại*
 
 ### Thay đổi thông tin tài khoản cấp đặc biệt
 <span style="color:#fbbc05; width: 50px; display: inline-block">**POST**</span> ```https://localhost:7265/api/account/household/addAccount```
