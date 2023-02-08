@@ -66,7 +66,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<AchievementEvidenceForm>().Property(hk => hk.Id).ValueGeneratedOnAdd();
         modelBuilder.Entity<AchievementRewardPair>().HasKey(g => g.Id);
         modelBuilder.Entity<AchievementRewardPair>().Property(hk => hk.Id).ValueGeneratedOnAdd();
-        //modelBuilder.Entity<AchievementRewardPair>().Property<int>("RewardCeremonyId").IsRequired(true);
+        //modelBuilder.Entity<AchievementRewardPair>().Property<int?>("RewardCeremonyId").IsRequired(true);
         modelBuilder.Entity<AchievementRewardPair>().HasIndex(a => new {a.RewardCeremonyId, a.AchievementType}).IsUnique();
 
         modelBuilder.Entity<RewardCeremony>().HasKey(hk => hk.Id);

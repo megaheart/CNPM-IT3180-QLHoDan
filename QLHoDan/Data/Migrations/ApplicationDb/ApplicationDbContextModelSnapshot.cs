@@ -877,7 +877,14 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                     b.Property<bool>("IsDone")
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime>("RewardDate")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("Time")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<double>("TotalValue")

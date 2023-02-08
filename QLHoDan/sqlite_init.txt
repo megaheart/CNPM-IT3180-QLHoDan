@@ -77,20 +77,24 @@ values ('000001', 'Nguyễn Văn Quảng', 'Không có', '1970-10-01', 1, 'Bện
 	   ('000024', 'Bùi Quỳnh Nga', 'Không có', '2008-08-09', 0, 'Bệnh viện hữu nghị Việt Tiệp, Hà Nội', 'Hải Phòng', 'Kinh','Việt Nam', 'Học sinh', 'Trường THCS Trần Phú', 'Con gái', 1, 0, 'Trung học cơ sở','Không có','2018-05-01', 'Con gái', 3, '006');
 
 --Thêm đợt phát thưởng
-insert into RewardCeremony([Title], [Time],[Type],TotalValue,IsAccepted,IsDone,ClosingFormDate, RewardDate)
-values ('Quà Trung thu 2022','2022-09-10','Quà Trung thu 2022', 10000000, 1, 1, '2022-09-01', '2022-09-20'),
-       ('Tổng kết thành tích học tập 2022','2022-11-20', 'Tổng kết thành tích học tập 2022', 50000000, 1, 1, '2022-11-05', '2022-11-25' ),
-	   ('Lì xi năm mới 2023','2023-01-20', 'Lì xi năm mới 2023', 20000000, 1, 0,'2023-01-05', '2023-01-25' );
+INSERT INTO RewardCeremony (Id, Title, Description, Time, Type, TotalValue, IsAccepted, IsDone, ClosingFormDate, RewardDate) 
+VALUES 
+	(1, 'Rewards Ceremony 1', 'A ceremony to reward achievements', '2022-12-31 10:00:00', 'TTHT', 100000, 1, 0, '2022-12-01', '2022-12-25'),
+	(2, 'Rewards Ceremony 2', 'A ceremony to reward achievements', '2022-12-31 11:00:00', 'TT', 50000, 1, 0, '2022-12-02', '2022-12-26'),
+	(3, 'Rewards Ceremony 3', 'A ceremony to reward achievements', '2022-12-31 12:00:00', 'TTHT', 75000, 1, 1, '2022-12-03', '2022-12-28'),
+	(4, 'Rewards Ceremony 4', 'A ceremony to reward achievements', '2022-12-31 13:00:00', 'TT', 30000, 0, 0, '2022-12-04', '2022-12-28'),
+	(5, 'Rewards Ceremony 5', 'A ceremony to reward achievements', '2022-12-31 14:00:00', 'TTHT', 90000, 1, 1, '2022-12-04', '2022-12-31');
+
 --Thêm AchievementRewardPair
 insert into AchievementRewardPair(RewardCeremonyId,AchievementType,AchievementName,RewardName,RewardValue)
-values (1, 0, 'Trẻ em dưới 15 tuổi', 'Quà nhân dịp trung thu', 50000),
+values (1, 1, 'Trẻ em dưới 15 tuổi', 'Quà nhân dịp trung thu', 50000),
         (2, 1, 'Học sinh tiên tiến', 'Tiền', 50000),
 		(2, 2, 'Học sinh giỏi cấp trường', 'Tiền', 100000),
 		(2, 3, 'Học sinh giỏi cấp quận', 'Tiền', 200000),
 		(2, 4, 'Học sinh giỏi cấp thành phố', 'Tiền', 500000),
 		(2, 5, 'Học sinh giỏi cấp quốc gia', 'QTiền', 1000000),
 		(2, 6, 'Trên mức quốc gia', 'Tiền', 2000000),
-        (3, 0, 'Trẻ em dưới 10 tuổi', 'Quà nhân dịp năm mới', 50000);
+        (3, 1, 'Trẻ em dưới 10 tuổi', 'Quà nhân dịp năm mới', 50000);
 --Thêm lịch sử nhận quà RewardRecord
 insert into RewardRecord(RewardCeremonyId, ResidentIdentityCode, AchievementType, AchievementName, RewardName, RewardValue)
 values (1, '000004', 0, 'Dưới 15 tuổi', 'Quà Trung thu 2022', 50000),

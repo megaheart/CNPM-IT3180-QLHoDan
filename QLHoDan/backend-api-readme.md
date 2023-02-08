@@ -1,4 +1,8 @@
 # Tài liệu API backend của phần mềm quản lý hộ dân
+## Hướng dẫn sử dục tài liệu
+- Các trường mà phần miêu tả có *[tuỳ chọn]* ở đầu, các trường đấy có thể bỏ qua mà không cần cho vào json, không bắt buộc
+- ```"DateTime"``` là kiểu dữ liệu json miêu tả ngày tháng, có dạng `yyyy-MM-ddTHH:mm:ss`
+
 # Module Nền tảng
 ## Truy cập tài nguyên tĩnh
 ### Lấy nội dung ảnh
@@ -497,7 +501,8 @@
             "householdId": "string",
             "scope": number,
             "ownerFullName": "string",
-            "ownerIDCode": "string"
+            "ownerIDCode": "string",
+            "createdTime": "DateTime"
         },
         ...
     ]
@@ -1065,6 +1070,544 @@
         *Xảy ra khi xoá một phần tử mà một số hàng trong các bảng khác có khoá ngoài trỏ đến phần tử này.*
 
         *Phần tử này hiện tại không thể bị xoá. Thay vào đó hãy cảnh báo người dùng rằng hộ khẩu này không thể xoá (Nó đã được các dữ liệu khác đề cập đến, cũng như điều này đảm bảo thông tin của nhân khẩu này là một thông tin hợp lệ với thực tiễn, không phải một mẫu thử nghiệm.)*
+
+# Module Phát thưởng
+## Quản lý đợt trao thưởng
+### Lấy ra danh sách các đợt trao thưởng
+<span style="color:#34a853; width: 50px; display: inline-block">**GET**</span> ```https://localhost:7265/api/RewardCeremonies```
+
+*Lấy ra danh sách dịp trao thưởng (thông tin khá sơ lược), chỉ người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch phường) mới dùng được.*
+
+<!-- - **Query Params**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |movedOut|*[tuỳ chọn]* `true` để lấy danh sách hộ khẩu đã chuyển đi, `false` để lấy danh sách những hộ khẩu đang thường trú<br/>Mặc định là `false`| -->
+
+- **Request Header**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |Authorization|"Bearer " + &lt;Một chuỗi kí tự là token nhận được sau khi đăng nhập&gt;|
+
+- **Response Body khi thành công**
+    ```json
+    [
+        {
+            "id": number,
+            "title": "string",
+            "time": "DateTime",
+            "type": "string",
+            "totalValue": number,
+            "isAccepted": boolean,
+            "isDone": boolean,
+            "closingFormDate": "DateTime",
+            "rewardDate": "DateTime"
+        },
+        ...
+    ]
+    ```
+    |Tham số  |Miêu tả  |
+    |---------|---------|
+    |id|mã định danh đợt thưởng|
+    |title|Tên đợt thưởng|
+    |time|Ngày giờ phút giây chủ tịch đề xuất kế hoạch phát thưởng|
+    |type|TTHT – phát thưởng cho thành tích học tập, TT – phát thưởng trung thu|
+    |totalValue|Tổng tiền cho việc phát thưởng|
+    |isAccepted|Chủ tịch phường đã duyệt danh sách phát thưởng chưa|
+    |isDone|Đã phát thưởng chưa|
+    |closingFormDate|Ngày đóng nhận form minh chứng|
+    |rewardDate|Thời gian nhận thưởng|
+
+    Ex:
+
+    ```json
+    [
+        {
+            "id": 1,
+            "title": "First Reward Ceremony",
+            "time": "2022-12-25T12:00:00Z",
+            "type": "TTHT",
+            "totalValue": 10000,
+            "isAccepted": true,
+            "isDone": true,
+            "closingFormDate": "2022-12-30T12:00:00Z",
+            "rewardDate": "2022-12-31T12:00:00Z"
+        },
+        ...
+    ]
+    ```
+- **Lỗi**
+    - [401 Unauthorized]
+
+        *JWT Token không hợp lệ*
+
+    - [403 Forbidden]
+
+        *Tài khoản không đủ quyền để truy cập. Tài khoản không phải người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch phường)*
+
+### Lấy thông tin chi tiết của đợt thưởng
+<span style="color:#34a853; width: 50px; display: inline-block">**GET**</span>
+```https://localhost:7265/api/RewardCeremonies/{id}```
+
+*Lấy ra thông tin chi tiết của đợt thưởng, chỉ người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch phường) mới dùng được.*
+
+- **Route Params**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |id|mã định danh đợt thưởng|
+
+- **Request Header**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |Authorization|"Bearer " + &lt;Một chuỗi kí tự là token nhận được sau khi đăng nhập&gt;|
+
+- **Response Body khi thành công**
+    ```json
+    [
+        {
+            "id": number,
+            "title": "string",
+            "description": "string",
+            "time": "DateTime",
+            "type": "string",
+            "totalValue": number,
+            "isAccepted": boolean,
+            "isDone": boolean,
+            "closingFormDate": "DateTime",
+            "rewardDate": "DateTime",
+            "achievementRewardPairs":[
+                {
+                    "achievementType": number,
+                    "achievementName": "string",
+                    "rewardName": "string",
+                    "rewardValue": number
+                },
+                ...
+            ]
+        },
+        ...
+    ]
+    ```
+    |Tham số  |Miêu tả  |
+    |---------|---------|
+    |id|mã định danh đợt thưởng|
+    |title|Tên đợt thưởng|
+    |description|Miêu tả đợt thưởng|
+    |time|Ngày giờ phút giây chủ tịch đề xuất kế hoạch phát thưởng|
+    |type|TTHT – phát thưởng cho thành tích học tập, TT – phát thưởng trung thu|
+    |totalValue|Tổng tiền cho việc phát thưởng|
+    |isAccepted|Chủ tịch phường đã duyệt danh sách phát thưởng chưa|
+    |isDone|Đã phát thưởng chưa|
+    |closingFormDate|Ngày đóng nhận form minh chứng|
+    |rewardDate|Thời gian nhận thưởng|   
+    |achievementRewardPairs|Bảng chuyển đổi loại thành tích thành giá trị phần thưởng, miêu tả kĩ hơn tại [đây](#thiết-lập-bảng-chuyển-đổi-loại-thành-tích-thành-giá-trị-phần-thưởng-cho-đợt-thưởng)|
+
+    Ex:
+
+    ```json
+    //Ví dụ cho đợt thưởng thành tích
+    [
+        {
+            "id": 1,
+            "title": "First Reward Ceremony",
+            "time": "2022-12-25T12:00:00Z",
+            "type": "TTHT",
+            "totalValue": 10000,
+            "isAccepted": true,
+            "isDone": true,
+            "closingFormDate": "2022-12-30T12:00:00Z",
+            "rewardDate": "2022-12-31T12:00:00Z",
+            "achievementRewardPairs":[
+                {
+                    "achievementType": 1,
+                    "achievementName": "Học sinh khá trường",
+                    "rewardName": "Bút bi",
+                    "rewardValue": 5000
+                },
+                {
+                    "achievementType": 2,
+                    "achievementName": "Học sinh giỏi trường",
+                    "rewardName": "Bút máy",
+                    "rewardValue": 10000
+                },
+                {
+                    "achievementType": 3,
+                    "achievementName": "Học sinh giỏi huyện",
+                    "rewardName": "Bút máy pro max",
+                    "rewardValue": 20000
+                }
+            ]
+        },
+        ...
+    ]
+    ```
+    ```json
+    //Ví dụ cho đợt thưởng trung thu
+    //Đợt thưởng trung thu không cần quan tâm đến achievementName vì chả có thành tích gì ở đây cả, còn achievementType không phải là phân thứ hạng mà phân biệt các phần quà khác nhau tuỳ theo sở thích mỗi cháu
+    [
+        {
+            "id": 1,
+            "title": "First Reward Ceremony",
+            "time": "2022-12-25T12:00:00Z",
+            "type": "TT",
+            "totalValue": 10000,
+            "isAccepted": true,
+            "isDone": true,
+            "closingFormDate": "2022-12-30T12:00:00Z",
+            "rewardDate": "2022-12-31T12:00:00Z",
+            "achievementRewardPairs":[
+                {
+                    "achievementType": 1,
+                    "achievementName": "",
+                    "rewardName": "3 cái kẹo mút chúp ba chúp",
+                    "rewardValue": 3000
+                },
+                {
+                    "achievementType": 2,
+                    "achievementName": "",
+                    "rewardName": "1 bánh chocopie",
+                    "rewardValue": 3000
+                }
+            ]
+        },
+        ...
+    ]
+    ```
+
+- **Lỗi**
+    - [401 Unauthorized]
+
+        *JWT Token không hợp lệ*
+
+    - [403 Forbidden]
+
+        *Tài khoản không đủ quyền để truy cập. Tài khoản không phải người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch phường)*
+
+    - [404 NotFound]
+
+        *Không tìm thấy đợt thưởng có id như đầu vào*
+
+    - [409 Conflict]
+
+        *Đợt thưởng thêm vào trùng tên với đợt thưởng đã tồn tại trong CSDL*
+
+### Thêm đợt thưởng mới
+<span style="color:#fbbc05; width: 50px; display: inline-block">**POST**</span> ```https://localhost:7265/api/RewardCeremonies```
+
+*Thêm đợt thưởng mới, chỉ chủ tịch phường mới dùng được.*
+
+*Sau khi thêm đợt thưởng mới, có thể gửi tin nhắn (nếu điền) đến tất cả tài khoản đặc biệt trừ bản thân.*
+
+- **Request Header**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |Authorization|"Bearer " + &lt;Một chuỗi kí tự là token nhận được sau khi đăng nhập&gt;|
+
+- **Request Body (Json)**
+    | Property | Type | Description |
+    | -------- | ---- | ----------- |
+    | `title` | string | Tên đợt thưởng |
+    | `description` | string | Miêu tả đợt thưởng |
+    | `type` | string | Loại phát thưởng (TTHT – phát thưởng cho thành tích học tập, TT – phát thưởng trung thu) |
+    | `closingFormDate` | string (date-time format) | Ngày đóng nhận form minh chứng |
+    | `rewardDate` | string (date-time format) | Thời gian nhận thưởng |
+    | `messageToSpecialAccount` | string | *[Tuỳ chọn]* Tin nhắn gửi đến các tài khoản đặc biệt, gửi ngay tại thời điểm request |
+
+    Ex:
+    ```json
+    {
+        "title": "Academic Achievement Award",
+        "description": "Academic Achievement Award is an event which celebrate by committee to give good student some presents.",
+        "type": "TTHT",
+        "closingFormDate": "2022-12-31T23:59:59",
+        "rewardDate": "2023-01-15T10:00:00",
+        "messageToSpecialAccount": "Congratulations on your academic success!"
+    }
+
+    ```
+
+- **Response Body khi thành công**
+    
+    Không có gì
+
+- **Lỗi**
+    - [401 Unauthorized]
+
+        *JWT Token không hợp lệ*
+
+    - [403 Forbidden]
+
+        *Tài khoản không đủ quyền để truy cập. Tài khoản không phải chủ tịch phường*
+
+    - [404 NotFound]
+
+        *Xảy ra khi quá trình thêm Đợt thưởng vào CSDL bị lỗi (cách khắc phục đó là request lại lần nữa)*
+    - [409 Conflict]
+
+        *Tên đợt thưởng đã tồn tại trong CSDL*
+
+### Cập nhật đợt thưởng
+<span style="color:#4285f4; width: 50px; display: inline-block">**PUT**</span>```https://localhost:7265/api/RewardCeremonies```
+
+*Cập nhật thông tin đợt thưởng, chỉ thư kí, chủ tịch phường mới dùng được.*
+
+*Sau khi cập nhật thông tin đợt thưởng, có thể gửi tin nhắn (nếu điền) đến tất cả tài khoản đặc biệt trừ bản thân.*
+
+- **Request Header**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |Authorization|"Bearer " + &lt;Một chuỗi kí tự là token nhận được sau khi đăng nhập&gt;|
+
+- **Request Body (Json)**
+    | Property | Type | Description |
+    | -------- | ---- | ----------- |
+    | `id` | int | Mã đợt thưởng |
+    | `title` | string | *[Tuỳ chọn]* Tên đợt thưởng |
+    | `description` | string | *[Tuỳ chọn]* Miêu tả đợt thưởng |
+    | `type` | string | *[Tuỳ chọn]* Loại phát thưởng (TTHT – phát thưởng cho thành tích học tập, TT – phát thưởng trung thu) |
+    | `closingFormDate` | string (date-time format) | *[Tuỳ chọn]* Ngày đóng nhận form minh chứng |
+    | `rewardDate` | string (date-time format) | *[Tuỳ chọn]* Thời gian nhận thưởng |
+    | `messageToSpecialAccount` | string | *[Tuỳ chọn]* Tin nhắn gửi đến các tài khoản đặc biệt, gửi ngay tại thời điểm request |
+
+    Ex:
+    ```json
+    {
+        "id": 6,
+        "title": "Academic Achievement Award",
+        "description": "Academic Achievement Award is an event which celebrate by committee to give good student some presents.",
+        "type": "TTHT",
+        "closingFormDate": "2022-12-31T23:59:59",
+        "rewardDate": "2023-01-15T10:00:00",
+        "messageToSpecialAccount": "Congratulations on your academic success!"
+    }
+
+    ```
+
+- **Response Body khi thành công**
+    
+    Không có gì
+
+- **Lỗi**
+    - [401 Unauthorized]
+
+        *JWT Token không hợp lệ*
+
+    - [403 Forbidden]
+
+        *Tài khoản không đủ quyền để truy cập. Tài khoản không phải người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch phường)*
+
+    - [404 NotFound]
+
+        *Đợt thưởng không tồn tại trong CSDL để cập nhật*
+
+### Thiết lập Bảng chuyển đổi loại thành tích thành giá trị phần thưởng cho đợt thưởng
+<span style="color:#fbbc05; width: 50px; display: inline-block">**POST**</span> ```https://localhost:7265/api/RewardCeremonies/setARPairs/{id}```
+
+*Thiết lập Bảng chuyển đổi loại thành tích thành giá trị phần thưởng cho đợt thưởng, tạo mới nếu không có, ghi đè bảng cũ nếu có.* 
+
+*Chỉ thư kí, chủ tịch phường mới dùng được.*
+
+✅ *Phải sắp xếp sẵn danh sách trước. (Sắp xếp theo thứ tự tăng dần của `achievementType`)*
+
+- **Route Params**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |id|mã định danh đợt thưởng|
+
+- **Request Header**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |Authorization|"Bearer " + &lt;Một chuỗi kí tự là token nhận được sau khi đăng nhập&gt;|
+
+- **Request Body (Json)**
+
+    Một danh sách các `AchievementRewardPair` được miêu tả như bên dưới:
+
+    | Property | Type | Description |
+    | -------- | ---- | ----------- |
+    | `achievementType` | number | Loại thành tích |
+    | `achievementName` | string | Miêu tả loại thành tích |
+    | `rewardName` | string |  Miêu tả Phần thưởng (dạng text) |
+    | `rewardValue` | number | Giá trị phần thưởng (số tiền) |
+
+    ✅ *Phải sắp xếp sẵn danh sách trước. (Sắp xếp theo thứ tự tăng dần của `achievementType`)*
+
+    Ex:
+    ```json
+    //Ví dụ cho đợt thưởng thành tích học tập
+    [
+        {
+            "achievementType": 1,
+            "achievementName": "Hsg trường",
+            "rewardName": "3 cái kẹo mút chúp ba chúp",
+            "rewardValue": 3000
+        },
+        {
+            "achievementType": 2,
+            "achievementName": "Hsg huyện",
+            "rewardName": "5 cái kẹo mút chúp ba chúp",
+            "rewardValue": 5000
+        },
+        ...
+    ]
+    ```
+
+- **Response Body khi thành công**
+    
+    Không có gì
+
+- **Lỗi**
+    - [401 Unauthorized]
+
+        *JWT Token không hợp lệ*
+
+    - [403 Forbidden]
+
+        *Tài khoản không đủ quyền để truy cập. Tài khoản không phải người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch phường)*
+
+    - [404 NotFound]
+
+        *Đợt thưởng không tồn tại trong CSDL để cập nhật*
+
+    - [400 BadRequest] ZeroList
+
+        *Danh sách không chứa phần tử nào*
+
+    - [400 BadRequest] InvalidAchievementRewardList
+
+        *Danh sách chưa được sắp xếp trước theo AchievementType tăng dần*
+
+        *Danh sách không bắt đầu với AchievementType đầu tiên bằng 1*
+
+        *AchievementType của các phần tử trong Danh sách không liên tục (1,2,4 nhưng thiếu 3 chẳng hạn)*
+
+### Phê duyệt đợt thưởng
+<span style="color:#fbbc05; width: 50px; display: inline-block">**POST**</span> ```https://localhost:7265/api/RewardCeremonies/accept/{id}```
+
+*Phê duyệt đợt thưởng, gửi thông báo mở đợt thưởng với toàn bộ người dân (nếu điền), và tài khoản đặc biệt (nếu điền).* 
+
+*Chỉ chủ tịch phường mới dùng được.*
+
+- **Route Params**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |id|mã định danh đợt thưởng|
+
+- **Request Header**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |Authorization|"Bearer " + &lt;Một chuỗi kí tự là token nhận được sau khi đăng nhập&gt;|
+
+- **Request Body (Json)**
+
+    | Property | Type | Description |
+    | --- | --- | --- |
+    | MessageToSpecialAccount | string | Tin nhắn gửi đến các tài khoản đặc biệt |
+    | MessageToHousehold | string | Tin nhắn gửi đến các tài khoản hộ dân |
+
+    Ex:
+    ```json
+    {
+        "MessageToSpecialAccount": "Chuẩn bị xét duyệt minh chứng nhé các đồng chí.",
+        "MessageToHousehold": "Mọi người chuẩn bị gửi minh chứng thành tích học tập của con em để con em có thể nhận quà nhé."
+    }
+    ```
+
+- **Response Body khi thành công**
+    
+    Không có gì
+
+- **Lỗi**
+    - [401 Unauthorized]
+
+        *JWT Token không hợp lệ*
+
+    - [403 Forbidden]
+
+        *Tài khoản không đủ quyền để truy cập. Tài khoản không phải người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch phường)*
+
+    - [404 NotFound]
+
+        *Đợt thưởng không tồn tại trong CSDL để cập nhật*
+### Đánh dấu đợt thưởng đã xong
+<span style="color:#fbbc05; width: 50px; display: inline-block">**POST**</span> ```https://localhost:7265/api/RewardCeremonies/done/{id}```
+
+*Đánh dấu đợt thưởng đã được thực hiện xong.* 
+
+*Chỉ chủ tịch phường mới dùng được.*
+
+- **Route Params**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |id|mã định danh đợt thưởng|
+
+- **Request Header**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |Authorization|"Bearer " + &lt;Một chuỗi kí tự là token nhận được sau khi đăng nhập&gt;|
+
+- **Response Body khi thành công**
+    
+    Không có gì
+
+- **Lỗi**
+    - [401 Unauthorized]
+
+        *JWT Token không hợp lệ*
+
+    - [403 Forbidden]
+
+        *Tài khoản không đủ quyền để truy cập. Tài khoản không phải người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch phường)*
+
+    - [404 NotFound]
+
+        *Đợt thưởng không tồn tại trong CSDL để cập nhật*
+
+    - [400 BadRequest] RewardCeremonyNotAccept
+
+        *Đợt thưởng chưa được phê duyệt, vậy nên nó chưa thể được hoàn thành*
+
+### Xoá đợt thưởng
+<span style="color:#ea4335; width: 50px; display: inline-block">**DELETE**</span> ```https://localhost:7265/api/RewardCeremonies/{id}```
+
+*Xoá đợt thưởng, chỉ chủ tịch phường mới dùng được.*
+
+- **Route Params**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |id|Mã đợt thưởng mà muốn xoá|
+
+- **Request Header**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |Authorization|"Bearer " + &lt;Một chuỗi kí tự là token nhận được sau khi đăng nhập&gt;|
+
+- **Response Body khi thành công**
+    
+    Không có
+
+- **Lỗi**
+    - [401 Unauthorized]
+
+        *JWT Token không hợp lệ*
+
+    - [403 Forbidden]
+
+        *Tài khoản không đủ quyền để truy cập. Tài khoản không phải người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch phường)*
+
+    - [404 NotFound]
+
+        *Đợt thưởng không tồn tại trong CSDL để xoá*
+
+    - [400 BadRequest] ForeignKeyConstraintFailed
+
+        *Xảy ra khi xoá một phần tử mà một số hàng trong các bảng khác có khoá ngoài trỏ đến phần tử này.*
+
+        *Phần tử này hiện tại không thể bị xoá. Thay vào đó hãy cảnh báo người dùng rằng đợt thưởng này không thể xoá (Nó đã được các dữ liệu khác đề cập đến, cũng như điều này đảm bảo thông tin của đợt thưởng này là một thông tin hợp lệ với thực tiễn, không phải một mẫu thử nghiệm.)*
+
+
+
+
+
 # Các kiểu dữ liệu được sử dụng nhiều lần
 
 ## ResidentInfo
