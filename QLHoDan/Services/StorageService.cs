@@ -3,12 +3,18 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace QLHoDan.Services
 {
+    /// <summary>
+    /// Nội dung tệp tin
+    /// </summary>
     public class FileContent
     {
         public Stream Stream { get; set; }
         public string ContentType { get; set; }
     }
-    public class Storage
+    /// <summary>
+    /// Service phụ trách lưu trữ tài nguyên dạng tệp tin
+    /// </summary>
+    public class StorageService
     {
         static readonly string imgFolder = "static/img/";
         /// <summary>

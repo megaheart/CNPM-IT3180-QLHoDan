@@ -3,11 +3,17 @@ using QLHoDan.Models;
 
 namespace QLHoDan.Services
 {
+    /// <summary>
+    /// Thông tin token
+    /// </summary>
     public class BearerToken
     {
         public string Content { get; set; }
         public DateTime Expiration { get; set; }
     }
+    /// <summary>
+    /// Interface cho Service phụ trách tạo token đăng nhập
+    /// </summary>
     public interface ITokenCreationService
     {
         /// <summary>

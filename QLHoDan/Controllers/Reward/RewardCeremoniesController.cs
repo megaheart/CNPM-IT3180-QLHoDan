@@ -7,6 +7,7 @@ using QLHoDan.Data;
 using QLHoDan.Models;
 using QLHoDan.Models.Api;
 using QLHoDan.Models.Reward;
+using QLHoDan.Services;
 using System.Data;
 using System.Linq;
 using System.Security.Claims;
@@ -19,12 +20,15 @@ namespace QLHoDan.Controllers.Reward
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly NotificationService _notification;
 
         public RewardCeremoniesController(ApplicationDbContext context,
-                                    UserManager<ApplicationUser> userManager)
+                                    UserManager<ApplicationUser> userManager,
+                                    NotificationService notification)
         {
             _context = context;
             _userManager = userManager;
+            _notification = notification;
         }
         // GET: api/RewardCeremonies
         /// <summary>
@@ -158,8 +162,22 @@ namespace QLHoDan.Controllers.Reward
                     throw;
                 }
             }
-
-            return Ok();
+            var userName = User.FindFirst(ClaimTypes.Name)?.Value;
+            if (userName != null && !string.IsNullOrEmpty(model.MessageToSpecialAccount))
+                await _notification.Notify(userName, new string[] { "#" }, new string[] { userName }, model.MessageToSpecialAccount);
+            var r = rewardceremony;
+            return Ok(new RewardCeremonyBriefInfo()
+            {
+                Id = r.Id,
+                Title = r.Title,
+                Time = r.Time,
+                Type = r.Type,
+                TotalValue = r.TotalValue,
+                IsAccepted = r.IsAccepted,
+                IsDone = r.IsDone,
+                ClosingFormDate = r.ClosingFormDate,
+                RewardDate = r.RewardDate,
+            });
         }
 
         // POST: api/RewardCeremonies
@@ -204,7 +222,9 @@ namespace QLHoDan.Controllers.Reward
             _context.RewardCeremony.Update(r);
 
             await _context.SaveChangesAsync();
-
+            var userName = User.FindFirst(ClaimTypes.Name)?.Value;
+            if (userName != null && !string.IsNullOrEmpty(model.MessageToSpecialAccount))
+                await _notification.Notify(userName, new string[] { "#" }, new string[] { userName }, model.MessageToSpecialAccount);
             return Ok();
         }
         // POST: api/RewardCeremonies/setARPairs/{id}
@@ -311,6 +331,14 @@ namespace QLHoDan.Controllers.Reward
             }
             r.IsAccepted = true;
             await _context.SaveChangesAsync();
+            var userName = User.FindFirst(ClaimTypes.Name)?.Value;
+            if (userName != null)
+            {
+                if (!string.IsNullOrEmpty(model.MessageToSpecialAccount))
+                    await _notification.Notify(userName, new string[] { "#" }, new string[] { userName }, model.MessageToSpecialAccount); 
+                if (!string.IsNullOrEmpty(model.MessageToHousehold))
+                    await _notification.Notify(userName, new string[] { "!" }, new string[] { userName }, model.MessageToHousehold);
+            }
 
             return Ok();
         }
