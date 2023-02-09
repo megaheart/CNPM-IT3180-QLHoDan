@@ -1,8 +1,15 @@
-import { useState, forwardRef, useCallback } from 'react';
+import { useState, forwardRef, useCallback, useEffect } from 'react';
+import useAuth from '~/hooks/useAuth';
 import { styled } from '@mui/material/styles';
 import { tableCellClasses } from '@mui/material/TableCell';
 import { Button, Paper, TableRow, TableHead, TableContainer, TableCell, TableBody, Table, TextField, Slide, Box, Dialog } from '@mui/material';
-
+import Skeleton from '../../Skeleton';
+import {
+    useQuery,
+    useMutation,
+    useQueryClient
+} from '@tanstack/react-query';
+import residentManager from '~/services/api/residentManager';
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
         backgroundColor: theme.palette.common.black,
@@ -27,29 +34,13 @@ const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-function createData(idenftification, name, birthday, gender, relationship, soHoKhau, toPhuTrach) {
-    return { idenftification, name, birthday, gender, relationship, soHoKhau, toPhuTrach };
-}
-const rowData = [
-    { idenftification: '00123466769', name: 'Phạm Đình Quân', birthday: '01/01/1990', gender: 'Nam', relationship: 'Chủ hộ', soHoKhau: '123456789', toPhuTrach: '1' },
-    { idenftification: '00123454785', name: 'Nguyễn Văn Nam', birthday: '01/01/1990', gender: 'Nam', relationship: 'Vợ', soHoKhau: '123456789', toPhuTrach: '1' },
-    { idenftification: '00123456789', name: 'Nguyễn Văn Khánh', birthday: '01/01/2002', gender: 'Nam', relationship: 'Con trai', soHoKhau: '123456789', toPhuTrach: '1' },
-    { idenftification: '00123456767', name: 'Nguyễn Văn Trọng', birthday: '01/01/2002', gender: 'Nam', relationship: 'Con gái', soHoKhau: '123456789', toPhuTrach: '1' },
-]
-const Rows = [
-    ...rowData.map((item, index) => {
-        return {
-            ...createData(...Object.values(item)),
-            id: index
-        }
-    }
-    )
-];
 
-export default function Population({ editMode }) {
+
+export default function Population({ editMode, data, loading }) {
+    const queryClient = useQueryClient();
+    const { auth } = useAuth();
     //những id của nhân khẩu sẽ bị xóa
     const [deleteIds, setDeleteIds] = useState([]);
-
     //
     const [open, setOpen] = useState(false);
     const handleClose = useCallback(() => setOpen(false), []);
@@ -64,9 +55,9 @@ export default function Population({ editMode }) {
     const [soHoKhau, setSoHoKhau] = useState('');
     const [toPhuTrach, setToPhuTrach] = useState('');
 
-
     //dữ liệu nhân khẩu
-    const [rows, setRows] = useState(Rows);
+    const [rows, setRows] = useState();
+
 
     const handleDeleteRowsData = (id) => {
         setRows(
@@ -112,42 +103,38 @@ export default function Population({ editMode }) {
         );
         setOpen(false);
     }
-
     return (
         <div style={{ display: 'flex', alignItem: 'center', justifyContent: 'center', flexDirection: 'column' }}>
             <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 1000 }} aria-label="customized table">
                     <TableHead>
                         <TableRow>
-                            <TableCell sx={{ fontSize: 20 }} align="left" colSpan={9}>
+                            <TableCell align="left" colSpan={9}>
                                 Thông tin thành viên trong hộ khẩu
                             </TableCell>
                         </TableRow>
                         <TableRow>
-                            <StyledTableCell sx={{ fontSize: 20 }} align="center">CCCD/CMND</StyledTableCell>
-                            <StyledTableCell sx={{ fontSize: 20 }} align="center">Họ và tên</StyledTableCell>
-                            <StyledTableCell sx={{ fontSize: 20 }} align="center">Ngày sinh</StyledTableCell>
-                            <StyledTableCell sx={{ fontSize: 20 }} align="center">Giới tính</StyledTableCell>
-                            <StyledTableCell sx={{ fontSize: 20 }} align="center">Quan hệ với chủ hộ</StyledTableCell>
-                            <StyledTableCell sx={{ fontSize: 20 }} align="center">Sổ hộ khẩu</StyledTableCell>
-                            <StyledTableCell sx={{ fontSize: 20 }} align="center">Tổ phụ trách</StyledTableCell>
-                            <StyledTableCell sx={{ fontSize: 20 }} align="center">Edit</StyledTableCell>
+                            <StyledTableCell align="center">CCCD/CMND</StyledTableCell>
+                            <StyledTableCell align="center">Họ và tên</StyledTableCell>
+                            <StyledTableCell align="center">Ngày sinh</StyledTableCell>
+                            <StyledTableCell align="center">Giới tính</StyledTableCell>
+                            <StyledTableCell align="center">Quan hệ với chủ hộ</StyledTableCell>
+                            <StyledTableCell align="center">Sổ hộ khẩu</StyledTableCell>
+                            <StyledTableCell align="center">Tổ phụ trách</StyledTableCell>
+                            <StyledTableCell align="center">Edit</StyledTableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {rows.map((row, index) => (
-                            <StyledTableRow key={row.idenftification}>
-                                {Object.keys(row).map((key) => {
-                                    if (key !== 'id') {
-                                        return (
-                                            <StyledTableCell key={key} align="center" component="th" scope="row">
-                                                {row[key]}
-                                            </StyledTableCell>
-                                        )
-                                    }
-                                    return null;
-                                })}
-                                <StyledTableCell key={row.idenftification + index} align="center" component="th" scope="row">
+                        {data.map((row, index) => (
+                            <StyledTableRow key={index}>
+                                <StyledTableCell key={index + '-1'} align="center">{row.identityCode}</StyledTableCell>
+                                <StyledTableCell key={index + '-2'} align="center">{row.fullName}</StyledTableCell>
+                                <StyledTableCell key={index + '-3'} align="center">{row.dateOfBirth}</StyledTableCell>
+                                <StyledTableCell key={index + '-4'} align="center">{row.isMale ? 'Nam' : 'Nữ'}</StyledTableCell>
+                                <StyledTableCell key={index + '-5'} align="center">{row.relationShip}</StyledTableCell>
+                                <StyledTableCell key={index + '-6'} align="center">{row.householdId}</StyledTableCell>
+                                <StyledTableCell key={index + '-7'} align="center">{row.scope}</StyledTableCell>
+                                <StyledTableCell key={row.identityCode + index} align="center" component="th" scope="row">
                                     <Button
                                         disabled={!editMode}
                                         onClick={() => {

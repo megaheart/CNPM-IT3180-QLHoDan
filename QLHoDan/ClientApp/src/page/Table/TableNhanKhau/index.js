@@ -65,32 +65,31 @@ export default function TableNhanKhau() {
 
     const mutationAdd = useMutation({
         mutationFn: async (resident) => residentManager.createResident(auth.token, resident),
-        onSuccess: async (newResident) => {
-            await queryClient.setQueryData(['residents'], (old) => [...old, newResident]);
+        onSuccess: async () => {
+            queryClient.invalidateQueries(['residents']);
         }
     });
 
     const mutationUpdate = useMutation(
         {
             mutationFn: async (resident) => residentManager.updateResident(auth.token, resident),
-            onSuccess: async (newResident) => {
-                await queryClient.setQueryData(['residents'], (old) => {
-                    const index = old.findIndex((resident) => resident.id === newResident.id);
-                    if (index !== -1) {
-                        const updated = [...old];
-                        updated[index] = newResident;
-                        return updated;
-                    }
-                    return old;
-                });
+            onSuccess: async () => {
+                queryClient.invalidateQueries(['residents']);
+            }
+        }
+    )
+
+    const mutationDelete = useMutation(
+        {
+            mutationFn: async (id) => residentManager.deleteResident(auth.token, id),
+            onSuccess: async () => {
+                queryClient.invalidateQueries(['residents']);
             }
         }
     )
 
     //
-    const [type, setType] = useState(
-
-    );
+    const [type, setType] = useState();
 
     const viewResidentDetail = async (identification) => {
         setOpenBackdrop(true);
@@ -104,6 +103,14 @@ export default function TableNhanKhau() {
         );
         setOpenBackdrop(false);
         setIsCreateMode(true);
+    }
+
+    const deleteResindent = async (id) => {
+        setSuccess(false);
+        setOpenBackdrop(true);
+        await mutationDelete.mutateAsync(id);
+        setSuccess(true);
+        setOpenBackdrop(false);
     }
 
     //chuyển trang
@@ -128,7 +135,8 @@ export default function TableNhanKhau() {
     }
 
     //bắt đầu xóa hộ khẩu
-    const handleClickOpen = () => {
+    const handleClickOpen = (id) => {
+        setDeleteId(id);
         setOpenDialog(true);
     };
     //không xóa nữa
@@ -137,10 +145,10 @@ export default function TableNhanKhau() {
         setOpenDialog(false);
     };
     //đồng ý xóa
-    const handleAgree = () => {
-        setSuccess(true);
-        setDeleteId(null);
+    const handleAgree = async () => {
         setOpenDialog(false);
+        await deleteResindent(deleteId);
+        setDeleteId(null);
     };
 
 
@@ -154,7 +162,7 @@ export default function TableNhanKhau() {
     return (
         <div style={{ height: '90%', width: '100%', margin: '10' }}>
             {(type && type.mutation) && <AddResidentDialog open={isCreateMode} onClose={closeCreateMode} type={type} />}
-            <Snackbar open={success} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+            <Snackbar open={success} autoHideDuration={3000} onClose={handleCloseSnackbar}>
                 <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%', fontSize: 15 }}>
                     Xoá nhân khẩu thành công!
                 </Alert>
@@ -231,7 +239,7 @@ export default function TableNhanKhau() {
                                             <Button sx={{ marginRight: 1 }} variant='contained' onClick={() => {
                                                 viewResidentDetail(row.identityCode);
                                             }} >Chi tiết</Button>
-                                            <Button variant='contained' color='error' onClick={handleClickOpen} >Xóa</Button>
+                                            <Button variant='contained' color='error' onClick={() => handleClickOpen(row.identityCode)} >Xóa</Button>
                                         </TableCell>
                                     </TableRow>
                                 );

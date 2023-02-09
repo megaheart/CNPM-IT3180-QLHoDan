@@ -1,32 +1,28 @@
-import * as React from 'react';
-import { forwardRef, useState, useRef, useEffect, useCallback, Fragment } from 'react';
+import { forwardRef, useState, useRef, useEffect } from 'react';
+import useAuth from '~/hooks/useAuth';
 //validate
 import validation from '~/services/validate/index.js';
 //material components
 import {
-    Button, Dialog, CircularProgress, Box, Fab, Slide, Snackbar, Alert,
-    TextField, TableRow, TableHead, TableContainer, TableCell, TableBody, Table, Paper
+    Button, Dialog, Slide, Snackbar, Alert,
+    TextField, TableRow, TableHead, TableContainer, TableCell, TableBody, Table, Paper,
+    FormControl,
+    InputLabel,
+    Input,
+    InputAdornment, LinearProgress
 } from '@mui/material';
-import { Add } from '@mui/icons-material';
-// import ListItemText from '@mui/material/ListItemText';
-// import ListItem from '@mui/material/ListItem';
-// import List from '@mui/material/List';
-// import Divider from '@mui/material/Divider';
-// import AppBar from '@mui/material/AppBar';
-// import Toolbar from '@mui/material/Toolbar';
-// import IconButton from '@mui/material/IconButton';
-// import Typography from '@mui/material/Typography';
-// import CloseIcon from '@mui/icons-material/Close';
-import { green } from '@mui/material/colors';
-//icons material
-import CheckIcon from '@mui/icons-material/Check';
-import SaveIcon from '@mui/icons-material/Save';
+import dayjs from 'dayjs';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers';
 //style
 import { tableCellClasses } from '@mui/material/TableCell';
 import { styled } from '@mui/material/styles';
 import classNames from 'classnames/bind';
 import styles from './AddHousehold.module.scss';
 import ConfirmBox from '../ConfirmBox';
+import AddResidentDialog from './addResident';
+import householdManager from '~/services/api/householdManager';
 
 const cx = classNames.bind(styles);
 const Transition = forwardRef(function Transition(props, ref) {
@@ -51,118 +47,45 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
         border: 0,
     },
 }));
-const rowData =
-    { idenftification: '123466769234', name: 'Nguyễn Văn D', birthday: '01/01/1990', gender: 'Nam', relationship: 'Chủ hộ', soHoKhau: '123456789', toPhuTrach: '1' };
-
-
-function makeid(length) {
-    var result = '';
-    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
-    for (var i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-}
-function makeRandomIdentification() {
-    var result = '';
-    var characters = '0123456789';
-    var charactersLength = characters.length;
-    for (var i = 0; i < 12; i++) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-}
 export default function AddHouseholDialog({ open, onClose }) {
+    const { auth } = useAuth();
     // dữ liệu bảng để hiển thị danh sách các nhân khẩu sẽ thêm
     const [people, setPeople] = useState([]);
-    // CCCD của thành viên để add vào
-    const [identificatiinInput, setIdentificationInput] = useState('');
-    // CCCD của chủ hộ để add vào
-    const [identificatiinInputMain, setIdentificationInputMain] = useState('');
+
+    const [moveOutDate, setMoveOutDate] = useState(null)
+
     //handle save button
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const timer = useRef();
-    const [errorMessage, setErrorMessage] = useState('');
-    const [checkErrorStatus, setCheckErrorStatus] = useState(false);
-    const [errorMessageMain, setErrorMessageMain] = useState('');
-    const [checkErrorMainStatus, setCheckErrorMainStatus] = useState(false);
-    const buttonSx = {
-        ...(success && {
-            bgcolor: green[500],
-            '&:hover': {
-                bgcolor: green[700],
-            },
-        }),
-    };
+
+    const [deleteId, setDeleteId] = useState(null);
+
+    const [addResidentDialog, setAddResidentDialog] = useState(false);
+
+    const [isDelete, setIsDelete] = useState(false);
+
+    const householdIdRef = useRef();
+    const [householdIdError, setHouseholdIdError] = useState('');
+    const addressRef = useRef();
+    const [addressError, setAddressError] = useState('');
+    const scopeRef = useRef();
+    const [scopeError, setScopeError] = useState('');
+    const moveOutPlaceRef = useRef();
+    const moveOutReasonRef = useRef();
 
     useEffect(() => {
         return () => {
             clearTimeout(timer.current);
         };
     }, []);
-    const handleSave = () => {
-        if (!loading) {
-            setSuccess(false);
-            setLoading(true);
-            timer.current = window.setTimeout(() => {
-                setSuccess(true);
-                setLoading(false);
-            }, 2000);
-        }
-    };
-    const resetInputIdentification = useCallback(
-        () => {
-            setIdentificationInput('');
-            setIdentificationInputMain('');
-        }, []
-    );
-    //them thanh vien vao ho khau bang CMND/CCCD, chỉnh sửa sau
-    const addIdentification = () => {
-        const check = validation.checkIdentifi(identificatiinInput);
-        if (check.isValid) {
-            setPeople(
-                prev => {
-                    return [...prev, {
-                        ...rowData,
-                        idenftification: makeRandomIdentification()
-                    }]
-                }
-            );
-            resetInputIdentification();
-        }
-        else {
-            setCheckErrorStatus(true);
-            setErrorMessage(check.message);
-        }
-    };
-    //them chu ho vao ho khau bang CMND/CCCD, chỉnh sửa sau
-    const addMainIdentification = () => {
-        const check = validation.checkIdentifi(identificatiinInputMain);
-        if (check.isValid) {
-            setPeople(
-                prev => {
-                    return [...prev, {
-                        ...rowData,
-                        idenftification: makeRandomIdentification()
-                    }]
-                }
-            );
-            resetInputIdentification();
-        }
-        else {
-            setCheckErrorMainStatus(true);
-            setErrorMessageMain(check.message);
-        }
-    };
+
     //handle when clode this dislog
     const [isClose, setIsClose] = useState(false);
-    const handleCloseConfirmBox = useCallback(() => {
+    const handleCloseConfirmBox = () => {
         setIsClose(false);
-    }, []);
+    }
 
-    // const [open, setOpen] = React.useState(false);
     const handleSuccess = () => {
         setSuccess(false);
     };
@@ -171,41 +94,124 @@ export default function AddHouseholDialog({ open, onClose }) {
         onClose(!open);
         setIsClose(false);
     };
-    const handleInput = useCallback(
-        (e) => {
-            setIdentificationInput(e.target.value);
-            if (checkErrorStatus) {
-                setCheckErrorStatus(false)
-            }
-        }, []);
 
     const handlStartClose = () => {
-        onClose(!open);
+        if (
+            householdIdRef.current.value !== '' ||
+            addressRef.current.value !== '' ||
+            scopeRef.current.value !== '' ||
+            moveOutPlaceRef.current.value !== '' ||
+            moveOutReasonRef.current.value !== '' ||
+            people.length !== 0 ||
+            moveOutDate !== null
+        ) {
+            setIsClose(true);
+        }
+        else {
+            onClose(false)
+        }
     };
-    const handleDelete = () => {
-        setIdentificationInput(
-            prev => {
-                return prev.filter((item, index) => index !== 0)
-            }
-        )
+
+
+    const handleDelete = (id) => {
+        setDeleteId(id);
+        setIsDelete(true);
     }
+
+    const handleCloseDeleteById = () => {
+        setDeleteId(null);
+        setIsDelete(false);
+    }
+    const handleDeleteById = () => {
+        setPeople(prev => {
+            return prev.filter(item => item.identityCode !== deleteId)
+        })
+        setIsDelete(false);
+        setDeleteId(null);
+    }
+
+    const addResident = (resident) => {
+        if (
+            people.every(
+                item => item.identityCode !== resident.identityCode
+            )
+        ) {
+            setPeople(prev => {
+                return [...prev, resident]
+            });
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    const handleStartAddResident = () => {
+        setAddResidentDialog(true);
+    }
+
+    const handleAddHousehold = async () => {
+        setLoading(true);
+        const householdId = householdIdRef.current.value;
+        const address = addressRef.current.value;
+        const scope = +scopeRef.current.value;
+        const moveOutPlace = moveOutPlaceRef.current.value;
+        const moveOutReason = moveOutReasonRef.current.value;
+        console.log(scope)
+        let canAdd = true;
+        if (householdId === '') {
+            setHouseholdIdError('Vui lòng nhập số hộ khẩu');
+            canAdd = false;
+        }
+        if (address === '') {
+            setAddressError('Vui lòng nhập địa chỉ');
+            canAdd = false;
+        }
+        if (!validation.checkScope(scope)) {
+            setScopeError('Vui lòng nhập đúng định dạng');
+            canAdd = false;
+        }
+        if (canAdd) {
+            const data = {
+                householdId: householdId,
+                address: address,
+                scope: scope,
+                moveOutDate: moveOutDate,
+                moveOutPlace: moveOutPlace,
+                moveOutReason: moveOutReason,
+                nonExistMembers: people
+            }
+            console.log(data)
+            const result = await householdManager.addHousehold(auth.token, data);
+            console.log(result);
+            if (result && result.status === 200) {
+                setSuccess(true);
+                setLoading(false);
+                onClose(!open);
+            }
+            setLoading(false);
+        }
+        setLoading(false);
+    }
+
     return (
         <div>
-            <Snackbar open={success} autoHideDuration={6000} onClose={handleSuccess} >
+            <Snackbar open={success} autoHideDuration={4000} onClose={handleSuccess} >
                 <Alert onClose={handleSuccess} severity="success" sx={{ width: '100%', fontSize: 15 }}>
                     Thên hộ khẩu mới thành công !
                 </Alert>
             </Snackbar>
+            {addResidentDialog && <AddResidentDialog open={addResidentDialog} onClose={setAddResidentDialog} action={addResident} />}
             <Dialog
                 fullWidth={true}
                 maxWidth='1000'
                 open={open}
-                onClose={handleClose}
+                onClose={handlStartClose}
                 TransitionComponent={Transition}
             >
                 <div className={cx('header-paper-population')}>
                     <Button variant="contained" color="error" onClick={handlStartClose}>Đóng</Button>
                 </div>
+                {loading && <LinearProgress />}
                 <div className={cx('household-paper')}>
                     <h2 className={cx('title-household')}>Thêm hộ khẩu mới</h2>
                     <div className={cx('household-detail')}>
@@ -213,69 +219,78 @@ export default function AddHouseholDialog({ open, onClose }) {
                             sx={{ width: '400px' }}
                             required
                             label="Số hộ khẩu"
-                            defaultValue="123"
                             variant="standard"
+                            defaultValue=''
+                            inputRef={householdIdRef}
+                            error={householdIdError !== ''}
+                            helperText={householdIdError}
                         />
                         <TextField
                             sx={{ width: '400px' }}
-                            required
                             label="Nơi thường trú"
-                            defaultValue="123"
+                            defaultValue=''
                             variant="standard"
+                            inputRef={addressRef}
+                            error={addressError !== ''}
+                            helperText={addressError}
                         />
                         <TextField
                             sx={{ width: '400px' }}
                             required
                             label="Tổ phụ trách"
-                            defaultValue="123"
+                            defaultValue=''
+                            variant="standard"
+                            inputRef={scopeRef}
+                            error={scopeError !== ''}
+                            helperText={scopeError}
+                        />
+                    </div>
+                    <div className={cx('household-detail')}>
+                        <TextField
+                            defaultValue=''
+                            sx={{ width: '400px' }}
+                            inputRef={moveOutPlaceRef}
+                            label="Địa điểm chuyển đi"
+                            variant="standard"
+                        />
+                        <LocalizationProvider dateAdapter={AdapterDayjs} >
+                            <DatePicker
+                                value={moveOutDate}
+                                onChange={(newValue) => {
+                                    setMoveOutDate(newValue);
+                                }}
+                                renderInput={({ inputRef, inputProps, InputProps }) =>
+                                    <FormControl sx={{ m: 1, width: 400 }} variant="standard">
+                                        <InputLabel htmlFor="input_login_account">
+                                            Ngày chuyển đi
+                                        </InputLabel>
+                                        <Input
+                                            inputRef={inputRef}
+                                            id="input_login_account"
+                                            endAdornment={
+                                                <InputAdornment position="start">
+                                                    {InputProps?.endAdornment}
+                                                </InputAdornment>
+                                            }
+                                            {...inputProps}
+                                        />
+                                    </FormControl>
+                                }
+                            />
+                        </LocalizationProvider>
+                        <TextField
+                            sx={{ width: '400px' }}
+                            label="Lý do chuyển đi"
+                            inputRef={moveOutReasonRef}
+                            defaultValue=""
                             variant="standard"
                         />
                     </div>
                 </div>
-                <div className={cx('line-form')}>
-                    <h3>CCCD/CMND chủ hộ ( Sau khi nhập ấn dấu + để tự động thêm vào bảng)</h3>
-                    <div className={cx('identification-container')}>
-                        <TextField
-                            label=""
-                            value={identificatiinInputMain}
-                            onChange={(e) => setIdentificationInputMain(e.target.value)}
-                            variant="outlined" />
-                        <Fab
-                            color="secondary"
-                            size="small"
-                            component="span"
-                            aria-label="add"
-                            variant="extended"
-                            sx={{ margin: '0 5px' }}
-                            onClick={addMainIdentification}
-                        >
-                            <Add />
-                        </Fab>
-                        {checkErrorMainStatus && <span className={cx('err-mes')}>{errorMessage}</span>}
-                    </div>
-                </div>
-                <div className={cx('line-form')}>
-                    <h3>CCCD/CMND thành viên ( Sau khi nhập ấn dấu + để tự động thêm vào bảng)</h3>
-                    <div className={cx('identification-container')}>
-                        <TextField
-                            required label=""
-                            value={identificatiinInput}
-                            onChange={handleInput}
-                            variant="outlined"
-                        />
-                        <Fab
-                            color="secondary"
-                            size="small"
-                            component="span"
-                            aria-label="add"
-                            variant="extended"
-                            sx={{ margin: '0 5px' }}
-                            onClick={addIdentification}
-                        >
-                            <Add />
-                        </Fab>
-                        {checkErrorStatus && <span className={cx('err-mes')}>{errorMessage}</span>}
-                    </div>
+                <div>
+                    <Button variant="contained"
+                        sx={{ margin: '0px 20px' }}
+                        color="primary" onClick={handleStartAddResident}>Thêm thành viên</Button>
                 </div>
                 <TableContainer sx={{ padding: '0 20px' }} component={Paper}>
                     <Table stickyHeader sx={{ minWidth: 1000 }} aria-label="customized table">
@@ -291,82 +306,65 @@ export default function AddHouseholDialog({ open, onClose }) {
                                 <StyledTableCell align="center">Ngày sinh</StyledTableCell>
                                 <StyledTableCell align="center">Giới tính</StyledTableCell>
                                 <StyledTableCell align="center">Quan hệ với chủ hộ</StyledTableCell>
-                                <StyledTableCell align="center">Sổ hộ khẩu</StyledTableCell>
-                                <StyledTableCell align="center">Tổ phụ trách</StyledTableCell>
                                 <StyledTableCell align="center">Edit</StyledTableCell>
                             </TableRow>
                         </TableHead>
-                        <TableBody>
-                            {people.length > 0 && people.map((row, index) => (
-                                <StyledTableRow key={index}>
-                                    {Object.keys(row).map((key, index1) => {
-                                        if (key !== 'id') {
-                                            return (
-                                                <StyledTableCell key={index + ' ' + index1} align="center" component="th" scope="row">
-                                                    {row[key]}
-                                                </StyledTableCell>
-                                            )
-                                        }
-                                        return null;
-                                    })}
-                                    <StyledTableCell align="center" component="th" scope="row">
-                                        <Button>
-                                            Sửa
-                                        </Button>
-                                        <Button onClick={handleDelete} >Xóa</Button>
-                                    </StyledTableCell>
-                                </StyledTableRow>
-                            ))}
-                            {
-                                people.length === 0 &&
-                                (
-                                    <Fragment>
-                                        <StyledTableRow>
-                                            <StyledTableCell align="center" component="th" scope="row" >
-                                            </StyledTableCell>
-                                        </StyledTableRow>
-                                        <StyledTableRow>
-                                            <StyledTableCell align="center" component="th" scope="row">
-                                                Chưa có thành viên nào
-                                            </StyledTableCell>
-                                        </StyledTableRow>
-                                        <StyledTableRow>
-                                            <StyledTableCell align="center" component="th" scope="row" >
-                                            </StyledTableCell>
-                                        </StyledTableRow>
-                                    </Fragment>
-                                )
-                            }
-                        </TableBody>
+                        {people.length !== 0 ?
+                            <TableBody>
+                                {people.map((row, index) => (
+                                    <StyledTableRow key={index}>
+                                        <StyledTableCell align="center">{row.identityCode}</StyledTableCell>
+                                        <StyledTableCell align="center">{row.fullName}</StyledTableCell>
+                                        <StyledTableCell align="center">{row.dateOfBirth.$d.getDate()}</StyledTableCell>
+                                        <StyledTableCell align="center">{row.isMale ? 'Nam' : 'Nữ'}</StyledTableCell>
+                                        <StyledTableCell align="center">{row.relationShip}</StyledTableCell>
+                                        <StyledTableCell align="center" component="th" scope="row">
+                                            <Button>
+                                                Chi tiết
+                                            </Button>
+                                            <Button
+                                                onClick={() => { handleDelete(row.identityCode) }}
+                                            >Xóa</Button>
+                                        </StyledTableCell>
+                                    </StyledTableRow>
+                                ))}
+                            </TableBody>
+                            :
+                            (
+                                <TableBody>
+                                    <TableRow>
+                                        <StyledTableCell align="center"></StyledTableCell>
+                                        <StyledTableCell align="center"></StyledTableCell>
+                                        <StyledTableCell align="center"></StyledTableCell>
+                                        <StyledTableCell align="center"></StyledTableCell>
+                                        <StyledTableCell align="center"></StyledTableCell>
+                                        <StyledTableCell align="center"></StyledTableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <StyledTableCell align="center"></StyledTableCell>
+                                        <StyledTableCell align="center"></StyledTableCell>
+                                        <StyledTableCell align="center">Chưa có thành viên</StyledTableCell>
+                                        <StyledTableCell align="center"></StyledTableCell>
+                                        <StyledTableCell align="center"></StyledTableCell>
+                                        <StyledTableCell align="center"></StyledTableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <StyledTableCell align="center"></StyledTableCell>
+                                        <StyledTableCell align="center"></StyledTableCell>
+                                        <StyledTableCell align="center"></StyledTableCell>
+                                        <StyledTableCell align="center"></StyledTableCell>
+                                        <StyledTableCell align="center"></StyledTableCell>
+                                        <StyledTableCell align="center"></StyledTableCell>
+                                    </TableRow>
+                                </TableBody>
+                            )
+                        }
                     </Table>
                 </TableContainer>
-                <div>
-                    <Box sx={{ m: 1, position: 'relative' }}>
-                        <Fab
-                            aria-label="save"
-                            color="primary"
-                            sx={buttonSx}
-                            onClick={handleSave}
-                        >
-                            {success ? <CheckIcon /> : <SaveIcon />}
-                        </Fab>
-                        {loading && (
-                            <CircularProgress
-                                size={68}
-                                sx={{
-                                    color: green[500],
-                                    position: 'absolute',
-                                    top: -6,
-                                    left: -6,
-                                    zIndex: 1,
-                                }}
-                            />
-                        )}
-                    </Box>
-
-                </div>
+                <Button onClick={handleAddHousehold} sx={{ marginTop: 20 }} variant='contained' color='secondary'>Thêm</Button>
             </Dialog>
-            <ConfirmBox open={isClose} onClose={handleCloseConfirmBox} onAgree={handleClose} />
+            <ConfirmBox key='close' open={isClose} onClose={handleCloseConfirmBox} onAgree={handleClose} />
+            <ConfirmBox key='delete' open={isDelete} onClose={handleCloseDeleteById} onAgree={handleDeleteById} title='Bạn có chắc muốn xóa' />
         </div >
     );
 }

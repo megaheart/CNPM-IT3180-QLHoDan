@@ -14,6 +14,7 @@ import CustomToolbarExport from '../ComponentExport';
 
 //call api
 import householdManager from '~/services/api/householdManager';
+import residentManager from '~/services/api/residentManager';
 import useAuth from '~/hooks/useAuth';
 import {
     useQuery,
@@ -29,18 +30,6 @@ const columns = [
 ];
 
 
-//data in each row
-// const rowInit = [
-//     { id: 1, noiThuongTru: 'Hà Nội', chuHo: 'Nguyễn Văn Thanh', iden: '123456789012', toPhuTrach: 1 },
-//     { id: 2, noiThuongTru: 'Hà Nội', chuHo: 'Trần Ngọc Cường', iden: '123456789012', toPhuTrach: 6 },
-//     { id: 3, noiThuongTru: 'Hà Nội', chuHo: 'Nguyễn Đức Minh', iden: '123456789012', toPhuTrach: 1 },
-//     { id: 4, noiThuongTru: 'Hà Nội', chuHo: 'Nguyễn Văn Minh', iden: '123456789012', toPhuTrach: 2 },
-//     { id: 5, noiThuongTru: 'Hà Nội', chuHo: 'Nguyễn Văn Nam', iden: '123456789012', toPhuTrach: 4 },
-//     { id: 6, noiThuongTru: 'Hà Nội', chuHo: 'Nguyễn Văn Khánh', iden: '123456789012', toPhuTrach: 1 },
-//     { id: 7, noiThuongTru: 'Hà Nội', chuHo: 'Nguyễn Quốc Duy', iden: '123456789012', toPhuTrach: 1 },
-//     { id: 8, noiThuongTru: 'Hà Nội', chuHo: 'Phạm Đình Quân', iden: '123456789012', toPhuTrach: 6 }
-// ]
-
 export default function TableHoKhau() {
     //các dữ liệu từng dòng được khởi tạo trong bảng, sẽ gọi bằng api
 
@@ -55,7 +44,20 @@ export default function TableHoKhau() {
         () => columns, []
     );
     const { auth } = useAuth();
-    const { data, isLoading, error } = useQuery(['households'], () => householdManager.getHouseholdList(auth.token));
+    const { data, isLoading, error } = useQuery(
+        ['households'], async () => householdManager.getHouseholdList(auth.token),
+        {
+            refetchOnWindowFocus: true,
+        }
+    );
+
+    const allResidents = useQuery(
+        ['residents'],
+        async () => residentManager.getAllResident(auth.token),
+        {
+            refetchOnWindowFocus: true,
+        }
+    );
 
     //trường dữ liệu từng cột
     //...
@@ -119,7 +121,7 @@ export default function TableHoKhau() {
     }
     return (
         <div style={{ height: '90%', width: '100%', margin: '10' }}>
-            <AddHouseholDialog open={isCreateMode} onClose={closeCreateMode} />
+            {isCreateMode && <AddHouseholDialog open={isCreateMode} onClose={closeCreateMode} />}
             <Snackbar open={success} autoHideDuration={6000} onClose={handleCloseSnackbar}>
                 <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%', fontSize: 15 }}>
                     Xoá hộ khẩu thành công!
@@ -128,16 +130,18 @@ export default function TableHoKhau() {
             {
                 infoId &&
                 <FullScreenDialog
+                    resetIfoId={() => setInfoId(null)}
                     open={dialogInfo}
                     onClose={setDialogInfo}
                     idHousehold={infoId}
+                    allResidents={allResidents.data}
                 />
             }
 
-            {!isLoading && <div>
+            {!isLoading && allResidents.isSuccess && <div>
                 <Button sx={{ fontSize: 16 }} variant='contained' onClick={() => setIsCreateMode(true)}>Thêm hộ khẩu</Button>
             </div>}
-            {isLoading ? <TableSkeleton /> : <TableContainer sx={{ maxHeight: 500, backgroundColor: '#fff' }}>
+            {(isLoading || allResidents.isLoading || !data) ? <TableSkeleton /> : <TableContainer sx={{ maxHeight: 500, backgroundColor: '#fff' }}>
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead >
                         <TableRow>
@@ -180,7 +184,7 @@ export default function TableHoKhau() {
                 </Table>
             </TableContainer>
             }
-            {!isLoading && <TablePagination
+            {(!isLoading && allResidents.isSuccess) && <TablePagination
                 rowsPerPageOptions={[5, 10, 20]}
                 component="div"
                 count={data.length}

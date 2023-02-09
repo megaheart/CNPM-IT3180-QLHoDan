@@ -19,16 +19,17 @@ import ConfirmBox from './ConfirmBox';
 import {
     useQuery,
     useMutation,
-    useQueryClient
+    useQueryClient,
+    useQueries
 } from '@tanstack/react-query';
 import householdManager from '~/services/api/householdManager';
-
+import residentManager from '~/services/api/residentManager';
 const cx = classNames.bind(styles);
 const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function FullScreenDialog({ open, onClose, idHousehold }) {
+export default function FullScreenDialog({ open, onClose, idHousehold, resetIfoId, allResidents }) {
     //handle save button
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
@@ -36,8 +37,8 @@ export default function FullScreenDialog({ open, onClose, idHousehold }) {
 
     const { auth } = useAuth();
 
-    const { data, isLoading, error } = useQuery(['householdDetail'], () => householdManager.getHousehold(auth.token, idHousehold));
-    console.log(data);
+    const { data, isLoading } = useQuery(['householdDetail'], () => householdManager.getHousehold(auth.token, idHousehold));
+
     //edit mode
     const [editMode, setEditMode] = useState(false);
 
@@ -75,6 +76,7 @@ export default function FullScreenDialog({ open, onClose, idHousehold }) {
     //handle close this dialog
     const handleClose = () => {
         setEditMode(false);
+        resetIfoId();
         onClose(!open);
         setIsClose(false);
     };
@@ -85,6 +87,7 @@ export default function FullScreenDialog({ open, onClose, idHousehold }) {
         }
         else {
             onClose(!open);
+            resetIfoId();
         }
     };
     return (
@@ -181,7 +184,11 @@ export default function FullScreenDialog({ open, onClose, idHousehold }) {
                                 />
                             </div>
                         </div>
-                        <Population editMode={editMode} />
+                        {<Population editMode={editMode} data={
+                            allResidents.filter((resident) => {
+                                return resident.householdId === idHousehold
+                            })}
+                        />}
                     </Fragment>
                 }
             </Dialog>
