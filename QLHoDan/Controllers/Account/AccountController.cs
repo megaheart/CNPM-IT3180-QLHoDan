@@ -14,7 +14,7 @@ using QLHoDan.Models.Api;
 using Microsoft.AspNetCore.Cors;
 using SQLitePCL;
 
-namespace QLHoDan.Controllers
+namespace QLHoDan.Controllers.Account
 {
     [Route("api/account")]
     [ApiController]
@@ -26,14 +26,14 @@ namespace QLHoDan.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly QLHoDan.Services.ITokenCreationService _jwtService;
-        private readonly QLHoDan.Services.Storage _storage;
+        private readonly ITokenCreationService _jwtService;
+        private readonly StorageService _storage;
         public AccountController(SignInManager<ApplicationUser> signInManager,
                                     UserManager<ApplicationUser> userManager,
                                     IAuthenticationSchemeProvider schemeProvider,
                                     RoleManager<IdentityRole> roleManager,
-                                    QLHoDan.Services.ITokenCreationService jwtService,
-                                    Storage storage)
+                                    ITokenCreationService jwtService,
+                                    StorageService storage)
         {
             _userManager = userManager;
             _schemeProvider = schemeProvider;
@@ -65,7 +65,7 @@ namespace QLHoDan.Controllers
             var user = await _userManager.FindByNameAsync(model.UserName);
             if (user == null)
             {
-                return BadRequest(new[] {new RequestError("IdS_InvalidAccount", "Bad credentials")} );
+                return BadRequest(new[] { new RequestError("IdS_InvalidAccount", "Bad credentials") });
             }
 
             var isPasswordValid = await _userManager.CheckPasswordAsync(user, model.Password);
@@ -98,7 +98,7 @@ namespace QLHoDan.Controllers
             var user = new ApplicationUser()
             {
                 UserName = model.UserName,
-                FullName= model.FullName,
+                FullName = model.FullName,
                 Scope = model.Scope,
                 Note = model.Note,
                 Role = model.Role,
@@ -130,7 +130,8 @@ namespace QLHoDan.Controllers
                     return BadRequest(new[] { new RequestError("IdS_RoleNotExist", "Account Role = " + model.Role + " (must be a integer in [1, 4]) Cannot Be Found.") });
             }
             IdentityResult roleresult = null;
-            if (!(await _roleManager.RoleExistsAsync(roleName))){
+            if (!await _roleManager.RoleExistsAsync(roleName))
+            {
                 roleresult = await _roleManager.CreateAsync(new IdentityRole(roleName));
             }
             if (roleresult == null || roleresult.Succeeded) roleresult = await _userManager.AddToRoleAsync(user, roleName);
@@ -148,10 +149,10 @@ namespace QLHoDan.Controllers
         //GET api/account/delete
         [HttpGet("delete")]
         [AllowAnonymous]
-        public async Task<IActionResult> DeleteAccount([FromQuery]string username)
+        public async Task<IActionResult> DeleteAccount([FromQuery] string username)
         {
             var user = await _userManager.FindByNameAsync(username);
-            if(user != null)
+            if (user != null)
             {
                 var result = await _userManager.DeleteAsync(user);
                 if (!result.Succeeded)
@@ -181,7 +182,7 @@ namespace QLHoDan.Controllers
         [HttpPost("changepassword")]
         [Authorize]
         //[ValidateAntiForgeryToken]
-        
+
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequestModel model)
         {
             if (!ModelState.IsValid)
@@ -189,7 +190,7 @@ namespace QLHoDan.Controllers
                 return BadRequest(ModelState);
             }
             var user = await _userManager.FindByIdAsync(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            if(user== null)
+            if (user == null)
             {
                 return Unauthorized("Invalid Token");
             }
@@ -287,14 +288,15 @@ namespace QLHoDan.Controllers
             //}
             var id = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var user = await _userManager.FindByIdAsync(id);
-            if(user == null)
+            if (user == null)
             {
                 return Unauthorized(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
             }
 
-            return Ok(new ProfileResponseModel { 
-                FullName = user.FullName, 
-                Scope = user.Scope, 
+            return Ok(new ProfileResponseModel
+            {
+                FullName = user.FullName,
+                Scope = user.Scope,
                 AvatarLink = user.AvatarLink,
                 WallpaperLink = user.WallpaperLink,
             });
@@ -305,7 +307,7 @@ namespace QLHoDan.Controllers
         /// </summary>
         [HttpPost("changeAvatar")]
         [Authorize]
-        public async Task<IActionResult> ChangeAvatar([FromForm(Name = "file")]IFormFile file)
+        public async Task<IActionResult> ChangeAvatar([FromForm(Name = "file")] IFormFile file)
         {
             var id = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var user = await _userManager.FindByIdAsync(id);
@@ -427,15 +429,15 @@ namespace QLHoDan.Controllers
                 return Unauthorized(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
             }
 
-            if(await _userManager.IsInRoleAsync(user, "ScopeLeader"))
+            if (await _userManager.IsInRoleAsync(user, "ScopeLeader"))
             {
                 return Ok(_userManager.Users.Where(u => u.Scope == user.Scope && u.Role == 4)
                     .Select(u => new HouseholdAccountResponseModel()
                     {
-                            UserName = u.UserName,
-                            FullName = u.FullName,
-                            Scope = u.Scope,
-                            Note = u.Note
+                        UserName = u.UserName,
+                        FullName = u.FullName,
+                        Scope = u.Scope,
+                        Note = u.Note
                     }));
             }
             else
@@ -470,7 +472,7 @@ namespace QLHoDan.Controllers
                 return Unauthorized(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
             }
             var isScopeLeader = await _userManager.IsInRoleAsync(manager, "ScopeLeader");
-            if(isScopeLeader && manager.Scope != model.Scope)
+            if (isScopeLeader && manager.Scope != model.Scope)
             {
                 return BadRequest(new[] { new RequestError("IdS_ScopeOutOfManagement", "Tổ trưởng tổ " + manager.Scope + " không thể tạo người dùng cho tổ " + model.Scope + ".") });
             }
@@ -492,7 +494,7 @@ namespace QLHoDan.Controllers
             }
             string roleName = "Household";
             IdentityResult roleresult = null;
-            if (!(await _roleManager.RoleExistsAsync(roleName)))
+            if (!await _roleManager.RoleExistsAsync(roleName))
             {
                 roleresult = await _roleManager.CreateAsync(new IdentityRole(roleName));
             }
@@ -503,7 +505,7 @@ namespace QLHoDan.Controllers
                 if (roleresult.Errors != null)
                     return BadRequest(RequestError.FromIdentityError(result.Errors));
                 return BadRequest(new[] { new RequestError("IdS_AddAccountRoleUnknown", "Add Account Role Unknown Error") });
-                
+
             }
 
             return Ok();
@@ -659,7 +661,7 @@ namespace QLHoDan.Controllers
             {
                 return Unauthorized(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
             }
-            if(model.Role == 1)
+            if (model.Role == 1)
             {
                 return BadRequest(new[] { new RequestError("IdS_RoleOutOfManagement", "Không thể tạo được tài khoản cấp Chủ tịch phường.") });
             }
@@ -704,7 +706,7 @@ namespace QLHoDan.Controllers
                     return BadRequest(new[] { new RequestError("IdS_RoleNotExist", "Account Role = " + model.Role + " (must be a integer in [1, 4]) Cannot Be Found.") });
             }
             IdentityResult roleresult = null;
-            if (!(await _roleManager.RoleExistsAsync(roleName)))
+            if (!await _roleManager.RoleExistsAsync(roleName))
             {
                 roleresult = await _roleManager.CreateAsync(new IdentityRole(roleName));
             }

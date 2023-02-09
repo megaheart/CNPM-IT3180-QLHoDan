@@ -435,6 +435,7 @@
 
         *Tài khoản không đủ quyền để truy cập. Tài khoản không phải thư kí, chủ tịch phường.*
 
+
 ## Cấp người quản trị
 ### Thay đổi thông tin tài khoản bất kì
 <span style="color:#fbbc05; width: 50px; display: inline-block">**POST**</span> ```https://localhost:7265/api/account/admin/changeAccountProfile```
@@ -474,6 +475,113 @@
     - [403 Forbidden]
 
         *Tài khoản không đủ quyền để truy cập. Tài khoản không phải chủ tịch phường.*
+
+## Quản lý thông báo
+### Lấy số lượng thông báo chưa đọc
+<span style="color:#34a853; width: 50px; display: inline-block">**GET**</span> ```https://localhost:7265/api/Notification/count```
+
+*Đếm số lượng thông báo chưa đọc.*
+
+- **Request Header**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |Authorization|"Bearer " + &lt;Một chuỗi kí tự là token nhận được sau khi đăng nhập&gt;|
+
+- **Response Body khi thành công (Json)**
+    Trả về 1 số nguyên không âm biểu thị số tin nhắn chưa đọc
+
+    Ex:
+    ```json
+    3
+    ```
+- **Lỗi**
+    - [401 Unauthorized]
+
+        *JWT Token không hợp lệ*
+
+### Lấy ra danh sách thông báo
+
+<span style="color:#34a853; width: 50px; display: inline-block">**GET**</span> ```https://localhost:7265/api/Notification[?isRead={boolean}]```
+
+*Lấy ra danh sách thông báo thoả mã điều kiện cho trước.*
+
+- **Query Params**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |isRead|*[tuỳ chọn]* `true` để lấy danh sách thông báo đã đọc, `false` để lấy danh sách thông báo chưa đọc.<br/>Mặc định là `false`|
+
+- **Request Header**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |Authorization|"Bearer " + &lt;Một chuỗi kí tự là token nhận được sau khi đăng nhập&gt;|
+
+- **Response Body khi thành công (Json)**
+
+    Một danh sách các thông báo mà mỗi thông báo đều có định dạng được miêu tả ở bảng dưới:
+
+    | Property    | Type      | Description            |
+    | ----------- | --------- | ---------------------- |
+    | `id`          | int       | id                     |
+    | `sender `     | string    | Username Tài khoản gửi |
+    | `senderFullname` | string | Tên đầy đủ của tài khoản gửi |
+    | `time`        | DateTime  | Ngày giờ phút giây gửi   |
+    | `content`     | string    | Nội dung thông báo       |
+    | `isRead`      | boolean   | Đã đọc hay chưa        |
+
+    Ex:
+    ```json
+    [
+        {
+            "Id": 30,
+            "Sender": "admin",
+            "SenderFullname": "Nguyễn Quý Sinh",
+            "Time": "2022-12-31T23:59:59",
+            "Content": "Các đồng chí chuẩn bị cho nghị định mới.",
+            "IsRead": false
+        },
+        ...
+    ]
+    ```
+
+- **Lỗi**
+    - [401 Unauthorized]
+
+        *JWT Token không hợp lệ*
+
+### Đánh dấu thông báo đã đọc
+<span style="color:#fbbc05; width: 50px; display: inline-block">**POST**</span> ```https://localhost:7265/api/Notification/read?msgIds={int},{int},..,{int}```
+
+*Phê duyệt đợt thưởng, gửi thông báo mở đợt thưởng với toàn bộ người dân (nếu điền), và tài khoản đặc biệt (nếu điền).* 
+
+*Chỉ chủ tịch phường mới dùng được.*
+
+- **Query Params**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |msgIds|Danh sách các mã thông báo cần đánh dấu đã đọc, có thể gồm 1 hoặc nhiều phần tử, là các số nguyên dương cách nhau bởi dấu phẩy|
+
+- **Request Header**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |Authorization|"Bearer " + &lt;Một chuỗi kí tự là token nhận được sau khi đăng nhập&gt;|
+
+- **Response Body khi thành công (Json)**
+    
+    Gửi về 1 danh sách Id của những thông báo đánh dấu đã đọc thành công.
+
+    Ex:
+    ```json
+    [2154,2,5,45]
+    ```
+
+- **Lỗi**
+    - [401 Unauthorized]
+
+        *JWT Token không hợp lệ*
+
+    - [400 BadRequest] InvalidMsgIds
+
+        *msgIds bị sai định dạng*
 
 # Module Quản lý hộ khẩu nhân khẩu
 ## Quản lý hộ khẩu
@@ -953,6 +1061,12 @@
 
         *Tổ trưởng không thể tạo nhân khẩu thuộc phạm vi quản lý của tổ khác*
 
+    - [400 BadRequest] InvalidScope
+
+        *Scope chưa được nhập và không tìm thấy hộ khẩu để lấy ra scope.*
+
+        *Scope bị nhập sai định dạng (scope là 1 số nguyên dương).*
+
 ### Cập nhật nhân khẩu
 <span style="color:#4285f4; width: 50px; display: inline-block">**PUT**</span>```https://localhost:7265/api/Residents```
 
@@ -1325,9 +1439,40 @@
 
     ```
 
-- **Response Body khi thành công**
+- **Response Body khi thành công (Json)**
     
-    Không có gì
+    Nội dung trả về tương tự như 1 phần tử trong danh sách trả về của [API Lấy ra danh sách các đợt trao thưởng](#lấy-ra-danh-sách-các-đợt-trao-thưởng)
+
+    | Property | Type | Description |
+    | -------- | ---- | ----------- |
+    |id|number|mã định danh đợt thưởng|
+    |title|string|Tên đợt thưởng|
+    |time|string (date-time format)|Ngày giờ phút giây chủ tịch đề xuất kế hoạch phát thưởng|
+    |type|string|TTHT – phát thưởng cho thành tích học tập, TT – phát thưởng trung thu|
+    |totalValue|number|Tổng tiền cho việc phát thưởng|
+    |isAccepted|boolean|Chủ tịch phường đã duyệt danh sách phát thưởng chưa|
+    |isDone|boolean|Đã phát thưởng chưa|
+    |closingFormDate|string (date-time format)|Ngày đóng nhận form minh chứng|
+    |rewardDate|string (date-time format)|Thời gian nhận thưởng|
+
+    Ex:
+
+    ```json
+    [
+        {
+            "id": 1,
+            "title": "First Reward Ceremony",
+            "time": "2022-12-25T12:00:00Z",
+            "type": "TTHT",
+            "totalValue": 10000,
+            "isAccepted": true,
+            "isDone": true,
+            "closingFormDate": "2022-12-30T12:00:00Z",
+            "rewardDate": "2022-12-31T12:00:00Z"
+        },
+        ...
+    ]
+    ```
 
 - **Lỗi**
     - [401 Unauthorized]
@@ -1603,8 +1748,6 @@
         *Xảy ra khi xoá một phần tử mà một số hàng trong các bảng khác có khoá ngoài trỏ đến phần tử này.*
 
         *Phần tử này hiện tại không thể bị xoá. Thay vào đó hãy cảnh báo người dùng rằng đợt thưởng này không thể xoá (Nó đã được các dữ liệu khác đề cập đến, cũng như điều này đảm bảo thông tin của đợt thưởng này là một thông tin hợp lệ với thực tiễn, không phải một mẫu thử nghiệm.)*
-
-
 
 
 

@@ -13,8 +13,8 @@ namespace QLHoDan.Controllers
     [ApiController]
     public class StaticFilesController : ControllerBase
     {
-        private readonly QLHoDan.Services.Storage _storage;
-        public StaticFilesController(QLHoDan.Services.Storage storage)
+        private readonly QLHoDan.Services.StorageService _storage;
+        public StaticFilesController(QLHoDan.Services.StorageService storage)
         {
             _storage = storage;
         }

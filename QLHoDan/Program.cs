@@ -23,9 +23,6 @@ builder.Services.AddCors(options =>
     });
 });
 
-//Add custom Services
-builder.Services.AddScoped<QLHoDan.Services.ITokenCreationService, JwtService>();
-builder.Services.AddSingleton<QLHoDan.Services.Storage>();
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
             ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -83,6 +80,13 @@ builder.Services.AddControllersWithViews(option =>
 builder.Services.AddRazorPages();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+//Add custom Services
+builder.Services.AddScoped<QLHoDan.Services.ITokenCreationService, JwtService>();
+builder.Services.AddScoped<QLHoDan.Services.NotificationService>();
+builder.Services.AddSingleton<QLHoDan.Services.StorageService>();
+
+
 
 var app = builder.Build();
 
