@@ -180,12 +180,20 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             }
             else if(model.Scope.HasValue)
             {
+                if(model.Scope.Value <= 0)
+                {
+                    return BadRequest(new RequestError()
+                    {
+                        Code = "InvalidScope",
+                        Description = "Scope bị nhập sai định dạng (scope là 1 số nguyên dương)."
+                    });
+                }
                 scope = model.Scope.Value;
             }
             else return BadRequest(new RequestError()
             {
                 Code = "InvalidScope",
-                Description = "Scope chưa được nhập và không tìm thấy hộ khẩu để lấy ra scope. " + model.HouseholdId + "."
+                Description = "Scope chưa được nhập và không tìm thấy hộ khẩu để lấy ra scope (householdId = " + model.HouseholdId + ")."
             });
             var isScopeLeader = await _userManager.IsInRoleAsync(manager, "ScopeLeader");
             if (isScopeLeader && manager.Scope != scope)
