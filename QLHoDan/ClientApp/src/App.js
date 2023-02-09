@@ -1,29 +1,67 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { routes, loginRoute } from '~/routes';
-import useAuth from "~/hooks/useAuth";
+
 import RequireAuth from './services/ProtectedRoute/requireAuth';
-const ROLES = {
-  ADMIN: "CommitteeChairman",
-  MANAGER: "Accountant" | "ScopeLeader",
-  USER: "Household"
-}
+
+/* A constant that is used to define the roles of the users. */
+
+const theme = createTheme({
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          fontSize: '0.7rem',
+        },
+      },
+    },
+    MuiDatePicker: {
+      styleOverrides: {
+        root: {
+          backgroundColor: 'red',
+        },
+      },
+    },
+  },
+});
+
+
+/**
+ * It renders a Route for each route in the routes array, and a Route for each route in the loginRoute
+ * array. 
+ * 
+ * The routes array contains objects that have a path, a layout, and an element. The layout is a React
+ * component that wraps the element. The element is a React component that is rendered inside the
+ * layout. 
+ * 
+ * The loginRoute array contains objects that have a path, a layout, and an element. The layout is a
+ * React component that wraps the element. The element is a React component that is rendered inside the
+ * layout. 
+ * 
+ * The routes array contains objects that have a path, a layout, and an element. The layout is a React
+ * component that wraps the element. The element is a React component that is rendered inside the
+ * layout. 
+ * 
+ * The routes array contains objects that have a path, a layout, and an element. The layout is a React
+ * component that wraps the element
+ * @returns The routes are being returned.
+ */
 function App() {
-  const { auth } = useAuth();
   return (
-    <Routes>
-      {
-        loginRoute.map((route => {
-          return <Route key={route.id} path={route.path} element={
-            (
-              <route.layout>
-                <route.element />
-              </route.layout>
-            )
-          } />
-        }))
-      }
-      {
-        auth.hasOwnProperty('username') && (
+    <ThemeProvider theme={theme}>
+      <Routes>
+        {
+          loginRoute.map((route => {
+            return <Route key={route.id} path={route.path} element={
+              (
+                <route.layout>
+                  <route.element />
+                </route.layout>
+              )
+            } />
+          }))
+        }
+        {
           routes.map((route => {
             const Page = route.element;
             let Layout = route.layout;
@@ -51,10 +89,11 @@ function App() {
               )
             }
           }))
-        )
 
-      }
-    </Routes>
+
+        }
+      </Routes>
+    </ThemeProvider>
   );
 }
 

@@ -1,5 +1,5 @@
 //page
-import { NKTable, HKTable, ResidentHistory, ManagerAccountResident } from '~/page/Table';
+import { NKTable, HKTable, ResidentHistory, ManagerAccountResident, ManagerSpecialAccount } from '~/page/Table';
 import { HKForm, NKForm, RequireRemoving, DeathConfirm, SeparateHousehold, ChangePopulation, ChangeHousehold, FixHouseholdNumber, ConfirmAchievement } from '~/page/Form';
 import ForgetPassword from '~/page/Authentication/ForgetPassword';
 import { Login, Register, Authentication } from '~/page/Authentication';
@@ -7,7 +7,8 @@ import Profile from '~/page/Account';
 import Notification from '~/page/Notification';
 import Guest, { Guest_Add_Household, Guest_Add_Resident } from '~/page/GuestUI';
 import DashboardComponent from '~/page/Dashboard';
-import PersistentDrawerRight from '~/features/Award'
+import PersistentDrawerRight from '~/features/Award';
+import HistoryAward from '~/features/Award/HistoryAward'
 // import ErrorLogin from '~/page/Error'
 //layout
 import DefaultLayout from '~/components/Layout/DefaultLayout'
@@ -16,12 +17,13 @@ import GuestLayout from '~/components/Layout/GuestLayout';
 
 const ROLES = {
     ADMIN: "CommitteeChairman",
-    MANAGER: "Accountant" | "ScopeLeader",
+    ACCOUNTANT: "Accountant",
+    MANAGER: "ScopeLeader",
     USER: "Household"
 }
 
 const routes = [
-    { path: '/dashboard', element: DashboardComponent, layout: DefaultLayout, id: 'db', role: [ROLES.ADMIN, ROLES.MANAGER] },
+    { path: '/dashboard', element: DashboardComponent, layout: DefaultLayout, id: 'db', role: [ROLES.ADMIN, ROLES.MANAGER, ROLES.ACCOUNTANT, ROLES.USER] },
     {
         path: '/addnew',
         subRoutes: [
@@ -44,19 +46,21 @@ const routes = [
             { subpath: '/table/ho_khau', element: HKTable, id: 'tb1' },
             { subpath: '/table/nhan_khau', element: NKTable, id: 'tb2' },
             { subpath: '/table/lich_su_nhan_khau', element: ResidentHistory, id: 'tb3' },
-            { subpath: '/table/danh_sach_tai_khoan_ho_dan', element: ManagerAccountResident, id: 'tb4' }
+            { subpath: '/table/danh_sach_tai_khoan_ho_dan', element: ManagerAccountResident, id: 'tb4' },
+            { subpath: '/table/danh_sach_tai_khoan_can_bo', element: ManagerSpecialAccount, id: 'tb5' }
         ],
-        layout: DefaultLayout, id: 'add', role: [ROLES.ADMIN, ROLES.MANAGER]
+        layout: DefaultLayout, id: 'add', role: [ROLES.ADMIN, ROLES.MANAGER, ROLES.ACCOUNTANT]
     },
     {
         path: '/award-route', subRoutes: [
-            { subpath: '/award', element: PersistentDrawerRight, id: 'a1' }
+            { subpath: '/award', element: PersistentDrawerRight, id: 'a1' },
+            { subpath: '/historyAward', element: HistoryAward, id: 'a2' }
         ],
-        layout: DefaultLayout, id: 'add', role: [ROLES.ADMIN, ROLES.MANAGER]
+        layout: DefaultLayout, id: 'add', role: [ROLES.ADMIN, ROLES.MANAGER, ROLES.ACCOUNTANT]
     },
-    { path: '/notification', element: Notification, layout: DefaultLayout, id: 'noti', role: [ROLES.ADMIN, ROLES.MANAGER, ROLES.USER] },
-    { path: '/profile', element: Profile, layout: DefaultLayout, id: 'pro', role: [ROLES.ADMIN, ROLES.MANAGER, ROLES.USER] },
-    { path: '/error', element: Error, layout: DefaultLayout, id: 'log', role: [ROLES.ADMIN, ROLES.MANAGER, ROLES.USER] },
+    { path: '/notification', element: Notification, layout: DefaultLayout, id: 'noti', role: [ROLES.ADMIN, ROLES.ACCOUNTANT, ROLES.MANAGER, ROLES.USER] },
+    { path: '/profile', element: Profile, layout: DefaultLayout, id: 'pro', role: [ROLES.ADMIN, ROLES.ACCOUNTANT, ROLES.MANAGER, ROLES.USER] },
+    { path: '/error', element: Error, layout: DefaultLayout, id: 'log', role: [ROLES.ADMIN, ROLES.ACCOUNTANT, ROLES.MANAGER, ROLES.USER] },
 
 ];
 

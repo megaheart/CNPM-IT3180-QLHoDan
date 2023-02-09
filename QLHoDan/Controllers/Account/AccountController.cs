@@ -315,7 +315,16 @@ namespace QLHoDan.Controllers.Account
             {
                 return Unauthorized(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
             }
-            user.AvatarLink = await _storage.SaveImage(file, "avatar_" + user.UserName);
+            var link = await _storage.SaveImage(file, "avatar_" + user.UserName);
+            if (string.IsNullOrEmpty(link))
+            {
+                return BadRequest(new RequestError()
+                {
+                    Code = "FileContentTypeInvalid",
+                    Description = "File của bạn không phải file ảnh"
+                });
+            }
+            user.AvatarLink = link;
             IdentityResult result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
             {
@@ -339,7 +348,16 @@ namespace QLHoDan.Controllers.Account
             {
                 return Unauthorized(new[] { new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") });
             }
-            user.WallpaperLink = await _storage.SaveImage(file, "wallpaper_" + user.UserName);
+            var link = await _storage.SaveImage(file, "wallpaper_" + user.UserName);
+            if (string.IsNullOrEmpty(link))
+            {
+                return BadRequest(new RequestError()
+                {
+                    Code = "FileContentTypeInvalid",
+                    Description = "File của bạn không phải file ảnh"
+                });
+            }
+            user.WallpaperLink = link;
             IdentityResult result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
             {

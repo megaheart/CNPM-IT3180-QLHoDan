@@ -5,7 +5,7 @@ const cx = classNames.bind(styles);
 export default function DashboardComponent() {
     return (
         <div >
-            <h1>Hello World </h1>
+            {/* <h1>Hello World </h1> */}
         </div>
     )
 }

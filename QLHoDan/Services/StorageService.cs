@@ -20,15 +20,20 @@ namespace QLHoDan.Services
         /// <summary>
         /// Lưu ảnh vào trong ổ cứng, trả về id để sau này có thể truy cập và lấy bức ảnh về
         /// </summary>
-        /// <param name="stream">Stream chứa nội dung bức hình</param>
-        /// <returns>id để sau này có thể truy cập và lấy bức ảnh về</returns>
-        public async Task<string> SaveImage([NotNull]IFormFile file, string fileNameWithoutExtension = null)
+        /// <param name="file">IFormFile chứa nội dung bức hình</param>
+        /// <returns>
+        /// Nếu file <b>không phải ảnh</b> thì trả về null. <br/>
+        /// Nếu file là file ảnh thì sẽ trả về id để sau này có thể truy cập và lấy bức ảnh về.
+        /// </returns>
+        public async Task<string?> SaveImage([NotNull]IFormFile file, string fileNameWithoutExtension = null)
         {
             if(fileNameWithoutExtension == null)
             {
                 fileNameWithoutExtension = Guid.NewGuid().ToString() + "-" + Guid.NewGuid().ToString();
             }
-            fileNameWithoutExtension += "." + file.ContentType.Substring(file.ContentType.LastIndexOf('/') + 1);
+            var ext = file.ContentType.Substring(file.ContentType.LastIndexOf('/') + 1);
+            if (ext != "png" && ext != "jpeg") return null;
+            fileNameWithoutExtension += "." + ext;
             using (Stream fileStream = File.Open(imgFolder + fileNameWithoutExtension, FileMode.OpenOrCreate))
             {
                 Stream stream = file.OpenReadStream();

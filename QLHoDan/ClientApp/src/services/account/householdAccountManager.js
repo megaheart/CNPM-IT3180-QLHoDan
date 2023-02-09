@@ -35,5 +35,5 @@ class HouseholdAccountManager {
         //return await response.json();
     }
 }
-const householdAccountManager = new HouseholdAccountManager;
+const householdAccountManager = new HouseholdAccountManager();
 export default householdAccountManager;

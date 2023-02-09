@@ -7,13 +7,16 @@ import { TextField, FormControl, InputLabel, MenuItem, Select, InputAdornment, I
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers';
+import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import ListAchievementAward from '../SetupAchivementAward';
+import ListSpecialAward from '../SetupSpecialAward/';
 
-import ListSpecialAward from '../SetupAchivementAward'
 const cx = classNames.bind(styles);
 
 function CreateEvent() {
     const [value, setValue] = useState(null);
     const [value1, setValue1] = useState(null);
+    const [typeOfEvent, setTypeOfEvent] = useState('special');
     return (
         <div className={cx('award-form')}>
             <section className={cx('award-1')}>
@@ -32,6 +35,7 @@ function CreateEvent() {
                     <Select
                         defaultValue='special'
                         sx={{ fontSize: 20 }}
+                        onChange={(e) => { setTypeOfEvent(e.target.value) }}
                     >
                         <MenuItem sx={{ fontSize: 20 }} value='special'>
                             Dịp đặc biệt
@@ -42,7 +46,7 @@ function CreateEvent() {
                     </Select>
                 </FormControl>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker
+                    <DesktopDatePicker
                         value={value}
                         onChange={(newValue) => {
                             setValue(newValue);
@@ -115,7 +119,9 @@ function CreateEvent() {
                 />
             </section>
             <section className={cx('award-2')}>
-                <ListSpecialAward />
+                {typeOfEvent === 'special' ?
+                    <ListSpecialAward /> :
+                    <ListAchievementAward />}
             </section>
         </div>
     );

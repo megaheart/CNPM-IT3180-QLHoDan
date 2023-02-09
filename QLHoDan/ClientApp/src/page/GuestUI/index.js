@@ -2,7 +2,7 @@ import { HKForm, NKForm } from '../Form'
 function Guest() {
     return (
         <div>
-            <h1>Chào mừng bạn đến với ứng dụng quản lý hộ dân của Group 1 </h1>
+
         </div>
     );
 }

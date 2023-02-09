@@ -1,16 +1,14 @@
 import { useState, useRef, useContext, useEffect } from 'react';
 import { AuthContext } from '~/components/AuthenProvider';
 
-import { deepOrange, deepPurple } from '@mui/material/colors';
+import { deepOrange } from '@mui/material/colors';
 import styles from './Header.module.scss';
 import classNames from 'classnames/bind';
 import { NavLink } from "react-router-dom";
-import fuhua from '~/assets/avatars/fuhua.png';
 import Tippy from '@tippyjs/react/headless';
 import { Wrapper as PopperWrapper } from '~/components/Popper';
 import ActionItem from '~/components/component/Action';
-//services
-import accountService from '~/services/account';
+
 //icons
 import HomeIcon from '@mui/icons-material/Home';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
@@ -18,8 +16,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleXmark, faMagnifyingGlass, faUser, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { Avatar, Badge, Alert, Stack } from '@mui/material';
 import MailIcon from '@mui/icons-material/Mail';
+//authentication
+import authenticationService from '~/services/account/authentication';
 //search
-import { FormsAction, TableAction, filterByTitle } from '~/components/component/Action/SearchResult';
+import { FormsAction, filterByTitle } from '~/components/component/Action/SearchResult';
 const cx = classNames.bind(styles);
 
 
@@ -52,7 +52,8 @@ function Header({ text }) {
     }, [search])
     //logout
     const handleLogout = () => {
-        accountService.logout(setAuth);
+        authenticationService.logOut();
+        setAuth({});
     }
     //count number of message
     const [count, setCount] = useState(4);
@@ -163,7 +164,7 @@ function Header({ text }) {
                                     </NavLink>
                                 </div>
                                 <div className={cx('btn')}>
-                                    <NavLink className={cx('btn-avatar-expand')} to='/' onClick={handleLogout}>
+                                    <NavLink className={cx('btn-avatar-expand')} to='/login' onClick={handleLogout}>
                                         <span className={cx('icon-avatar-btn')}><FontAwesomeIcon icon={faRightFromBracket} /> </span>
                                         <span className={cx('avatar-text-btn')}>Đăng xuất</span>
                                     </NavLink>

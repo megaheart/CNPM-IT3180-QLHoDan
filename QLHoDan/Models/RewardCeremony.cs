@@ -6,7 +6,6 @@ namespace QLHoDan.Models
 
 	public class RewardCeremony
 	{
-
         public int Id { get; set; }
         //Tên đợt thưởng
         public string Title { get; set; }
