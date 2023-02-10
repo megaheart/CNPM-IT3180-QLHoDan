@@ -176,16 +176,21 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                     b.Property<bool>("IsAccepted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("NotAcceptedReason")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("NotAcceptedReason")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ResidentIdentityCode")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("RewardCeremonyId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ResidentIdentityCode");
+
+                    b.HasIndex("RewardCeremonyId");
 
                     b.ToTable("AchievementEvidenceForm");
                 });
@@ -203,7 +208,7 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                     b.Property<int>("AchievementType")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("RewardCeremonyId")
+                    b.Property<int>("RewardCeremonyId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("RewardName")
@@ -650,6 +655,14 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                     b.Property<bool>("IsRead")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Receiver")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Sender")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("Time")
                         .HasColumnType("TEXT");
 
@@ -871,6 +884,10 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                     b.Property<DateTime>("ClosingFormDate")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<bool>("IsAccepted")
                         .HasColumnType("INTEGER");
 
@@ -895,6 +912,8 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Title", "Time");
 
                     b.ToTable("RewardCeremony");
                 });
@@ -1050,7 +1069,15 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("QLHoDan.Models.RewardCeremony", "RewardCeremony")
+                        .WithMany()
+                        .HasForeignKey("RewardCeremonyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Resident");
+
+                    b.Navigation("RewardCeremony");
                 });
 
             modelBuilder.Entity("QLHoDan.Models.AchievementRewardPair", b =>
