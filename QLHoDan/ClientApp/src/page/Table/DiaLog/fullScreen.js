@@ -1,20 +1,25 @@
 import { forwardRef, useState, useRef, useEffect, useCallback, Fragment } from 'react';
 import useAuth from '~/hooks/useAuth';
 //material components
-import { Button, Dialog, CircularProgress, Box, Fab, Slide, Snackbar, Alert, TextField } from '@mui/material';
+import {
+    Button, Dialog, Slide, Snackbar, Alert, TextField,
+    InputLabel, InputAdornment, Input, FormControl
+} from '@mui/material';
 import { green } from '@mui/material/colors';
 //icons material
-import CheckIcon from '@mui/icons-material/Check';
-import SaveIcon from '@mui/icons-material/Save';
+import dayjs from 'dayjs';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers';
 //style
 import classNames from 'classnames/bind';
 import styles from './FullScreenDialog.module.scss';
 //components
 import Population from '../TableTemplate/Population';
-import Household from '../Paper/household';
 import LinearProgress from '@mui/material/LinearProgress';
 import Skeleton from '../../Skeleton';
 import ConfirmBox from './ConfirmBox';
+
 //api
 import {
     useQuery,
@@ -33,33 +38,53 @@ export default function FullScreenDialog({ open, onClose, idHousehold, resetIfoI
     //handle save button
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
-    const timer = useRef();
 
     const { auth } = useAuth();
-
-    const { data, isLoading } = useQuery(['householdDetail'], () => householdManager.getHousehold(auth.token, idHousehold));
+    //loading data
+    const { data, isLoading } = useQuery(['householdDetail', idHousehold], () => householdManager.getHousehold(auth.token, idHousehold));
 
     //edit mode
     const [editMode, setEditMode] = useState(false);
 
-    useEffect(() => {
-        return () => {
-            clearTimeout(timer.current);
-        };
-    }, []);
-    const handleSave = () => {
-        if (!loading) {
-            setSuccess(false);
-            setLoading(true);
-            timer.current = window.setTimeout(() => {
-                setSuccess(true);
-                setLoading(false);
-                setEditMode(false);
-            }, 2000);
-        }
-    };
     //handle when clode this dislog
     const [isClose, setIsClose] = useState(false);
+
+    //data change
+    const addressRef = useRef();
+    const [createdTime, setCreatedTime] = useState(null);
+    const [moveOutDate, setMoveOutDate] = useState(null);
+    const moveOutPlaceRef = useRef();
+    const moveOutReasonRef = useRef();
+    const scopeRef = useRef();
+
+    const queryClient = useQueryClient();
+
+    console.log(data);
+
+    useEffect(() => {
+        if (data) {
+            setCreatedTime(data.createdTime || null);
+            setMoveOutDate(data.moveOutDate || null);
+        }
+    }, [data]);
+
+    const queryUpdateHousehold = useMutation({
+        mutationFn: async (dataChange) => householdManager.updateHousehold(auth.token, data.householdId, dataChange),
+        onMutate: async () => {
+            setLoading(true);
+        },
+        onError: () => {
+            alert('Bạn không thể cập nhật hộ khẩu này');
+            setLoading(false);
+        },
+        onSuccess: async () => {
+            await queryClient.invalidateQueries('households');
+            await queryClient.invalidateQueries('residents');
+            setLoading(false);
+            setSuccess(true);
+            setEditMode(false);
+        }
+    });
     const handleCloseConfirmBox = useCallback(() => {
         setIsClose(false);
     }, []);
@@ -90,6 +115,21 @@ export default function FullScreenDialog({ open, onClose, idHousehold, resetIfoI
             resetIfoId();
         }
     };
+
+    const handleSave = () => {
+        const requestBody = {
+            householdId: data.householdId,
+            address: addressRef.current.value,
+            moveOutDate: moveOutDate,
+            moveOutPlace: moveOutPlaceRef.current.value,
+            moveOutReason: moveOutReasonRef.current.value,
+            scope: +scopeRef.current.value,
+            nonExistMembers: []
+        }
+        queryUpdateHousehold.mutate(requestBody);
+    }
+
+
     return (
         <div>
             <Snackbar open={success} autoHideDuration={6000} onClose={handleSuccess} >
@@ -97,11 +137,12 @@ export default function FullScreenDialog({ open, onClose, idHousehold, resetIfoI
                     Thay đổi thông tin thành công!
                 </Alert>
             </Snackbar>
+
             <Dialog
                 fullWidth={true}
                 maxWidth='1000'
                 open={open}
-                onClose={handleClose}
+                onClose={handlStartClose}
                 TransitionComponent={Transition}
             >
                 {loading && <LinearProgress />}
@@ -110,78 +151,116 @@ export default function FullScreenDialog({ open, onClose, idHousehold, resetIfoI
                         <div className={cx('header-paper-population')}>
                             <div className={cx('change-and-save')}>
                                 <Button variant="contained" disabled={editMode} color="primary" sx={{ fontSize: '1rem' }} onClick={handleEdit}>Chỉnh sửa</Button>
-                                <Button variant="outlined" disabled={!editMode} color='success'
-                                    sx={{ fontSize: '1rem' }} onClick={handleSave}>Lưu</Button>
+                                {editMode && <Button variant="outlined" color='success'
+                                    sx={{ fontSize: '1rem' }} onClick={handleSave}>Lưu</Button>}
                             </div>
-
                             <Button variant="contained" color="error" sx={{ fontSize: '1rem' }} onClick={handlStartClose}>Đóng</Button>
                         </div>
                         <div className={cx('household-paper')}>
                             <h2 className={cx('title-household')}>Thông tin sổ hộ khẩu</h2>
                             <div className={cx('household-detail')}>
-                                <TextField
-                                    disabled={true}
-                                    sx={{ width: 200 }}
-                                    inputProps={{ style: { fontSize: 15 } }}
-                                    InputLabelProps={{ style: { fontSize: 20 } }}
-                                    label="Số hộ khẩu"
-                                    defaultValue={idHousehold}
-                                    variant="standard"
-                                />
-                                <TextField
-                                    disabled={true}
-                                    sx={{ width: 200 }}
-                                    inputProps={{ style: { fontSize: 15 } }}
-                                    InputLabelProps={{ style: { fontSize: 20 } }}
-                                    label="Ngày tạo"
-                                    defaultValue={data.createdTime}
-                                    variant="standard"
-                                />
-                                <TextField
-                                    disabled={!editMode}
-                                    sx={{ width: 400 }}
-                                    inputProps={{ style: { fontSize: 15 } }}
-                                    InputLabelProps={{ style: { fontSize: 20 } }}
-                                    label="Nơi thường trú"
-                                    defaultValue={data.address}
-                                    variant="standard"
-                                />
-                                <TextField
-                                    disabled={!editMode}
-                                    sx={{ width: 200 }}
-                                    inputProps={{ style: { fontSize: 15 } }}
-                                    InputLabelProps={{ style: { fontSize: 20 } }}
-                                    label="Ngày chuyển "
-                                    defaultValue={data.moveOutDate || 'Không có'}
-                                    variant="standard"
-                                />
-                                <TextField
-                                    disabled={!editMode}
-                                    sx={{ width: 200 }}
-                                    inputProps={{ style: { fontSize: 15 } }}
-                                    InputLabelProps={{ style: { fontSize: 20 } }}
-                                    label="Nơi chuyển "
-                                    defaultValue={data.moveOutPlace || 'Không có'}
-                                    variant="standard"
-                                />
-                                <TextField
-                                    disabled={!editMode}
-                                    sx={{ width: 200 }}
-                                    inputProps={{ style: { fontSize: 15 } }}
-                                    InputLabelProps={{ style: { fontSize: 20 } }}
-                                    label="Lý do chuyển "
-                                    defaultValue={data.moveOutReason || 'Không có'}
-                                    variant="standard"
-                                />
-                                <TextField
-                                    disabled={!editMode}
-                                    sx={{ width: 200 }}
-                                    inputProps={{ style: { fontSize: 15 } }}
-                                    InputLabelProps={{ style: { fontSize: 20 } }}
-                                    label="Tổ phụ trách"
-                                    defaultValue={data.scope}
-                                    variant="standard"
-                                />
+                                <div className={cx('household-detail-line')}>
+                                    <TextField
+                                        disabled={true}
+                                        sx={{ width: 300 }}
+                                        inputProps={{ style: { fontSize: 15 } }}
+                                        InputLabelProps={{ style: { fontSize: 20 } }}
+                                        label="Số hộ khẩu"
+                                        defaultValue={data.householdId}
+                                        variant="standard"
+                                    />
+                                    <LocalizationProvider dateAdapter={AdapterDayjs} >
+                                        <DatePicker
+                                            disabled={true}
+                                            value={createdTime}
+                                            onChange={(newValue) => {
+                                                setCreatedTime(newValue);
+                                            }}
+                                            renderInput={({ inputProps, InputProps }) =>
+                                                <FormControl sx={{ width: 300 }} variant="standard">
+                                                    <InputLabel htmlFor="input_login_account">
+                                                        Ngày tạo
+                                                    </InputLabel>
+                                                    <Input
+                                                        id="input_login_account"
+                                                        endAdornment={
+                                                            <InputAdornment position="start">
+                                                                {InputProps?.endAdornment}
+                                                            </InputAdornment>
+                                                        }
+                                                        {...inputProps}
+                                                    />
+                                                </FormControl>
+                                            }
+                                        />
+                                    </LocalizationProvider>
+                                    <TextField
+                                        disabled={!editMode}
+                                        sx={{ width: 650 }}
+                                        inputProps={{ style: { fontSize: 15 } }}
+                                        InputLabelProps={{ style: { fontSize: 20 } }}
+                                        label="Nơi thường trú"
+                                        inputRef={addressRef}
+                                        defaultValue={data.address || ''}
+                                        variant="standard"
+                                    />
+                                </div>
+                                <div className={cx('household-detail-line')}>
+                                    <LocalizationProvider dateAdapter={AdapterDayjs} >
+                                        <DatePicker
+                                            value={moveOutDate}
+                                            onChange={(newValue) => {
+                                                setMoveOutDate(newValue);
+                                            }}
+                                            renderInput={({ inputProps, InputProps }) =>
+                                                <FormControl sx={{ width: 300 }} variant="standard">
+                                                    <InputLabel htmlFor="input_login_account">
+                                                        Ngày chuyển
+                                                    </InputLabel>
+                                                    <Input
+                                                        id="input_login_account"
+                                                        endAdornment={
+                                                            <InputAdornment position="start">
+                                                                {InputProps?.endAdornment}
+                                                            </InputAdornment>
+                                                        }
+                                                        {...inputProps}
+                                                    />
+                                                </FormControl>
+                                            }
+                                        />
+                                    </LocalizationProvider>
+                                    <TextField
+                                        disabled={!editMode}
+                                        sx={{ width: 300 }}
+                                        inputProps={{ style: { fontSize: 15 } }}
+                                        InputLabelProps={{ style: { fontSize: 20 } }}
+                                        label="Nơi chuyển "
+                                        defaultValue={data.moveOutPlace || ''}
+                                        inputRef={moveOutPlaceRef}
+                                        variant="standard"
+                                    />
+                                    <TextField
+                                        disabled={!editMode}
+                                        sx={{ width: 300 }}
+                                        inputProps={{ style: { fontSize: 15 } }}
+                                        InputLabelProps={{ style: { fontSize: 20 } }}
+                                        label="Lý do chuyển "
+                                        defaultValue={data.moveOutReason || ''}
+                                        variant="standard"
+                                        inputRef={moveOutReasonRef}
+                                    />
+                                    <TextField
+                                        disabled={!editMode}
+                                        sx={{ width: 300 }}
+                                        inputProps={{ style: { fontSize: 15 } }}
+                                        InputLabelProps={{ style: { fontSize: 20 } }}
+                                        label="Tổ phụ trách"
+                                        defaultValue={data.scope || ''}
+                                        variant="standard"
+                                        inputRef={scopeRef}
+                                    />
+                                </div>
                             </div>
                         </div>
                         {<Population editMode={editMode} data={

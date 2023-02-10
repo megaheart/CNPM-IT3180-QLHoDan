@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import {
     Snackbar, Alert, Button, TableRow, TablePagination, TableHead,
-    TableContainer, TableCell, TableBody, Table
+    TableContainer, TableCell, TableBody, Table, Backdrop, CircularProgress,
 } from '@mui/material';
 //page
 import FullScreenDialog from '../DiaLog/fullScreen';
@@ -19,14 +19,14 @@ import useAuth from '~/hooks/useAuth';
 import {
     useQuery,
     useMutation,
-    useQueryClient
+    useQueryClient,
 } from '@tanstack/react-query';
 //column field
 const columns = [
-    { id: 'householdId', label: 'Số hộ khẩu', width: 40, align: 'center', headerAlign: 'center' },
-    { id: 'ownerFullName', label: 'Chủ hộ', align: 'center', headerAlign: 'center', width: 200 },
-    { id: 'ownerIDCode', label: 'CMND/CCCD của chủ hộ', align: 'center', headerAlign: 'center', width: 200 },
-    { id: 'scope', label: 'Tổ phụ trách', type: 'number', width: 150, align: 'center', headerAlign: 'center' },
+    { id: 'householdId', label: 'Số hộ khẩu', width: 200, align: 'left', headerAlign: 'left' },
+    { id: 'ownerFullName', label: 'Tên chủ hộ', align: 'left', headerAlign: 'left', width: 250 },
+    { id: 'ownerIDCode', label: 'CMND/CCCD của chủ hộ', align: 'left', headerAlign: 'left', width: 300 },
+    { id: 'scope', label: 'Tổ phụ trách', type: 'number', width: 150, align: 'left', headerAlign: 'left' },
 ];
 
 
@@ -43,21 +43,6 @@ export default function TableHoKhau() {
     const columsInit = useMemo(
         () => columns, []
     );
-    const { auth } = useAuth();
-    const { data, isLoading, error } = useQuery(
-        ['households'], async () => householdManager.getHouseholdList(auth.token),
-        {
-            refetchOnWindowFocus: true,
-        }
-    );
-
-    const allResidents = useQuery(
-        ['residents'],
-        async () => residentManager.getAllResident(auth.token),
-        {
-            refetchOnWindowFocus: true,
-        }
-    );
 
     //trường dữ liệu từng cột
     //...
@@ -65,6 +50,9 @@ export default function TableHoKhau() {
 
     //confirm box xóa 1 hộ khẩu, xuất hiện khi nhấn nút xóa
     const [openAlert, setOpenAlert] = useState(false);
+
+    //const backdrop 
+    const [openBackdrop, setOpenBackdrop] = useState(false);
 
     //id của hộ khẩu cần xóa
     const [deleteId, setDeleteId] = useState();
@@ -76,11 +64,43 @@ export default function TableHoKhau() {
     //trạng thái thành công khi xóa 1 hộ khẩu
     const [success, setSuccess] = useState(false);
 
+    const queryClient = useQueryClient();
+
+    const { auth } = useAuth();
+    const { data, isLoading, error } = useQuery(
+        ['households'], async () => householdManager.getHouseholdList(auth.token),
+    );
+
+    const allResidents = useQuery(
+        ['residents'],
+        async () => residentManager.getAllResident(auth.token)
+    );
+
+    const queryDeleteHousehold = useMutation({
+        mutationFn: async (id) => householdManager.deleteHousehold(auth.token, id),
+        onMutate: async () => {
+            setSuccess(false);
+            setOpenBackdrop(true);
+            setOpenAlert(false);
+        },
+        onError: () => {
+            setOpenBackdrop(false);
+            alert('Bạn không thể xóa hộ khẩu này');
+        },
+        onSuccess: async () => {
+            await queryClient.invalidateQueries('households');
+            await queryClient.invalidateQueries('residents');
+            setSuccess(true);
+            setOpenBackdrop(false);
+            setDeleteId(null);
+        }
+    }
+    )
+
     const handleCloseSnackbar = (event, reason) => {
         if (reason === 'clickaway') {
             return;
         }
-
         setSuccess(false);
     };
 
@@ -95,7 +115,8 @@ export default function TableHoKhau() {
     };
 
     //bắt đầu xóa hộ khẩu
-    const handleClickOpen = () => {
+    const handleDelete = (id) => {
+        setDeleteId(id);
         setOpenAlert(true);
     };
     //không xóa nữa
@@ -105,16 +126,14 @@ export default function TableHoKhau() {
     };
     //đồng ý xóa
     const handleAgree = () => {
-        setSuccess(true);
-        setDeleteId(null);
-        setOpenAlert(false);
+        queryDeleteHousehold.mutate(deleteId);
     };
     // dialog hiển thị chi tiết hộ khẩu
     const handleViewHousehold = (id) => {
-        console.log(id);
         setInfoId(id);
         setDialogInfo(true);
     }
+    // change resident info
     // dialog tạo 1 hộ khẩu
     const closeCreateMode = () => {
         setIsCreateMode(false);
@@ -124,9 +143,15 @@ export default function TableHoKhau() {
             {isCreateMode && <AddHouseholDialog open={isCreateMode} onClose={closeCreateMode} />}
             <Snackbar open={success} autoHideDuration={6000} onClose={handleCloseSnackbar}>
                 <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%', fontSize: 15 }}>
-                    Xoá hộ khẩu thành công!
+                    {deleteId ? 'Xoá' : 'Cập nhật'} hộ khẩu thành công!
                 </Alert>
             </Snackbar>
+            <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={openBackdrop}
+            >
+                <CircularProgress color="inherit" />
+            </Backdrop>
             {
                 infoId &&
                 <FullScreenDialog
@@ -138,9 +163,6 @@ export default function TableHoKhau() {
                 />
             }
 
-            {!isLoading && allResidents.isSuccess && <div>
-                <Button sx={{ fontSize: 16 }} variant='contained' onClick={() => setIsCreateMode(true)}>Thêm hộ khẩu</Button>
-            </div>}
             {(isLoading || allResidents.isLoading || !data) ? <TableSkeleton /> : <TableContainer sx={{ maxHeight: 500, backgroundColor: '#fff' }}>
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead >
@@ -149,12 +171,14 @@ export default function TableHoKhau() {
                                 <TableCell
                                     key={column.id}
                                     align={column.align}
-                                    style={{ minWidth: column.minWidth, fontSize: 15 }}
+                                    style={{ width: column.width, fontSize: 15 }}
                                 >
                                     {column.label}
                                 </TableCell>
                             ))}
-                            <TableCell></TableCell>
+                            <TableCell align='right'>
+                                <Button sx={{ fontSize: 16 }} variant='contained' onClick={() => setIsCreateMode(true)}>Thêm hộ khẩu</Button>
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody >
@@ -175,7 +199,7 @@ export default function TableHoKhau() {
                                         })}
                                         <TableCell key={`${index}-button`} align="right">
                                             <Button sx={{ marginRight: 1 }} variant='contained' onClick={() => handleViewHousehold(row.householdId)} >Chi tiết</Button>
-                                            <Button variant='contained' color='error' onClick={handleClickOpen} >Xóa</Button>
+                                            <Button variant='contained' color='error' onClick={() => handleDelete(row.householdId)} >Xóa</Button>
                                         </TableCell>
                                     </TableRow>
                                 );

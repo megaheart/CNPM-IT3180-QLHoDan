@@ -8,8 +8,8 @@ import {
     TableContainer, TableCell, TableBody, Table,
     Backdrop, CircularProgress
 } from '@mui/material';
-import TableSkeleton from '../../Skeleton/index'
-import AddResidentDialog from '../DiaLog/AddResident';
+import TableSkeleton from '../../../Skeleton/index'
+import AddResidentDialog from '../../DiaLog/AddResident';
 
 //api
 import residentManager from '~/services/api/residentManager';
@@ -21,18 +21,20 @@ import {
 
 //column field
 const columns = [
-    { id: 'identityCode', label: 'CMND/CCCD', width: 150, align: 'center', headerAlign: 'center' },
-    { id: 'fullName', label: 'Họ và tên', width: 200, align: 'center', headerAlign: 'center' },
-    { id: 'dateOfBirth', label: 'Ngày sinh', type: 'date', width: 150, align: 'center', headerAlign: 'center' },
-    { id: 'isMale', label: 'Giới tính', width: 100, align: 'center', headerAlign: 'center' },
-    { id: 'householdId', label: 'Sổ hộ khẩu', width: 150, align: 'center', headerAlign: 'center' },
-    { id: 'relationShip', label: 'Quan hệ với chủ hộ', width: 170, align: 'center', headerAlign: 'center' },
-    { id: 'scope', label: 'Tổ phụ trách', width: 130, align: 'center', headerAlign: 'center' },
+    { id: 'identityCode', label: 'CMND/CCCD', width: 100, align: 'left', headerAlign: 'center' },
+    { id: 'fullName', label: 'Họ và tên', width: 200, align: 'left', headerAlign: 'left' },
+    { id: 'dateOfBirth', label: 'Ngày sinh', type: 'date', width: 150, align: 'left', headerAlign: 'left' },
+    { id: 'isMale', label: 'Giới tính', width: 100, align: 'left', headerAlign: 'left' },
+    { id: 'householdId', label: 'Sổ hộ khẩu', width: 120, align: 'left', headerAlign: 'left' },
+    { id: 'relationShip', label: 'Quan hệ với chủ hộ', width: 170, align: 'left', headerAlign: 'left' },
+    { id: 'scope', label: 'Tổ phụ trách', width: 120, align: 'left', headerAlign: 'left' },
 ]
 
 
 
-export default function TableNhanKhau() {
+export default function TableNhanKhau({ action, typeTable }) {
+
+
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -57,9 +59,10 @@ export default function TableNhanKhau() {
     //id của nhân khẩu cần xóa
     const [deleteId, setDeleteId] = useState(null);
 
+    const [type, setType] = useState();
 
     //datas from database
-    const { data, isLoading, error } = useQuery(['residents'], () => residentManager.getAllResident(auth.token));
+    const { data, isLoading, error } = useQuery(['residents', typeTable], () => action(auth.token));
 
     const queryClient = useQueryClient();
 
@@ -88,8 +91,6 @@ export default function TableNhanKhau() {
         }
     )
 
-    //
-    const [type, setType] = useState();
 
     const viewResidentDetail = async (identification) => {
         setOpenBackdrop(true);
@@ -195,7 +196,7 @@ export default function TableNhanKhau() {
                     </Button>
                 </DialogActions>
             </Dialog>
-            {isLoading || <Button variant='contained' sx={{ fontSize: 16 }} onClick={handleCreateResident}>Thêm nhân khẩu</Button>}
+
             {isLoading ? <TableSkeleton /> : <TableContainer sx={{ maxHeight: 500, backgroundColor: '#fff' }}>
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead >
@@ -204,14 +205,16 @@ export default function TableNhanKhau() {
                                 <TableCell
                                     key={column.id}
                                     align={column.align}
-                                    style={{ minWidth: column.minWidth, fontSize: 15 }}
+                                    style={{ width: column.width, fontSize: 15 }}
                                 >
                                     <span>
                                         {column.label}
                                     </span>
                                 </TableCell>
                             ))}
-                            <TableCell>{' '}</TableCell>
+                            <TableCell align='right'>
+                                <Button variant='contained' sx={{ fontSize: 16 }} onClick={handleCreateResident}>Thêm nhân khẩu</Button>
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody >

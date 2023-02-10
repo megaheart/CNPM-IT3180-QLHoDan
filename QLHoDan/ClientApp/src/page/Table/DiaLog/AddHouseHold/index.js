@@ -24,6 +24,13 @@ import ConfirmBox from '../ConfirmBox';
 import AddResidentDialog from './addResident';
 import householdManager from '~/services/api/householdManager';
 
+import {
+    useQuery,
+    useMutation,
+    useQueryClient,
+    useQueries
+} from '@tanstack/react-query';
+
 const cx = classNames.bind(styles);
 const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -49,10 +56,12 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 export default function AddHouseholDialog({ open, onClose }) {
     const { auth } = useAuth();
+    const queryClient = useQueryClient();
+
     // dữ liệu bảng để hiển thị danh sách các nhân khẩu sẽ thêm
     const [people, setPeople] = useState([]);
 
-    const [moveOutDate, setMoveOutDate] = useState(null)
+    const [moveOutDate, setMoveOutDate] = useState(null);
 
     //handle save button
     const [loading, setLoading] = useState(false);
@@ -73,6 +82,25 @@ export default function AddHouseholDialog({ open, onClose }) {
     const [scopeError, setScopeError] = useState('');
     const moveOutPlaceRef = useRef();
     const moveOutReasonRef = useRef();
+
+    const queryAdd = useMutation({
+        mutationFn: async (household) => householdManager.addHousehold(auth.token, household),
+        onMutate: () => {
+            setLoading(true);
+        },
+        onError: (error) => {
+            setLoading(false);
+            console.log(error);
+            alert('Thêm hộ khẩu thất bại');
+        },
+        onSuccess: async () => {
+            await queryClient.invalidateQueries('households');
+            await queryClient.invalidateQueries('residents');
+            setSuccess(true);
+            setLoading(false);
+            onClose(!open);
+        }
+    })
 
     useEffect(() => {
         return () => {
@@ -181,16 +209,8 @@ export default function AddHouseholDialog({ open, onClose }) {
                 nonExistMembers: people
             }
             console.log(data)
-            const result = await householdManager.addHousehold(auth.token, data);
-            console.log(result);
-            if (result && result.status === 200) {
-                setSuccess(true);
-                setLoading(false);
-                onClose(!open);
-            }
-            setLoading(false);
+            queryAdd.mutate(data)
         }
-        setLoading(false);
     }
 
     return (
@@ -260,7 +280,7 @@ export default function AddHouseholDialog({ open, onClose }) {
                                     setMoveOutDate(newValue);
                                 }}
                                 renderInput={({ inputRef, inputProps, InputProps }) =>
-                                    <FormControl sx={{ m: 1, width: 400 }} variant="standard">
+                                    <FormControl sx={{ width: 400 }} variant="standard">
                                         <InputLabel htmlFor="input_login_account">
                                             Ngày chuyển đi
                                         </InputLabel>
@@ -286,82 +306,64 @@ export default function AddHouseholDialog({ open, onClose }) {
                             variant="standard"
                         />
                     </div>
-                </div>
-                <div>
-                    <Button variant="contained"
-                        sx={{ margin: '0px 20px' }}
-                        color="primary" onClick={handleStartAddResident}>Thêm thành viên</Button>
-                </div>
-                <TableContainer sx={{ padding: '0 20px' }} component={Paper}>
-                    <Table stickyHeader sx={{ minWidth: 1000 }} aria-label="customized table">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell sx={{ fontSize: 20 }} align="left" colSpan={9}>
-                                    Thông tin thành viên trong hộ khẩu
-                                </TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <StyledTableCell align="center">CCCD/CMND</StyledTableCell>
-                                <StyledTableCell align="center">Họ và tên</StyledTableCell>
-                                <StyledTableCell align="center">Ngày sinh</StyledTableCell>
-                                <StyledTableCell align="center">Giới tính</StyledTableCell>
-                                <StyledTableCell align="center">Quan hệ với chủ hộ</StyledTableCell>
-                                <StyledTableCell align="center">Edit</StyledTableCell>
-                            </TableRow>
-                        </TableHead>
-                        {people.length !== 0 ?
-                            <TableBody>
-                                {people.map((row, index) => (
-                                    <StyledTableRow key={index}>
-                                        <StyledTableCell align="center">{row.identityCode}</StyledTableCell>
-                                        <StyledTableCell align="center">{row.fullName}</StyledTableCell>
-                                        <StyledTableCell align="center">{row.dateOfBirth.$d.getDate()}</StyledTableCell>
-                                        <StyledTableCell align="center">{row.isMale ? 'Nam' : 'Nữ'}</StyledTableCell>
-                                        <StyledTableCell align="center">{row.relationShip}</StyledTableCell>
-                                        <StyledTableCell align="center" component="th" scope="row">
-                                            <Button>
-                                                Chi tiết
-                                            </Button>
-                                            <Button
-                                                onClick={() => { handleDelete(row.identityCode) }}
-                                            >Xóa</Button>
-                                        </StyledTableCell>
-                                    </StyledTableRow>
-                                ))}
-                            </TableBody>
-                            :
-                            (
+                    <div>
+                        <Button variant="contained"
+                            sx={{ margin: '5px 20px' }}
+                            color="primary" onClick={handleStartAddResident}>Thêm thành viên</Button>
+                    </div>
+                    <h3>Thông tin thành viên trong hộ khẩu</h3>
+                    <TableContainer sx={{ padding: '0 0px', height: 240 }} component={Paper}>
+                        <Table stickyHeader sx={{ minWidth: 1000 }} aria-label="customized table">
+                            <TableHead>
+                                <TableRow>
+                                    <StyledTableCell align="center">CCCD/CMND</StyledTableCell>
+                                    <StyledTableCell align="center">Họ và tên</StyledTableCell>
+                                    <StyledTableCell align="center">Ngày sinh</StyledTableCell>
+                                    <StyledTableCell align="center">Giới tính</StyledTableCell>
+                                    <StyledTableCell align="center">Quan hệ với chủ hộ</StyledTableCell>
+                                    <StyledTableCell align="center">Edit</StyledTableCell>
+                                </TableRow>
+                            </TableHead>
+                            {people.length !== 0 ?
                                 <TableBody>
-                                    <TableRow>
-                                        <StyledTableCell align="center"></StyledTableCell>
-                                        <StyledTableCell align="center"></StyledTableCell>
-                                        <StyledTableCell align="center"></StyledTableCell>
-                                        <StyledTableCell align="center"></StyledTableCell>
-                                        <StyledTableCell align="center"></StyledTableCell>
-                                        <StyledTableCell align="center"></StyledTableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <StyledTableCell align="center"></StyledTableCell>
-                                        <StyledTableCell align="center"></StyledTableCell>
-                                        <StyledTableCell align="center">Chưa có thành viên</StyledTableCell>
-                                        <StyledTableCell align="center"></StyledTableCell>
-                                        <StyledTableCell align="center"></StyledTableCell>
-                                        <StyledTableCell align="center"></StyledTableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <StyledTableCell align="center"></StyledTableCell>
-                                        <StyledTableCell align="center"></StyledTableCell>
-                                        <StyledTableCell align="center"></StyledTableCell>
-                                        <StyledTableCell align="center"></StyledTableCell>
-                                        <StyledTableCell align="center"></StyledTableCell>
-                                        <StyledTableCell align="center"></StyledTableCell>
-                                    </TableRow>
+                                    {people.map((row, index) => (
+                                        <StyledTableRow key={index}>
+                                            <StyledTableCell align="center">{row.identityCode}</StyledTableCell>
+                                            <StyledTableCell align="center">{row.fullName}</StyledTableCell>
+                                            <StyledTableCell align="center">{row.dateOfBirth ? row.dateOfBirth.$d.getDate() : null}</StyledTableCell>
+                                            <StyledTableCell align="center">{row.isMale ? 'Nam' : 'Nữ'}</StyledTableCell>
+                                            <StyledTableCell align="center">{row.relationShip}</StyledTableCell>
+                                            <StyledTableCell align="center" component="th" scope="row">
+                                                <Button>
+                                                    Chi tiết
+                                                </Button>
+                                                <Button
+                                                    onClick={() => { handleDelete(row.identityCode) }}
+                                                >Xóa</Button>
+                                            </StyledTableCell>
+                                        </StyledTableRow>
+                                    ))}
                                 </TableBody>
-                            )
-                        }
-                    </Table>
-                </TableContainer>
-                <Button onClick={handleAddHousehold} sx={{ marginTop: 20 }} variant='contained' color='secondary'>Thêm</Button>
+                                :
+                                (
+                                    <TableBody>
+                                        <TableRow>
+                                            <StyledTableCell align="center"></StyledTableCell>
+                                            <StyledTableCell align="center"></StyledTableCell>
+                                            <StyledTableCell align="center">Chưa có thành viên</StyledTableCell>
+                                            <StyledTableCell align="center"></StyledTableCell>
+                                            <StyledTableCell align="center"></StyledTableCell>
+                                            <StyledTableCell align="center"></StyledTableCell>
+                                        </TableRow>
+                                    </TableBody>
+                                )
+                            }
+                        </Table>
+                    </TableContainer>
+                    <div width='100%'>
+                        <Button onClick={handleAddHousehold} sx={{ display: 'block', margin: '0 auto' }} variant='contained' color='secondary'>Thêm</Button>
+                    </div>
+                </div>
             </Dialog>
             <ConfirmBox key='close' open={isClose} onClose={handleCloseConfirmBox} onAgree={handleClose} />
             <ConfirmBox key='delete' open={isDelete} onClose={handleCloseDeleteById} onAgree={handleDeleteById} title='Bạn có chắc muốn xóa' />

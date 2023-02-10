@@ -28,9 +28,6 @@ const Transition = forwardRef(function Transition(props, ref) {
 });
 
 
-const createDate = (date) => {
-
-}
 
 export default function AddResidentDialog({ open, onClose, type }) {
     const { auth } = useAuth();
@@ -172,6 +169,7 @@ export default function AddResidentDialog({ open, onClose, type }) {
             setIdentityCodeError('');
             if (type.type !== 'UPDATE') {
                 await type.mutation.mutate(currentData);
+                onClose(false);
                 setSuccess(true);
                 setLoading(false);
             }
@@ -213,6 +211,7 @@ export default function AddResidentDialog({ open, onClose, type }) {
             setIdentityCodeError('');
             if (type.type === 'ADD') {
                 await type.mutation.mutate(currentData);
+                onClose(false);
                 setSuccess(true);
                 setLoading(false);
             }

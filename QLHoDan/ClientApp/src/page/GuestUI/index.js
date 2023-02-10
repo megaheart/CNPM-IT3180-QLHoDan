@@ -2,7 +2,6 @@ import { HKForm, NKForm } from '../Form'
 function Guest() {
     return (
         <div>
-
         </div>
     );
 }

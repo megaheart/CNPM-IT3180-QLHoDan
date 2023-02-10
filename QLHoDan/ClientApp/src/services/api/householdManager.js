@@ -15,6 +15,18 @@ class HouseholdManager {
             console.log('ERROR IN GETTING HOUSEHOLD LIST')
         }
     }
+    async getHouseholdListMove(token) {
+        const response = await axios.get(
+            `${API_HOUSEHOLDS}?moveOut=${true}`,
+            config(token)
+        );
+        if (response && response.data) {
+            return response.data;
+        }
+        else {
+            console.log('ERROR IN GETTING HOUSEHOLD LIST MOVE OUT')
+        }
+    }
     async getHousehold(token, id) {
         const response = await axios.get(`${API_HOUSEHOLDS}/${id}`,
             config(token)
@@ -39,7 +51,7 @@ class HouseholdManager {
     }
     async updateHousehold(token, id, household) {
         const response = await axios.put(
-            `${API_HOUSEHOLDS}/${id}`,
+            `${API_HOUSEHOLDS}`,
             household,
             config(token)
         );
@@ -48,6 +60,18 @@ class HouseholdManager {
         }
         else {
             console.log('ERROR IN UPDATING HOUSEHOLD')
+        }
+    }
+    async deleteHousehold(token, id) {
+        const response = await axios.delete(
+            `${API_HOUSEHOLDS}/${id}`,
+            config(token)
+        );
+        if (response && response.data) {
+            return response;
+        }
+        else {
+            console.log('ERROR IN DELETING HOUSEHOLD')
         }
     }
 }

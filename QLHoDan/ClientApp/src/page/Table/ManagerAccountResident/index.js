@@ -121,9 +121,9 @@ export default function ManagerAccountResident() {
         setPage(0);
     };
 
-    const startConfirmBox = () => {
-        setIsClose(true);
-    };
+    // const startConfirmBox = () => {
+    //     setIsClose(true);
+    // };
 
     const handleCloseConfirmBox = () => {
         setIsClose(false);
@@ -138,9 +138,9 @@ export default function ManagerAccountResident() {
         setAccountInfo(row);
     };
 
-    const handleDeleteAccount = () => {
+    // const handleDeleteAccount = () => {
 
-    };
+    // };
 
     return (
         <Paper sx={{ width: '100%' }}>
@@ -159,7 +159,7 @@ export default function ManagerAccountResident() {
             <ConfirmBox sx={{ marginLeft: 10 }} open={isClose} onClose={handleCloseConfirmBox} onAgree={handleAgree} />
             <div className={cx('tool-bar')}>
                 <div className={cx('item-tool')}>
-                    <Button variant='contained' onClick={() => setOpen(true)} >Tạo tài khoản mới</Button>
+
                 </div>
                 <div className={cx('item-tool')}>
                     <Input
@@ -185,7 +185,9 @@ export default function ManagerAccountResident() {
                                     {column.label}
                                 </TableCell>
                             ))}
-                            <TableCell></TableCell>
+                            <TableCell align='center'>
+                                <Button variant='contained' color='success' onClick={() => setOpen(true)} >Tạo tài khoản mới</Button>
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -204,9 +206,9 @@ export default function ManagerAccountResident() {
                                                 </TableCell>
                                             );
                                         })}
-                                        <TableCell align="right">
+                                        <TableCell align="center">
                                             <Button variant='contained' onClick={() => handleChangeAccount(row)} >Sửa</Button>
-                                            <Button variant='contained' color='error' onClick={startConfirmBox} >Xóa</Button>
+                                            {/* <Button variant='contained' color='error' onClick={startConfirmBox} >Xóa</Button> */}
                                         </TableCell>
                                     </TableRow>
                                 );

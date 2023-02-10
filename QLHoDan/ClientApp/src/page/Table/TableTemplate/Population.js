@@ -4,6 +4,7 @@ import { styled } from '@mui/material/styles';
 import { tableCellClasses } from '@mui/material/TableCell';
 import { Button, Paper, TableRow, TableHead, TableContainer, TableCell, TableBody, Table, TextField, Slide, Box, Dialog } from '@mui/material';
 import Skeleton from '../../Skeleton';
+import UpdateResidentDialog from '../DiaLog/ChangeResidentInfo';
 import {
     useQuery,
     useMutation,
@@ -36,73 +37,29 @@ const Transition = forwardRef(function Transition(props, ref) {
 
 
 
-export default function Population({ editMode, data, loading }) {
-    const queryClient = useQueryClient();
+export default function Population({ editMode, data }) {
     const { auth } = useAuth();
     //những id của nhân khẩu sẽ bị xóa
-    const [deleteIds, setDeleteIds] = useState([]);
+    const [deleteId, setDeleteId] = useState([]);
+
+    const [updateResident, setUpdateResident] = useState(false);
+    const [updateDataId, setUpdateDataId] = useState(null);
     //
     const [open, setOpen] = useState(false);
-    const handleClose = useCallback(() => setOpen(false), []);
-    //dữ liệu nhân khẩu đang được edit
-    const [editRow, setEditRow] = useState({});
-    //dữ liệu nhân khẩu các input
-    const [identification, setIdentification] = useState('');
-    const [name, setName] = useState('');
-    const [birthday, setBirthday] = useState('');
-    const [gender, setGender] = useState('');
-    const [relationship, setRelationship] = useState('');
-    const [soHoKhau, setSoHoKhau] = useState('');
-    const [toPhuTrach, setToPhuTrach] = useState('');
 
-    //dữ liệu nhân khẩu
-    const [rows, setRows] = useState();
-
-
-    const handleDeleteRowsData = (id) => {
-        setRows(
-            prev => prev.filter(item => item.id !== id)
-        );
-        setDeleteIds(
-            prev => [...prev, id]
-        );
+    const startUpdate = (id) => {
+        setUpdateDataId(id);
+        setUpdateResident(true);
     }
 
-    const handleEditRowData = (id) => {
-        setOpen(true);
-        setEditRow(rows.find(item => item.id === id));
+    const handleDelete = (id) => {
+        setDeleteId(id);
+    }
+    const closeUpdate = () => {
+        setUpdateResident(false);
+        setUpdateDataId(null)
     }
 
-    const handleEditField = useCallback((identification, name, birthday, gender, relationship, soHoKhau, toPhuTrach) => {
-        setIdentification(identification);
-        setName(name);
-        setBirthday(birthday);
-        setGender(gender);
-        setRelationship(relationship);
-        setSoHoKhau(soHoKhau);
-        setToPhuTrach(toPhuTrach);
-    }, []);
-    //lưu dữ liệu nhân khẩu
-    const handleSave = () => {
-        setRows(
-            prev => prev.map(item => {
-                if (item.id === editRow.id) {
-                    return {
-                        id: item.id,
-                        identification,
-                        name,
-                        birthday,
-                        gender,
-                        relationship,
-                        soHoKhau,
-                        toPhuTrach
-                    }
-                }
-                return item;
-            })
-        );
-        setOpen(false);
-    }
     return (
         <div style={{ display: 'flex', alignItem: 'center', justifyContent: 'center', flexDirection: 'column' }}>
             <TableContainer component={Paper}>
@@ -138,96 +95,27 @@ export default function Population({ editMode, data, loading }) {
                                     <Button
                                         disabled={!editMode}
                                         onClick={() => {
-                                            handleEditRowData(row.id);
-                                            handleEditField(row.idenftification, row.name, row.birthday, row.gender, row.relationship, row.soHoKhau, row.toPhuTrach);
+                                            startUpdate(row.identityCode)
                                         }
                                         }
                                     >
-                                        Sửa
+                                        Chi tiết
                                     </Button>
                                     <Button
-                                        key={row.identification + 'delete'}
-                                        disabled={!editMode} onClick={() => { handleDeleteRowsData(row.id) }}>Xóa</Button>
+                                        key={row.identityCode + 'delete'}
+                                        disabled={!editMode} onClick={() => { handleDelete(row.identityCode) }}>Xóa</Button>
                                 </StyledTableCell>
                             </StyledTableRow>
                         ))}
                     </TableBody>
                 </Table>
             </TableContainer>
-            <Dialog
-                open={open}
-                onClose={handleClose}
-                TransitionComponent={Transition}
-            >
-                <Box
-                    component="form"
-                    sx={{
-                        '& .MuiTextField-root': { m: 1, width: '25ch' },
-                    }}
-                    noValidate
-                    autoComplete="off"
-                >
-                    <div >
-                        <TextField
-                            sx={{ width: '600px' }}
-                            inputProps={{ style: { fontSize: 15 } }}
-                            InputLabelProps={{ style: { fontSize: 20 } }}
-                            required
-                            label="Họ và tên"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            variant="standard"
-                        />
-                        <TextField
-                            sx={{ width: '600px' }}
-                            inputProps={{ style: { fontSize: 15 } }}
-                            InputLabelProps={{ style: { fontSize: 20 } }}
-                            required
-                            label="Ngày sinh"
-                            value={birthday}
-                            onChange={(e) => setBirthday(e.target.value)}
-                            variant="standard"
-                        />
-                    </div>
-                    <div>
-                        <TextField
-                            sx={{ width: '400px' }}
-                            inputProps={{ style: { fontSize: 15 } }}
-                            InputLabelProps={{ style: { fontSize: 20 } }}
-                            required
-                            label="Giới tính"
-                            value={gender}
-                            onChange={(e) => setGender(e.target.value)}
-                            variant="standard"
-                        />
-                        <TextField
-                            sx={{ width: '400px' }}
-                            inputProps={{ style: { fontSize: 15 } }}
-                            InputLabelProps={{ style: { fontSize: 20 } }}
-                            required
-                            label="Quan hệ với chủ hộ"
-                            value={relationship}
-                            onChange={(e) => setRelationship(e.target.value)}
-                            variant="standard"
-                        />
-                    </div>
-                    <div>
-                        <TextField
-                            sx={{ width: '400px' }}
-                            inputProps={{ style: { fontSize: 15 } }}
-                            InputLabelProps={{ style: { fontSize: 20 } }}
-                            required
-                            label="Tổ phụ trách"
-                            value={toPhuTrach}
-                            onChange={(e) => setToPhuTrach(e.target.value)}
-                            variant="standard"
-                        />
-                    </div>
-                    <div>
-                        <Button sx={{ fontSize: 20, margin: '0 auto', display: 'block' }} color="primary" onClick={handleSave}>Lưu</Button>
-                    </div>
-                </Box>
-            </Dialog>
+            {updateDataId &&
+                <UpdateResidentDialog
+                    key={updateDataId}
+                    open={updateResident}
+                    onClose={closeUpdate}
+                    dataId={updateDataId} />}
             {/* <div>
                 <Button sx={{ fontSize: 20, margin: '0 auto', display: 'block' }} color="primary" >Lưu</Button>
             </div> */}

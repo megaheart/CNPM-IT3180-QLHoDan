@@ -27,22 +27,18 @@ export default function AddResidentDialog({ open, onClose, action }) {
 
     const [dateOfBirth, setBirthday] = useState(null);
     const [idCardDate, setIdCardDate] = useState(null);
-    const [moveOutDate, setMoveOutDate] = useState(null);
     const [moveInDate, setMoveInDate] = useState(null);
 
     const academicLevelRef = useRef();
     const aliasRef = useRef();
     const birthPlaceRef = useRef();
     const criminalRecordRef = useRef();
-    const dateOfBirthRef = useRef();
     const ethnicRef = useRef();
     const fullNameRef = useRef();
-    const idCardDateRef = useRef();
     const idCardPlaceRef = useRef();
     const identityCodeRef = useRef();
     const isMaleRef = useRef();
     const jobRef = useRef();
-    const moveInDateRef = useRef();
     const moveInReasonRef = useRef();
     const nationRef = useRef();
     const nativeLandRef = useRef();
@@ -72,8 +68,10 @@ export default function AddResidentDialog({ open, onClose, action }) {
             moveInReason: moveInReasonRef.current.value,
         }
         console.log(currentData);
-        action(currentData);
-        onClose(false);
+        if (currentData.identityCode !== '') {
+            action(currentData);
+            onClose(false);
+        }
     }
 
     //handle when clode this dislog
@@ -84,7 +82,31 @@ export default function AddResidentDialog({ open, onClose, action }) {
 
     //start close this dialog
     const handlStartClose = () => {
-        onClose(!open);
+        if (
+            fullNameRef.current.value !== '' ||
+            aliasRef.current.value !== '' ||
+            birthPlaceRef.current.value !== '' ||
+            isMaleRef.current.value !== 'male' ||
+            dateOfBirth !== null ||
+            nativeLandRef.current.value !== '' ||
+            ethnicRef.current.value !== '' ||
+            nationRef.current.value !== '' ||
+            jobRef.current.value !== '' ||
+            workplaceRef.current.value !== '' ||
+            identityCodeRef.current.value !== '' ||
+            idCardDate !== null ||
+            idCardPlaceRef.current.value !== '' ||
+            relationShipRef.current.value !== '' ||
+            academicLevelRef.current.value !== '' ||
+            criminalRecordRef.current.value !== '' ||
+            moveInDate !== null ||
+            moveInReasonRef.current.value !== ''
+        ) {
+            setIsClose(true);
+        }
+        else {
+            onClose(!open);
+        }
     };
     //handle close this dialog
     const handleClose = () => {
@@ -97,7 +119,7 @@ export default function AddResidentDialog({ open, onClose, action }) {
                 fullWidth={true}
                 maxWidth='600'
                 open={open}
-                onClose={handleClose}
+                onClose={handlStartClose}
                 TransitionComponent={Transition}
             >
                 <div className={cx('state-dialog')} >
@@ -126,7 +148,6 @@ export default function AddResidentDialog({ open, onClose, action }) {
                                     onChange={(newValue) => {
                                         setBirthday(newValue);
                                     }}
-                                    inputRef={dateOfBirthRef}
                                     renderInput={({ inputRef, inputProps, InputProps }) =>
                                         <FormControl sx={{ m: 1, width: 270 }} variant="standard">
                                             <InputLabel htmlFor="input_login_account">
@@ -208,7 +229,6 @@ export default function AddResidentDialog({ open, onClose, action }) {
                                     onChange={(newValue) => {
                                         setIdCardDate(newValue);
                                     }}
-                                    inputRef={idCardDateRef}
                                     renderInput={({ inputRef, inputProps, InputProps }) =>
                                         <FormControl sx={{ m: 1, width: 270 }} variant="standard">
                                             <InputLabel htmlFor="input_login_account">
@@ -252,7 +272,6 @@ export default function AddResidentDialog({ open, onClose, action }) {
                             <LocalizationProvider dateAdapter={AdapterDayjs} >
                                 <DatePicker
                                     value={moveInDate}
-                                    inputRef={moveInDateRef}
                                     onChange={(newValue) => {
                                         setMoveInDate(newValue)
                                     }}

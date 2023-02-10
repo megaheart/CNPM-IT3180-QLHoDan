@@ -19,8 +19,9 @@
 .household-detail {
     margin: 6px;
     display: flex;
-    flex-flow: row wrap;
+    flex-direction: column;
     justify-content: flex-start;
+    align-items: stretch;
     gap: 10px;
 }
 .change-and-save {
@@ -28,4 +29,11 @@
     flex-direction: row;
     gap: 1px;
     align-items: stretch;
+}
+.household-detail-line {
+    display: flex;
+    flex-direction: row;
+    gap: 50px;
+    align-items: center;
+    justify-content: flex-start;
 }

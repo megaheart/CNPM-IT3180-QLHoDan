@@ -27,3 +27,5 @@ export const API_ACCOUNTMANAGEMENT_SPECIAL_CHANGEACCOUNTPROFILE = `${API_ACCOUNT
 export const API_HOUSEHOLDS = `${API_URL}/Households`;
 
 export const API_GET_ALL_RESIDENT = `${API_URL}/Residents`
+
+export const API_REWARDS = `${API_URL}/RewardCeremonies`;

@@ -24,6 +24,24 @@ class ResidentManager {
         }
     }
 
+    async getResidentMove(token) {
+        const response = await axios.get(
+            `${API_GET_ALL_RESIDENT}?isDead=${false}&moveOut=${true}`, config(token)
+        );
+        if (response && response.data) {
+            return response.data;
+        }
+    }
+
+    async getResidentDead(token) {
+        const response = await axios.get(
+            `${API_GET_ALL_RESIDENT}?isDead=${true}&moveOut=${false}`, config(token)
+        );
+        if (response && response.data) {
+            return response.data;
+        }
+    }
+
     async getResidentsById(token, ids) {
         let residents = [];
         for (let i = 0; i < ids.length; i++) {
