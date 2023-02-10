@@ -263,7 +263,7 @@
         *Tổ trưởng không thể tạo tài khoản hộ dân thuộc phạm vi quản lý của tổ khác*
 
 ### Thay đổi thông tin tài khoản hộ dân
-<span style="color:#fbbc05; width: 50px; display: inline-block">**POST**</span> ```https://localhost:7265/api/account/household/addAccount```
+<span style="color:#fbbc05; width: 50px; display: inline-block">**POST**</span> ```https://localhost:7265/api/account/household/changeAccountProfile```
 
 *Thay đổi thông tin tài khoản hộ dân, chỉ người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch phường) mới dùng được.*
 
@@ -314,7 +314,7 @@
 ## Quản lý tài khoản đặc biệt
 ### Lấy ra tất cả danh sách tài khoản cấp đặc biệt
 
-<span style="color:#34a853; width: 50px; display: inline-block">**GET**</span> ```https://localhost:7265/api/account/household/AccountList```
+<span style="color:#34a853; width: 50px; display: inline-block">**GET**</span> ```https://localhost:7265/api/account/special/AccountList```
 
 *Lấy ra tất cả danh sách tài khoản cấp đặc biệt (Tổ trưởng, thư kí, chủ tịch phường), chỉ thư kí, chủ tịch phường mới dùng được.*
 
@@ -352,7 +352,7 @@
         *Tài khoản không đủ quyền để truy cập. Tài khoản không phải thư kí, chủ tịch phường.*
         
 ### Thêm tài khoản cấp đặc biệt
-<span style="color:#fbbc05; width: 50px; display: inline-block">**POST**</span> ```https://localhost:7265/api/account/household/addAccount```
+<span style="color:#fbbc05; width: 50px; display: inline-block">**POST**</span> ```https://localhost:7265/api/account/special/addAccount```
 
 *Thêm tài khoản tài khoản cấp đặc biệt (Tổ trưởng, thư kí, chủ tịch phường), chỉ thư kí, chủ tịch phường mới dùng được.*
 
@@ -397,7 +397,7 @@
         *Tên đăng nhập đã tồn tại*
 
 ### Thay đổi thông tin tài khoản cấp đặc biệt
-<span style="color:#fbbc05; width: 50px; display: inline-block">**POST**</span> ```https://localhost:7265/api/account/household/addAccount```
+<span style="color:#fbbc05; width: 50px; display: inline-block">**POST**</span> ```https://localhost:7265/api/account/special/changeAccountProfile```
 
 *Thay đổi thông tin tài khoản tài khoản cấp đặc biệt (Tổ trưởng, thư kí, chủ tịch phường), chỉ thư kí, chủ tịch phường mới dùng được.*
 

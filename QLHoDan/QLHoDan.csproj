@@ -44,7 +44,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Controllers\Reward\" />
     <Folder Include="Data\Migrations\ApplicationDb\" />
     <Folder Include="static\img\" />
   </ItemGroup>

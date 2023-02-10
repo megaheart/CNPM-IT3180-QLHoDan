@@ -187,7 +187,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<RewardRecord>()
             .HasOne<Resident>(ls => ls.Resident).WithMany()
             .OnDelete(DeleteBehavior.NoAction);
-            //.HasForeignKey<RewardRecord>("IdCode");
+        //.HasForeignKey<RewardRecord>("IdCode");
+        modelBuilder.Entity<AchievementEvidenceForm>()
+            .HasOne<Resident>(a => a.Resident).WithMany();
     }
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
