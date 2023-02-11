@@ -7,10 +7,9 @@ import {
     TableContainer, TableCell, TableBody, Table, Backdrop, CircularProgress,
 } from '@mui/material';
 //page
-import FullScreenDialog from '../DiaLog/fullScreen';
-import AddHouseholDialog from '../DiaLog/AddHouseHold';
-import TableSkeleton from '../../Skeleton/index';
-import CustomToolbarExport from '../ComponentExport';
+import FullScreenDialog from '../../DiaLog/fullScreen';
+import AddHouseholDialog from '../../DiaLog/AddHouseHold';
+import TableSkeleton from '../../../Skeleton/index';
 
 //call api
 import householdManager from '~/services/api/householdManager';
@@ -30,11 +29,14 @@ const columns = [
 ];
 
 
-export default function TableHoKhau() {
+export default function TableHoKhau({ action, typeTable }) {
     //các dữ liệu từng dòng được khởi tạo trong bảng, sẽ gọi bằng api
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
+
+    const [successAdd, setSuccessAdd] = useState(false);
+
 
     //dialog
     const [isCreateMode, setIsCreateMode] = useState(false);
@@ -64,15 +66,21 @@ export default function TableHoKhau() {
     //trạng thái thành công khi xóa 1 hộ khẩu
     const [success, setSuccess] = useState(false);
 
+
+
+    const handleSuccessAdd = () => {
+        setSuccessAdd(false);
+    };
+
     const queryClient = useQueryClient();
 
     const { auth } = useAuth();
     const { data, isLoading, error } = useQuery(
-        ['households'], async () => householdManager.getHouseholdList(auth.token),
+        ['households', typeTable], async () => action(auth.token),
     );
 
     const allResidents = useQuery(
-        ['residents'],
+        ['residents', typeTable],
         async () => residentManager.getAllResident(auth.token)
     );
 
@@ -88,8 +96,8 @@ export default function TableHoKhau() {
             alert('Bạn không thể xóa hộ khẩu này');
         },
         onSuccess: async () => {
-            await queryClient.invalidateQueries('households');
-            await queryClient.invalidateQueries('residents');
+            await queryClient.invalidateQueries(['households', typeTable]);
+            await queryClient.invalidateQueries(['residents', typeTable]);
             setSuccess(true);
             setOpenBackdrop(false);
             setDeleteId(null);
@@ -140,14 +148,21 @@ export default function TableHoKhau() {
     }
     return (
         <div style={{ height: '90%', width: '100%', margin: '10' }}>
-            {isCreateMode && <AddHouseholDialog open={isCreateMode} onClose={closeCreateMode} />}
+            {isCreateMode && <AddHouseholDialog open={isCreateMode} onClose={closeCreateMode} onSucess={() => { setSuccessAdd(true) }}
+                normal={typeTable === 'move' ? true : false}
+            />}
             <Snackbar open={success} autoHideDuration={6000} onClose={handleCloseSnackbar}>
                 <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%', fontSize: 15 }}>
                     {deleteId ? 'Xoá' : 'Cập nhật'} hộ khẩu thành công!
                 </Alert>
             </Snackbar>
+            <Snackbar open={successAdd} autoHideDuration={4000} onClose={handleSuccessAdd} >
+                <Alert onClose={handleSuccessAdd} severity="success" sx={{ width: '100%', fontSize: 15 }}>
+                    Thên hộ khẩu mới thành công !
+                </Alert>
+            </Snackbar>
             <Backdrop
-                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1000 }}
                 open={openBackdrop}
             >
                 <CircularProgress color="inherit" />
@@ -160,10 +175,11 @@ export default function TableHoKhau() {
                     onClose={setDialogInfo}
                     idHousehold={infoId}
                     allResidents={allResidents.data}
+                    typeTable={typeTable}
                 />
             }
 
-            {(isLoading || allResidents.isLoading || !data) ? <TableSkeleton /> : <TableContainer sx={{ maxHeight: 500, backgroundColor: '#fff' }}>
+            {(isLoading || allResidents.isLoading || !data) ? <TableSkeleton /> : <TableContainer sx={{ height: 395, backgroundColor: '#fff' }}>
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead >
                         <TableRow>
@@ -177,7 +193,7 @@ export default function TableHoKhau() {
                                 </TableCell>
                             ))}
                             <TableCell align='right'>
-                                <Button sx={{ fontSize: 16 }} variant='contained' onClick={() => setIsCreateMode(true)}>Thêm hộ khẩu</Button>
+                                <Button sx={{ fontSize: 15 }} color='success' variant='contained' onClick={() => setIsCreateMode(true)}>Thêm hộ khẩu</Button>
                             </TableCell>
                         </TableRow>
                     </TableHead>

@@ -1,10 +1,10 @@
-import { forwardRef, useState, useRef, useEffect } from 'react';
+import { forwardRef, useState, useRef } from 'react';
 import useAuth from '~/hooks/useAuth';
 //validate
 import validation from '~/services/validate/index.js';
 //material components
 import {
-    Button, Dialog, Slide, Snackbar, Alert,
+    Button, Dialog, Slide,
     TextField, TableRow, TableHead, TableContainer, TableCell, TableBody, Table, Paper,
     FormControl,
     InputLabel,
@@ -54,7 +54,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
         border: 0,
     },
 }));
-export default function AddHouseholDialog({ open, onClose }) {
+export default function AddHouseholDialog({ open, onClose, onSucess, normal }) {
     const { auth } = useAuth();
     const queryClient = useQueryClient();
 
@@ -65,8 +65,6 @@ export default function AddHouseholDialog({ open, onClose }) {
 
     //handle save button
     const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState(false);
-    const timer = useRef();
 
     const [deleteId, setDeleteId] = useState(null);
 
@@ -83,6 +81,13 @@ export default function AddHouseholDialog({ open, onClose }) {
     const moveOutPlaceRef = useRef();
     const moveOutReasonRef = useRef();
 
+    const [detailResident, setDetailResident] = useState(null);
+
+    const handleChangeDetailResident = (detail) => {
+        setAddResidentDialog(true);
+        setDetailResident(detail);
+    }
+
     const queryAdd = useMutation({
         mutationFn: async (household) => householdManager.addHousehold(auth.token, household),
         onMutate: () => {
@@ -96,27 +101,17 @@ export default function AddHouseholDialog({ open, onClose }) {
         onSuccess: async () => {
             await queryClient.invalidateQueries('households');
             await queryClient.invalidateQueries('residents');
-            setSuccess(true);
+            onSucess(true);
             setLoading(false);
             onClose(!open);
         }
     })
-
-    useEffect(() => {
-        return () => {
-            clearTimeout(timer.current);
-        };
-    }, []);
 
     //handle when clode this dislog
     const [isClose, setIsClose] = useState(false);
     const handleCloseConfirmBox = () => {
         setIsClose(false);
     }
-
-    const handleSuccess = () => {
-        setSuccess(false);
-    };
     //handle close this dialog
     const handleClose = () => {
         onClose(!open);
@@ -159,18 +154,24 @@ export default function AddHouseholDialog({ open, onClose }) {
     }
 
     const addResident = (resident) => {
-        if (
-            people.every(
-                item => item.identityCode !== resident.identityCode
-            )
-        ) {
-            setPeople(prev => {
-                return [...prev, resident]
-            });
-            return true;
+        if (people.every(
+            item => item.identityCode !== resident.identityCode
+        )) {
+            setPeople(prev => [...prev, resident]);
         }
         else {
-            return false;
+            setPeople(prev => {
+                return [...prev].map(item => {
+                    if (item.identityCode === resident.identityCode) {
+                        return resident;
+                    }
+                    else {
+                        return item;
+                    }
+                }
+                )
+            });
+            setDetailResident(null);
         }
     }
     const handleStartAddResident = () => {
@@ -184,7 +185,6 @@ export default function AddHouseholDialog({ open, onClose }) {
         const scope = +scopeRef.current.value;
         const moveOutPlace = moveOutPlaceRef.current.value;
         const moveOutReason = moveOutReasonRef.current.value;
-        console.log(scope)
         let canAdd = true;
         if (householdId === '') {
             setHouseholdIdError('Vui lòng nhập số hộ khẩu');
@@ -207,20 +207,20 @@ export default function AddHouseholDialog({ open, onClose }) {
                 moveOutPlace: moveOutPlace,
                 moveOutReason: moveOutReason,
                 nonExistMembers: people
-            }
-            console.log(data)
+            };
             queryAdd.mutate(data)
         }
     }
 
     return (
         <div>
-            <Snackbar open={success} autoHideDuration={4000} onClose={handleSuccess} >
-                <Alert onClose={handleSuccess} severity="success" sx={{ width: '100%', fontSize: 15 }}>
-                    Thên hộ khẩu mới thành công !
-                </Alert>
-            </Snackbar>
-            {addResidentDialog && <AddResidentDialog open={addResidentDialog} onClose={setAddResidentDialog} action={addResident} />}
+            {addResidentDialog &&
+                <AddResidentDialog
+                    open={addResidentDialog}
+                    onClose={setAddResidentDialog}
+                    action={addResident}
+                    data={detailResident} />
+            }
             <Dialog
                 fullWidth={true}
                 maxWidth='1000'
@@ -272,6 +272,7 @@ export default function AddHouseholDialog({ open, onClose }) {
                             inputRef={moveOutPlaceRef}
                             label="Địa điểm chuyển đi"
                             variant="standard"
+                            disabled={!normal}
                         />
                         <LocalizationProvider dateAdapter={AdapterDayjs} >
                             <DatePicker
@@ -279,6 +280,7 @@ export default function AddHouseholDialog({ open, onClose }) {
                                 onChange={(newValue) => {
                                     setMoveOutDate(newValue);
                                 }}
+                                disabled={!normal}
                                 renderInput={({ inputRef, inputProps, InputProps }) =>
                                     <FormControl sx={{ width: 400 }} variant="standard">
                                         <InputLabel htmlFor="input_login_account">
@@ -299,6 +301,7 @@ export default function AddHouseholDialog({ open, onClose }) {
                             />
                         </LocalizationProvider>
                         <TextField
+                            disabled={!normal}
                             sx={{ width: '400px' }}
                             label="Lý do chuyển đi"
                             inputRef={moveOutReasonRef}
@@ -308,7 +311,7 @@ export default function AddHouseholDialog({ open, onClose }) {
                     </div>
                     <div>
                         <Button variant="contained"
-                            sx={{ margin: '5px 20px' }}
+                            sx={{ margin: '5px 5px' }}
                             color="primary" onClick={handleStartAddResident}>Thêm thành viên</Button>
                     </div>
                     <h3>Thông tin thành viên trong hộ khẩu</h3>
@@ -330,11 +333,19 @@ export default function AddHouseholDialog({ open, onClose }) {
                                         <StyledTableRow key={index}>
                                             <StyledTableCell align="center">{row.identityCode}</StyledTableCell>
                                             <StyledTableCell align="center">{row.fullName}</StyledTableCell>
-                                            <StyledTableCell align="center">{row.dateOfBirth ? row.dateOfBirth.$d.getDate() : null}</StyledTableCell>
+                                            <StyledTableCell align="center">{row.dateOfBirth ? new Date(row.dateOfBirth).toLocaleDateString(
+                                                'vi-VN',
+                                                { day: '2-digit', month: '2-digit', year: 'numeric' }
+                                            ) : null}</StyledTableCell>
                                             <StyledTableCell align="center">{row.isMale ? 'Nam' : 'Nữ'}</StyledTableCell>
                                             <StyledTableCell align="center">{row.relationShip}</StyledTableCell>
                                             <StyledTableCell align="center" component="th" scope="row">
-                                                <Button>
+                                                <Button onClick={
+                                                    () => {
+                                                        handleChangeDetailResident(row)
+                                                    }
+                                                }
+                                                >
                                                     Chi tiết
                                                 </Button>
                                                 <Button

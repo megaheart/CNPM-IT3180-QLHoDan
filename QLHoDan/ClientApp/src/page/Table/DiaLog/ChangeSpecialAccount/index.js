@@ -4,48 +4,41 @@ import validation from '~/services/validate/index.js';
 //material components
 import {
     Button, Dialog, Slide,
-    TextField
+    TextField, Select, MenuItem, FormControl, InputLabel
 } from '@mui/material';
-// import ListItemText from '@mui/material/ListItemText';
-// import ListItem from '@mui/material/ListItem';
-// import List from '@mui/material/List';
-// import Divider from '@mui/material/Divider';
-// import AppBar from '@mui/material/AppBar';
-// import Toolbar from '@mui/material/Toolbar';
-// import IconButton from '@mui/material/IconButton';
-// import Typography from '@mui/material/Typography';
-// import CloseIcon from '@mui/icons-material/Close';
 import classNames from 'classnames/bind';
 import styles from './AddHousehold.module.scss';
 import ConfirmBox from '../ConfirmBox';
-import {
-    useQuery,
-    useMutation,
-    useQueryClient,
-    QueryClient,
-    QueryClientProvider,
-} from '@tanstack/react-query';
-import householdAccountManager from '~/services/api/householdApi';
+
+import useAuth from '~/hooks/useAuth';
+import LinearProgress from '@mui/material/LinearProgress';
+
 const cx = classNames.bind(styles);
 const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
-export default function ChangeHouseholdAccount({ mutation, open, onClose, info }) {
+export default function ChangeSpecialAccount({ mutation, completeChange, open, onClose, info }) {
+    const { auth } = useAuth();
 
-
-    const { userName, fullName, scope, note } = info;
+    const { userName, fullName, scope, note, role } = info;
 
     const usernameRef = useRef();
     const fullnameRef = useRef();
     const scopeRef = useRef();
     const noteRef = useRef();
+    // const roleRef = useRef();
 
     const [usernameError, setUsernameError] = useState('');
     const [fullnameError, setFullnameError] = useState('');
     const [scopeError, setScopeError] = useState('');
 
+    const [loading, setLoading] = useState(false);
+
     //handle when clode this dislog
     const [isClose, setIsClose] = useState(false);
+
+
+
     const handleCloseConfirmBox = () => {
         setIsClose(false);
     };
@@ -61,6 +54,7 @@ export default function ChangeHouseholdAccount({ mutation, open, onClose, info }
             fullnameRef.current.value !== fullName ||
             scopeRef.current.value != scope ||
             noteRef.current.value !== note
+            // || roleRef.current.value !== role
         ) {
             setIsClose(true);
         }
@@ -88,14 +82,27 @@ export default function ChangeHouseholdAccount({ mutation, open, onClose, info }
             setFullnameError('');
             setUsernameError('');
             setScopeError('');
-            await mutation.mutate({
+            mutation.mutate({
                 userName: usernameRef.current.value,
                 fullName: fullnameRef.current.value,
                 scope: scopeRef.current.value,
                 note: noteRef.current.value || ''
-            });
-
-            onClose(false);
+            },
+                {
+                    onMutate: () => {
+                        setLoading(true);
+                    },
+                    onError: () => {
+                        setLoading(false)
+                    }
+                    ,
+                    onSuccess: async () => {
+                        completeChange('Thay đổi thông tin');
+                        setLoading(false);
+                        onClose(false);
+                    }
+                }
+            );
         }
     }
     return (
@@ -106,20 +113,21 @@ export default function ChangeHouseholdAccount({ mutation, open, onClose, info }
                 onClose={handlStartClose}
                 TransitionComponent={Transition}
             >
+                {loading && <LinearProgress />}
                 <div className={cx('header-paper-population')}>
                     <Button variant="contained" color="error" onClick={handlStartClose}>Đóng</Button>
                 </div>
                 <div className={cx('account-paper')}>
-                    <h2 className={cx('title-household')}>Sửa thông tin tài khoản hộ dân</h2>
+                    <h2 className={cx('title-household')}>Sửa thông tin tài khoản đặc biệt</h2>
                     <div className={cx('account-household-detail')}>
                         <TextField
-                            disabled
                             inputRef={usernameRef}
                             sx={{ width: '400px' }}
                             label="Tên đăng nhập*"
                             InputLabelProps={{
                                 fontSize: 20
                             }}
+                            disabled
                             defaultValue={userName}
                             variant="standard"
                         />
@@ -132,6 +140,26 @@ export default function ChangeHouseholdAccount({ mutation, open, onClose, info }
                             error={fullnameError.length > 0}
                             helperText={fullnameError}
                         />
+                        {/* <FormControl sx={{ m: 1, width: 270 }} variant="standard">
+                            <InputLabel htmlFor="input_login_account">
+                                Quyền hạn
+                            </InputLabel>
+                            <Select
+                                inputRef={roleRef}
+                                defaultValue='3'
+                                id="input_login_account"
+                            >
+                                <MenuItem value='3'>
+                                    Tổ trưởng
+                                </MenuItem>
+                                <MenuItem value='2'>
+                                    Kế toán
+                                </MenuItem>
+                                <MenuItem value='1'>
+                                    Chủ tịch xã
+                                </MenuItem>
+                            </Select>
+                        </FormControl> */}
                         <TextField
                             inputRef={scopeRef}
                             sx={{ width: '400px' }}

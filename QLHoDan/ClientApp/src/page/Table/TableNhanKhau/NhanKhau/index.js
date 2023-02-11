@@ -197,7 +197,7 @@ export default function TableNhanKhau({ action, typeTable }) {
                 </DialogActions>
             </Dialog>
 
-            {isLoading ? <TableSkeleton /> : <TableContainer sx={{ maxHeight: 500, backgroundColor: '#fff' }}>
+            {isLoading ? <TableSkeleton /> : <TableContainer sx={{ height: 470, backgroundColor: '#fff' }}>
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead >
                         <TableRow>
@@ -227,6 +227,12 @@ export default function TableNhanKhau({ action, typeTable }) {
                                             let value = row[column.id];
                                             if (column.id === 'isMale') {
                                                 value = value ? 'Nam' : 'Nữ';
+                                            }
+                                            if (column.id === 'dateOfBirth') {
+                                                value = new Date(value).toLocaleDateString(
+                                                    'vi-VN',
+                                                    { day: '2-digit', month: '2-digit', year: 'numeric' }
+                                                );
                                             }
                                             return (
                                                 <TableCell key={`${value}-${i}-tablecell`} align={column.align} style={{ fontSize: 15 }}>

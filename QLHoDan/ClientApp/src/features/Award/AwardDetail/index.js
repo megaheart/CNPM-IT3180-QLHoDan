@@ -233,6 +233,7 @@ export default function AwardDetail({ open, onClose, idAward }) {
                                         onChange={(newValue) => {
                                             setClosingFormDate(newValue);
                                         }}
+                                        disabled
                                         renderInput={({ inputProps, InputProps }) =>
                                             <FormControl sx={{ m: 1, width: 270 }} variant="standard">
                                                 <InputLabel htmlFor="input_login_account">
@@ -259,6 +260,7 @@ export default function AwardDetail({ open, onClose, idAward }) {
                                         onChange={(newValue) => {
                                             setRewardDate(newValue);
                                         }}
+                                        disabled
                                         renderInput={({ inputProps, InputProps }) =>
                                             <FormControl sx={{ m: 1, width: 270 }} variant="standard">
                                                 <InputLabel htmlFor="input_login_account">

@@ -26,7 +26,7 @@ class ResidentManager {
 
     async getResidentMove(token) {
         const response = await axios.get(
-            `${API_GET_ALL_RESIDENT}?isDead=${false}&moveOut=${true}`, config(token)
+            `${API_GET_ALL_RESIDENT}?isDead=${false}&movedOut=${true}`, config(token)
         );
         if (response && response.data) {
             return response.data;
@@ -35,7 +35,7 @@ class ResidentManager {
 
     async getResidentDead(token) {
         const response = await axios.get(
-            `${API_GET_ALL_RESIDENT}?isDead=${true}&moveOut=${false}`, config(token)
+            `${API_GET_ALL_RESIDENT}?isDead=${true}&movedOut=${false}`, config(token)
         );
         if (response && response.data) {
             return response.data;

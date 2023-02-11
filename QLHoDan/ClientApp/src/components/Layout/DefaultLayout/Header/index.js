@@ -1,5 +1,5 @@
 import { useState, useRef, useContext, useEffect } from 'react';
-import { AuthContext } from '~/components/AuthenProvider';
+import useAuth from '~/hooks/useAuth';
 
 import { deepOrange } from '@mui/material/colors';
 import styles from './Header.module.scss';
@@ -20,11 +20,28 @@ import MailIcon from '@mui/icons-material/Mail';
 import authenticationService from '~/services/account/authentication';
 //search
 import { FormsAction, filterByTitle } from '~/components/component/Action/SearchResult';
+
+import accountApi from '~/services/api/accountApi';
+import { useQuery } from '@tanstack/react-query';
+
 const cx = classNames.bind(styles);
 
+function getLastName(string) {
+    if (typeof string === 'string') {
+        const arr = string.split(' ');
+        return arr[arr.length - 1];
+    }
+    return '';
+};
 
 function Header({ text }) {
-    const { setAuth } = useContext(AuthContext);
+    const { auth, setAuth } = useAuth();
+
+    const { data, isLoading } = useQuery(
+        ['user'],
+        async () => accountApi.getProfile(auth.token),
+    );
+
     //tippy for avatar button
     const tippy = useRef();
     const [tippyAvatar, setTippyAvatar] = useState(null);
@@ -172,8 +189,10 @@ function Header({ text }) {
                         </div>
                     )}
                 >
-                    <Avatar sx={{ cursor: 'pointer', border: '2px solid transparent', '&:hover': { borderColor: 'green' }, bgcolor: deepOrange[500] }}
-                        onClick={turnOnTippy} >Đức</Avatar>
+                    <Avatar sx={{ fontSize: 10, cursor: 'pointer', border: '2px solid transparent', '&:hover': { borderColor: 'green' }, bgcolor: deepOrange[500] }}
+                        onClick={turnOnTippy} >
+                        <span>{isLoading ? 'Loading...' : getLastName(data.fullName)}</span>
+                    </Avatar>
                     {/* <Avatar sx={{ cursor: 'pointer', border: '2px solid transparent', '&:hover': { borderColor: 'green' } }} src={fuhua} onClick={turnOnTippy} /> */}
                 </Tippy>
             </div>

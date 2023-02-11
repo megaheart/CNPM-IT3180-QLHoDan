@@ -17,7 +17,7 @@ class HouseholdManager {
     }
     async getHouseholdListMove(token) {
         const response = await axios.get(
-            `${API_HOUSEHOLDS}?moveOut=${true}`,
+            `${API_HOUSEHOLDS}?movedOut=${true}`,
             config(token)
         );
         if (response && response.data) {

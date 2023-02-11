@@ -29,3 +29,7 @@ export const API_HOUSEHOLDS = `${API_URL}/Households`;
 export const API_GET_ALL_RESIDENT = `${API_URL}/Residents`
 
 export const API_REWARDS = `${API_URL}/RewardCeremonies`;
+
+export const API_ACCOUNT_SPECIAL = `${API_ACCOUNT_URL}/special`;
+
+export const API_NOTIFICATION = `${API_URL}/Notification`;

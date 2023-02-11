@@ -23,7 +23,6 @@ export default function Header() {
         ['user'],
         async () => accountApi.getProfile(auth.token),
     );
-    console.log(data)
 
     const role = useMemo(() => {
         if (auth.role === 'CommitteeChairman') {

@@ -3,7 +3,7 @@ import useAuth from '~/hooks/useAuth';
 //material components
 import {
     Button, Dialog, Slide, Snackbar, Alert, TextField,
-    InputLabel, InputAdornment, Input, FormControl
+    InputLabel, InputAdornment, Input, FormControl, Backdrop, CircularProgress
 } from '@mui/material';
 import { green } from '@mui/material/colors';
 //icons material
@@ -34,14 +34,14 @@ const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function FullScreenDialog({ open, onClose, idHousehold, resetIfoId, allResidents }) {
+export default function FullScreenDialog({ open, onClose, idHousehold, resetIfoId, allResidents, typeTable }) {
     //handle save button
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
 
     const { auth } = useAuth();
     //loading data
-    const { data, isLoading } = useQuery(['householdDetail', idHousehold], () => householdManager.getHousehold(auth.token, idHousehold));
+    const { data, isLoading } = useQuery(['householdDetail', typeTable, idHousehold], () => householdManager.getHousehold(auth.token, idHousehold));
 
     //edit mode
     const [editMode, setEditMode] = useState(false);
@@ -58,8 +58,6 @@ export default function FullScreenDialog({ open, onClose, idHousehold, resetIfoI
     const scopeRef = useRef();
 
     const queryClient = useQueryClient();
-
-    console.log(data);
 
     useEffect(() => {
         if (data) {
@@ -78,8 +76,9 @@ export default function FullScreenDialog({ open, onClose, idHousehold, resetIfoI
             setLoading(false);
         },
         onSuccess: async () => {
-            await queryClient.invalidateQueries('households');
-            await queryClient.invalidateQueries('residents');
+            await queryClient.invalidateQueries(['householdDetail', typeTable, idHousehold]);
+            await queryClient.invalidateQueries(['households', typeTable]);
+            await queryClient.invalidateQueries(['residents', typeTable]);
             setLoading(false);
             setSuccess(true);
             setEditMode(false);
@@ -137,7 +136,12 @@ export default function FullScreenDialog({ open, onClose, idHousehold, resetIfoI
                     Thay đổi thông tin thành công!
                 </Alert>
             </Snackbar>
-
+            {loading && <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1000 }}
+                open={loading}
+            >
+                <CircularProgress color="inherit" />
+            </Backdrop>}
             <Dialog
                 fullWidth={true}
                 maxWidth='1000'
@@ -206,12 +210,16 @@ export default function FullScreenDialog({ open, onClose, idHousehold, resetIfoI
                                     />
                                 </div>
                                 <div className={cx('household-detail-line')}>
-                                    <LocalizationProvider dateAdapter={AdapterDayjs} >
+                                    {typeTable === 'current' && <LocalizationProvider dateAdapter={AdapterDayjs} >
                                         <DatePicker
                                             value={moveOutDate}
                                             onChange={(newValue) => {
                                                 setMoveOutDate(newValue);
                                             }}
+                                            dayOfYearFormatter={(day) => `${new Date(day).toLocaleString('vi-VN',
+                                                { day: '2-digit', month: '2-digit', year: 'numeric' })}`}
+                                            toolbarFormat="DD MM YYYY"
+                                            disabled={!editMode}
                                             renderInput={({ inputProps, InputProps }) =>
                                                 <FormControl sx={{ width: 300 }} variant="standard">
                                                     <InputLabel htmlFor="input_login_account">
@@ -229,8 +237,8 @@ export default function FullScreenDialog({ open, onClose, idHousehold, resetIfoI
                                                 </FormControl>
                                             }
                                         />
-                                    </LocalizationProvider>
-                                    <TextField
+                                    </LocalizationProvider>}
+                                    {typeTable === 'current' && <TextField
                                         disabled={!editMode}
                                         sx={{ width: 300 }}
                                         inputProps={{ style: { fontSize: 15 } }}
@@ -239,8 +247,8 @@ export default function FullScreenDialog({ open, onClose, idHousehold, resetIfoI
                                         defaultValue={data.moveOutPlace || ''}
                                         inputRef={moveOutPlaceRef}
                                         variant="standard"
-                                    />
-                                    <TextField
+                                    />}
+                                    {typeTable === 'current' && <TextField
                                         disabled={!editMode}
                                         sx={{ width: 300 }}
                                         inputProps={{ style: { fontSize: 15 } }}
@@ -250,6 +258,7 @@ export default function FullScreenDialog({ open, onClose, idHousehold, resetIfoI
                                         variant="standard"
                                         inputRef={moveOutReasonRef}
                                     />
+                                    }
                                     <TextField
                                         disabled={!editMode}
                                         sx={{ width: 300 }}

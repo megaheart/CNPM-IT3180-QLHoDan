@@ -21,7 +21,7 @@ const Transition = forwardRef(function Transition(props, ref) {
 });
 
 
-export default function AddResidentDialog({ open, onClose, action }) {
+export default function AddResidentDialog({ open, onClose, action, data = null }) {
 
     const [identityCodeError, setIdentityCodeError] = useState('');
 
@@ -74,6 +74,16 @@ export default function AddResidentDialog({ open, onClose, action }) {
         }
     }
 
+    useEffect(
+        () => {
+            if (data) {
+                setBirthday(dayjs(data.dateOfBirth));
+                setIdCardDate(dayjs(data.idCardDate));
+                setMoveInDate(dayjs(data.moveInDate));
+            }
+        }, []
+    )
+
     //handle when clode this dislog
     const [isClose, setIsClose] = useState(false);
     const handleCloseConfirmBox = useCallback(() => {
@@ -83,30 +93,28 @@ export default function AddResidentDialog({ open, onClose, action }) {
     //start close this dialog
     const handlStartClose = () => {
         if (
-            fullNameRef.current.value !== '' ||
-            aliasRef.current.value !== '' ||
-            birthPlaceRef.current.value !== '' ||
-            isMaleRef.current.value !== 'male' ||
-            dateOfBirth !== null ||
-            nativeLandRef.current.value !== '' ||
-            ethnicRef.current.value !== '' ||
-            nationRef.current.value !== '' ||
-            jobRef.current.value !== '' ||
-            workplaceRef.current.value !== '' ||
-            identityCodeRef.current.value !== '' ||
-            idCardDate !== null ||
-            idCardPlaceRef.current.value !== '' ||
-            relationShipRef.current.value !== '' ||
-            academicLevelRef.current.value !== '' ||
-            criminalRecordRef.current.value !== '' ||
-            moveInDate !== null ||
-            moveInReasonRef.current.value !== ''
+            fullNameRef.current.value !== (data ? data.fullName : '') ||
+            aliasRef.current.value !== (data ? data.alias : '') ||
+            birthPlaceRef.current.value !== (data ? data.birthPlace : '') ||
+            isMaleRef.current.value !== (data ? (data.isMale ? 'male' : 'female') : 'male') ||
+            nativeLandRef.current.value !== (data ? data.nativeLand : '') ||
+            ethnicRef.current.value !== (data ? data.ethnic : '') ||
+            nationRef.current.value !== (data ? data.nation : '') ||
+            jobRef.current.value !== (data ? data.job : '') ||
+            workplaceRef.current.value !== (data ? data.workplace : '') ||
+            identityCodeRef.current.value !== (data ? data.identityCode : '') ||
+            idCardPlaceRef.current.value !== (data ? data.idCardPlace : '') ||
+            relationShipRef.current.value !== (data ? data.relationShip : '') ||
+            academicLevelRef.current.value !== (data ? data.academicLevel : '') ||
+            criminalRecordRef.current.value !== (data ? data.criminalRecord : '') ||
+            moveInReasonRef.current.value !== (data ? data.moveInReason : '')
         ) {
             setIsClose(true);
         }
         else {
             onClose(!open);
         }
+
     };
     //handle close this dialog
     const handleClose = () => {
@@ -124,23 +132,23 @@ export default function AddResidentDialog({ open, onClose, action }) {
             >
                 <div className={cx('state-dialog')} >
                     <Button variant="contained" color="success"
-                        sx={{ fontSize: 15, margin: '2 0', width: 60 }} onClick={handleAdd}>Thêm</Button>
+                        sx={{ fontSize: 15, margin: '2 0', width: 100 }} onClick={handleAdd}>{data ? 'Cập nhật' : 'Thêm'}</Button>
                     <Button variant="contained" color="error"
                         sx={{ fontSize: 15, margin: '2 0', width: 60 }} onClick={handlStartClose}>Đóng</Button>
                 </div>
                 <div className={cx('form-add-resident')} >
-                    <h2 >Thêm nhân khẩu mới</h2>
+                    <h2 >{data ? 'Thông tin nhân khẩu cần thêm' : 'Thêm nhân khẩu mới'}</h2>
                     <div >
                         <div>
                             <TextField sx={{ m: 1, width: 270 }} label="Họ và tên"
                                 inputRef={fullNameRef}
                                 variant="standard"
-                                defaultValue=''
+                                defaultValue={data ? data.fullName : ''}
                             />
                             <TextField sx={{ m: 1, width: 270 }} label="Bí danh"
                                 variant="standard"
                                 inputRef={aliasRef}
-                                defaultValue=''
+                                defaultValue={data ? data.alias : ''}
                             />
                             <LocalizationProvider dateAdapter={AdapterDayjs} >
                                 <DatePicker
@@ -169,13 +177,13 @@ export default function AddResidentDialog({ open, onClose, action }) {
                             </LocalizationProvider>
                             <TextField sx={{ m: 1, width: 270 }} label="Dân tộc"
                                 inputRef={ethnicRef}
-                                defaultValue=''
+                                defaultValue={data ? data.ethnic : ''}
                                 variant="standard" />
 
                         </div>
                         <div>
                             <TextField sx={{ m: 1, width: 556 }}
-                                defaultValue=''
+                                defaultValue={data ? data.birthPlace : ''}
                                 label="Nơi sinh"
                                 variant="standard"
                                 inputRef={birthPlaceRef}
@@ -183,11 +191,11 @@ export default function AddResidentDialog({ open, onClose, action }) {
                             <TextField sx={{ m: 1, width: 270 }} label="Nguyên quán"
                                 variant="standard"
                                 inputRef={nativeLandRef}
-                                defaultValue=''
+                                defaultValue={data ? data.nativeLand : ''}
                             />
                             <TextField sx={{ m: 1, width: 270 }} label="Quốc tịch"
                                 inputRef={nationRef}
-                                defaultValue=''
+                                defaultValue={data ? data.nation : ''}
                                 variant="standard" />
                         </div>
                         <div>
@@ -197,7 +205,7 @@ export default function AddResidentDialog({ open, onClose, action }) {
                                 </InputLabel>
                                 <Select
                                     inputRef={isMaleRef}
-                                    defaultValue='male'
+                                    defaultValue={data ? (data.isMale ? 'male' : 'female') : 'male'}
                                     id="input_login_account"
                                 >
                                     <MenuItem value='male'>
@@ -208,10 +216,14 @@ export default function AddResidentDialog({ open, onClose, action }) {
                                     </MenuItem>
                                 </Select>
                             </FormControl>
-                            <TextField sx={{ m: 1, width: 270 }} label="Nghề nghiệp"
+                            <TextField sx={{ m: 1, width: 270 }}
+                                label="Nghề nghiệp"
                                 inputRef={jobRef}
-                                variant="standard" />
+                                variant="standard"
+                                defaultValue={data ? data.job : ''}
+                            />
                             <TextField sx={{ m: 1, width: 556 }} label="Nơi làm việc"
+                                defaultValue={data ? data.workplace : ''}
                                 inputRef={workplaceRef}
                                 variant="standard" />
                         </div>
@@ -221,7 +233,7 @@ export default function AddResidentDialog({ open, onClose, action }) {
                                 inputRef={identityCodeRef}
                                 variant="standard"
                                 helperText={identityCodeError}
-                                defaultValue=''
+                                defaultValue={data ? data.identityCode : ''}
                             />
                             <LocalizationProvider dateAdapter={AdapterDayjs} >
                                 <DatePicker
@@ -251,21 +263,22 @@ export default function AddResidentDialog({ open, onClose, action }) {
                             <TextField sx={{ m: 1, width: 270 }} label="Nơi cấp CMND/CCCD"
                                 inputRef={idCardPlaceRef}
                                 variant="standard"
+                                defaultValue={data ? data.idCardPlace : ''}
                                 helperText={identityCodeError}
                             />
                         </div>
                         <div>
                             <TextField sx={{ m: 1, width: 270 }} label="Quan hệ với chủ hộ"
                                 inputRef={relationShipRef}
-                                defaultValue=''
+                                defaultValue={data ? data.relationShip : ''}
                                 variant="standard" />
                             <TextField sx={{ m: 1, width: 270 }} label="Trình độ học vấn"
                                 inputRef={academicLevelRef}
-                                defaultValue=''
+                                defaultValue={data ? data.academicLevel : ''}
                                 variant="standard" />
                             <TextField sx={{ m: 1, width: 270 }} label="Tiền án"
                                 inputRef={criminalRecordRef}
-                                defaultValue=''
+                                defaultValue={data ? data.criminalRecord : ''}
                                 variant="standard" />
                         </div>
                         <div>
@@ -298,7 +311,7 @@ export default function AddResidentDialog({ open, onClose, action }) {
                         <div>
                             <TextField multiline sx={{ m: 1, width: 1130 }} label="Lý do chuyển đến"
                                 inputRef={moveInReasonRef}
-                                defaultValue=''
+                                defaultValue={data ? data.moveInReason : ''}
                                 variant="standard" />
                         </div>
                     </div>
