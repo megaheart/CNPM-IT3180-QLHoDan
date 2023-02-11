@@ -1,7 +1,4 @@
 
-import residentManager from '~/services/api/residentManager';
-
-import TableNhanKhau from './NhanKhau/index.js';
 import { styled } from '@mui/system';
 import TabsUnstyled from '@mui/base/TabsUnstyled';
 import TabsListUnstyled from '@mui/base/TabsListUnstyled';
@@ -10,29 +7,29 @@ import { buttonUnstyledClasses } from '@mui/base/ButtonUnstyled';
 import TabUnstyled, { tabUnstyledClasses } from '@mui/base/TabUnstyled';
 
 const blue = {
-  50: '#F0F7FF',
-  100: '#C2E0FF',
-  200: '#80BFFF',
-  300: '#66B2FF',
-  400: '#3399FF',
-  500: '#007FFF',
-  600: '#0072E5',
-  700: '#0059B2',
-  800: '#004C99',
-  900: '#003A75',
+    50: '#F0F7FF',
+    100: '#C2E0FF',
+    200: '#80BFFF',
+    300: '#66B2FF',
+    400: '#3399FF',
+    500: '#007FFF',
+    600: '#0072E5',
+    700: '#0059B2',
+    800: '#004C99',
+    900: '#003A75',
 };
 
 const grey = {
-  50: '#f6f8fa',
-  100: '#eaeef2',
-  200: '#d0d7de',
-  300: '#afb8c1',
-  400: '#8c959f',
-  500: '#6e7781',
-  600: '#57606a',
-  700: '#424a53',
-  800: '#32383f',
-  900: '#24292f',
+    50: '#f6f8fa',
+    100: '#eaeef2',
+    200: '#d0d7de',
+    300: '#afb8c1',
+    400: '#8c959f',
+    500: '#6e7781',
+    600: '#57606a',
+    700: '#424a53',
+    800: '#32383f',
+    900: '#24292f',
 };
 
 const Tab = styled(TabUnstyled)`
@@ -77,7 +74,7 @@ const TabPanel = styled(TabPanelUnstyled)`
 `;
 
 const TabsList = styled(TabsListUnstyled)(
-  ({ theme }) => `
+    ({ theme }) => `
   min-width: 400px;
   background-color: ${blue[500]};
   border-radius: 12px;
@@ -90,36 +87,9 @@ const TabsList = styled(TabsListUnstyled)(
   `,
 );
 
-export default function UnstyledTabsCustomized() {
-  return (
-    <TabsUnstyled defaultValue={0}>
-      <TabsList>
-        <Tab>Hiện có</Tab>
-        <Tab>Chuyển đi</Tab>
-        <Tab>Khai tử</Tab>
-      </TabsList>
-      <TabPanel value={0}>
-        <TableNhanKhau
-          key='1'
-          action={residentManager.getAllResident}
-          typeTable='current'
-        />
-      </TabPanel>
-      <TabPanel value={1}>
-        <TableNhanKhau
-          key='2'
-          action={residentManager.getResidentMove}
-          typeTable='move'
-        />
-      </TabPanel>
-      <TabPanel value={2}>
-        <TableNhanKhau
-          key='3'
-          action={residentManager.getResidentDead}
-          typeTable='dead'
-        />
-      </TabPanel>
-    </TabsUnstyled>
-  );
+export {
+    TabsUnstyled,
+    Tab,
+    TabPanel,
+    TabsList,
 }
-

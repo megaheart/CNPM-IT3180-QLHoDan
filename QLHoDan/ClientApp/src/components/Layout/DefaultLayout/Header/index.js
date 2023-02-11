@@ -18,6 +18,7 @@ import { Avatar, Badge, Alert, Stack } from '@mui/material';
 import MailIcon from '@mui/icons-material/Mail';
 //authentication
 import authenticationService from '~/services/account/authentication';
+import notificationManager from '~/services/api/notificationManager';
 //search
 import { FormsAction, filterByTitle } from '~/components/component/Action/SearchResult';
 
@@ -41,7 +42,10 @@ function Header({ text }) {
         ['user'],
         async () => accountApi.getProfile(auth.token),
     );
-
+    // const queryNotificationCount = useQuery(
+    //     ['notification'],
+    //     async () => notificationManager.getNumberOfUnreadNotification(auth.token),
+    // );
     //tippy for avatar button
     const tippy = useRef();
     const [tippyAvatar, setTippyAvatar] = useState(null);
@@ -161,7 +165,10 @@ function Header({ text }) {
                         </div>
                     )}
                 >
-                    <Badge color="secondary" badgeContent={count}  >
+                    <Badge color="secondary" badgeContent={
+                        // queryNotificationCount.isLoading ? 0 : queryNotificationCount.data
+                        count
+                    }  >
                         <MailIcon sx={{ fontSize: 30, cursor: 'pointer' }} onClick={turnOnTippyMessage} />
                     </Badge>
                 </Tippy>

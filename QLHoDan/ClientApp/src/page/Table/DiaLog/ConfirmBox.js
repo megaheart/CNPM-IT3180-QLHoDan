@@ -10,7 +10,7 @@ function ConfirmBox({ open, onClose, onAgree, title }) {
             aria-describedby="alert-dialog-description"
         >
             <DialogTitle sx={{ fontSize: 20 }} id="alert-dialog-title">
-                {title || "Xóa hộ khẩu ?"}
+                {title}
             </DialogTitle>
             <DialogContent>
                 <DialogContentText sx={{ fontSize: 15 }} id="alert-dialog-description">

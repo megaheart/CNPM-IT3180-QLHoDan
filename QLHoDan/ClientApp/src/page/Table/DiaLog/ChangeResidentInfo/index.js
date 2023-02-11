@@ -4,7 +4,7 @@ import useAuth from '~/hooks/useAuth';
 import validation from '~/services/validate/index.js';
 //material components
 import {
-    Button, Dialog, Slide, Snackbar, Alert,
+    Button, Dialog, Slide,
     TextField, MenuItem, InputLabel, InputAdornment, Input, FormControl, Select
 } from '@mui/material';
 import Skeleton from '@mui/material/Skeleton';
@@ -13,8 +13,6 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers';
 import LinearProgress from '@mui/material/LinearProgress';
-import Backdrop from '@mui/material/Backdrop';
-import CircularProgress from '@mui/material/CircularProgress';
 //style
 import classNames from 'classnames/bind';
 import styles from './AddResident.module.scss';
@@ -32,27 +30,33 @@ const Transition = forwardRef(function Transition(props, ref) {
 });
 
 
-export default function UpdateResidentDialog({ open, onClose, dataId }) {
+export default function UpdateResidentDialog({ open, onClose, dataId, setSuccess }) {
     const { auth } = useAuth();
-
+    const [editMode, setEditMode] = useState(false);
     //handle save button
     const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState(false);
 
     const [identityCodeError, setIdentityCodeError] = useState('');
 
     const { data, isLoading } = useQuery(['residentDetail', dataId], () => residentManager.getResident(auth.token, dataId));
     const queryClient = useQueryClient();
     const mutation = useMutation((data) => residentManager.updateResident(auth.token, data), {
+        onMutate: () => {
+            setLoading(true);
+        },
+        onError: () => {
+            alert('Có lỗi xảy ra, vui lòng thử lại !')
+        },
         onSuccess: async () => {
             await queryClient.invalidateQueries(['residentDetail', dataId]);
             await queryClient.invalidateQueries(['allResidents']);
             await queryClient.invalidateQueries(['householdDetail']);
-
-            setLoading(false);
-            setSuccess(true);
             onClose();
+            setSuccess();
         },
+        onSettled: () => {
+            setLoading(false);
+        }
     });
 
     const [dateOfBirth, setBirthday] = useState(null);
@@ -101,7 +105,7 @@ export default function UpdateResidentDialog({ open, onClose, dataId }) {
         const currentData = {
             fullName: fullNameRef.current.value,
             alias: aliasRef.current.value,
-            dateOfBirth: dateOfBirth.$d,
+            dateOfBirth: dayjs(dateOfBirth) || null,
             isMale: isMaleRef.current.value === 'male' ? true : false,
             birthPlace: birthPlaceRef.current.value,
             nativeLand: nativeLandRef.current.value,
@@ -110,15 +114,15 @@ export default function UpdateResidentDialog({ open, onClose, dataId }) {
             job: jobRef.current.value,
             workplace: workplaceRef.current.value,
             identityCode: identityCodeRef.current.value,
-            idCardDate: idCardDate.$d || null,
+            idCardDate: dayjs(idCardDate) || null,
             idCardPlace: idCardPlaceRef.current.value,
             relationShip: relationShipRef.current.value,
             academicLevel: academicLevelRef.current.value,
             criminalRecord: criminalRecordRef.current.value,
-            moveInDate: moveInDate.$d || null,
+            moveInDate: dayjs(moveInDate) || null,
             moveInReason: moveInReasonRef.current.value,
             moveOutPlace: moveOutPlaceRef.current.value,
-            moveOutDate: moveOutDate.$d || null,
+            moveOutDate: dayjs(moveOutDate) || null,
             moveOutReason: moveOutReasonRef.current.value,
             scope: scopeRef.current.value ? +scopeRef.current.value : null,
             householdId: householdIdRef.current.value || null,
@@ -136,24 +140,6 @@ export default function UpdateResidentDialog({ open, onClose, dataId }) {
 
     //start close this dialog
     const handlStartClose = () => {
-        console.log(fullNameRef.current.value !== data.fullName);
-        console.log(aliasRef.current.value !== data.alias);
-        console.log(isMaleRef.current.value !== (data.isMale === true ? 'male' : 'female'))
-        console.log(birthPlaceRef.current.value !== data.birthPlace);
-        console.log(nativeLandRef.current.value !== data.nativeLand);
-        console.log(ethnicRef.current.value !== data.ethnic);
-        console.log(nationRef.current.value !== data.nation);
-        console.log(jobRef.current.value !== data.job);
-        console.log(workplaceRef.current.value !== data.workplace);
-        console.log(identityCodeRef.current.value !== data.identityCode);
-        console.log(idCardPlaceRef.current.value !== data.idCardPlace);
-        console.log(relationShipRef.current.value !== data.relationShip);
-        console.log(academicLevelRef.current.value !== data.academicLevel);
-        console.log(criminalRecordRef.current.value !== data.criminalRecord);
-        console.log(moveInReasonRef.current.value !== data.moveInReason);
-        console.log(moveOutReasonRef.current.value !== data.moveOutReason);
-        console.log(moveOutPlaceRef.current.value !== data.moveOutPlace);
-
         if (
             fullNameRef.current.value !== (data.fullName || '') ||
             aliasRef.current.value !== (data.alias || '') ||
@@ -184,12 +170,12 @@ export default function UpdateResidentDialog({ open, onClose, dataId }) {
         else {
             onClose();
         }
-
     };
     // const [open, setOpen] = React.useState(false);
-    const handleSuccess = () => {
-        setSuccess(false);
-    };
+    const startEdit = () => {
+        setEditMode(true);
+    }
+
     //handle close this dialog
     const handleClose = () => {
         onClose();
@@ -197,11 +183,6 @@ export default function UpdateResidentDialog({ open, onClose, dataId }) {
     };
     return (
         <div>
-            <Snackbar open={success} autoHideDuration={3000} onClose={handleSuccess} >
-                <Alert onClose={handleSuccess} severity="success" sx={{ width: '100%', fontSize: 15 }}>
-                    Cập nhật nhân khẩu thành công !
-                </Alert>
-            </Snackbar>
             <Dialog
                 fullWidth={true}
                 maxWidth='600'
@@ -210,8 +191,16 @@ export default function UpdateResidentDialog({ open, onClose, dataId }) {
                 TransitionComponent={Transition}
             >
                 <div className={cx('header-paper-resident')}>
-                    <Button variant="contained" color="success"
-                        sx={{ fontSize: 15, margin: '2 0', width: 120 }} onClick={handleUpdate}>Cập nhật</Button>
+                    <div>
+
+                        {editMode ?
+                            <Button variant="contained" color="success"
+                                sx={{ fontSize: 15, margin: '2 0', width: 150 }} onClick={handleUpdate}>Cập nhật</Button>
+                            : <Button variant="contained" color="success"
+                                sx={{ fontSize: 15, margin: '2 0', width: 150 }} onClick={startEdit}>Chỉnh sửa</Button>
+                        }
+
+                    </div>
 
                     <Button variant="contained" color="error"
                         sx={{ fontSize: 15, margin: '2 0', width: 60 }} onClick={handlStartClose}>Đóng</Button>
@@ -227,16 +216,19 @@ export default function UpdateResidentDialog({ open, onClose, dataId }) {
                                     inputRef={fullNameRef}
                                     variant="standard"
                                     defaultValue={data.fullName}
+                                    disabled={!editMode}
                                     aria-readonly={true}
                                 />
                                 <TextField sx={{ m: 1, width: 270 }} label="Bí danh"
                                     variant="standard"
                                     inputRef={aliasRef}
+                                    disabled={!editMode}
                                     defaultValue={data.alias}
                                 />
                                 <LocalizationProvider dateAdapter={AdapterDayjs} >
                                     <DatePicker
                                         value={dateOfBirth}
+                                        disabled={!editMode}
                                         onChange={(newValue) => {
                                             setBirthday(newValue);
                                         }}
@@ -262,6 +254,7 @@ export default function UpdateResidentDialog({ open, onClose, dataId }) {
                                 </LocalizationProvider>
                                 <TextField sx={{ m: 1, width: 270 }} label="Dân tộc"
                                     inputRef={ethnicRef}
+                                    disabled={!editMode}
                                     variant="standard"
                                     defaultValue={data.ethnic} />
                             </div>
@@ -269,16 +262,19 @@ export default function UpdateResidentDialog({ open, onClose, dataId }) {
                                 <TextField sx={{ m: 1, width: 556 }} label="Nơi sinh"
                                     variant="standard"
                                     inputRef={birthPlaceRef}
+                                    disabled={!editMode}
                                     defaultValue={data.birthPlace}
                                 />
                                 <TextField sx={{ m: 1, width: 270 }} label="Nguyên quán"
                                     variant="standard"
                                     inputRef={nativeLandRef}
+                                    disabled={!editMode}
                                     defaultValue={data.nativeLand}
                                 />
                                 <TextField sx={{ m: 1, width: 270 }} label="Quốc tịch"
                                     inputRef={nationRef}
                                     defaultValue={data.nation}
+                                    disabled={!editMode}
                                     variant="standard" />
                             </div>
                             <div>
@@ -288,6 +284,7 @@ export default function UpdateResidentDialog({ open, onClose, dataId }) {
                                     </InputLabel>
                                     <Select
                                         inputRef={isMaleRef}
+                                        disabled={!editMode}
                                         defaultValue={data.isMale ? 'male' : 'female'}
                                         id="input_login_account"
                                     >
@@ -302,10 +299,12 @@ export default function UpdateResidentDialog({ open, onClose, dataId }) {
                                 <TextField sx={{ m: 1, width: 270 }} label="Nghề nghiệp"
                                     defaultValue={data.job}
                                     inputRef={jobRef}
+                                    disabled={!editMode}
                                     variant="standard" />
                                 <TextField sx={{ m: 1, width: 556 }} label="Nơi làm việc"
                                     defaultValue={data.workplace}
                                     inputRef={workplaceRef}
+                                    disabled={!editMode}
                                     variant="standard" />
                             </div>
                             <div>
@@ -319,6 +318,7 @@ export default function UpdateResidentDialog({ open, onClose, dataId }) {
                                 <LocalizationProvider dateAdapter={AdapterDayjs} >
                                     <DatePicker
                                         value={idCardDate}
+                                        disabled={!editMode}
                                         onChange={(newValue) => {
                                             setIdCardDate(newValue);
                                         }}
@@ -345,6 +345,7 @@ export default function UpdateResidentDialog({ open, onClose, dataId }) {
                                 <TextField sx={{ m: 1, width: 270 }} label="Nơi cấp CMND/CCCD"
                                     defaultValue={data.idCardPlace}
                                     inputRef={idCardPlaceRef}
+                                    disabled={!editMode}
                                     variant="standard"
                                     helperText={identityCodeError}
                                 />
@@ -355,6 +356,7 @@ export default function UpdateResidentDialog({ open, onClose, dataId }) {
                                     <Select
                                         defaultValue={data.isDead ? 'yes' : 'no'}
                                         inputRef={isDeadRef}
+                                        disabled={!editMode}
 
                                         id="input_login_account"
                                     >
@@ -371,18 +373,22 @@ export default function UpdateResidentDialog({ open, onClose, dataId }) {
                                 <TextField sx={{ m: 1, width: 270 }} label="Quan hệ với chủ hộ"
                                     defaultValue={data.relationShip}
                                     inputRef={relationShipRef}
+                                    disabled={!editMode}
                                     variant="standard" />
                                 <TextField label="Sổ hộ khẩu thuộc về"
                                     defaultValue={data.householdId}
                                     inputRef={householdIdRef}
+                                    disabled={!editMode}
                                     sx={{ m: 1, width: 270 }}
                                     variant="standard" />
                                 <TextField sx={{ m: 1, width: 270 }} label="Trình độ học vấn"
                                     defaultValue={data.academicLevel}
+                                    disabled={!editMode}
                                     inputRef={academicLevelRef}
                                     variant="standard" />
                                 <TextField sx={{ m: 1, width: 270 }} label="Tiền án"
                                     defaultValue={data.criminalRecord}
+                                    disabled={!editMode}
                                     inputRef={criminalRecordRef}
                                     variant="standard" />
                             </div>
@@ -390,12 +396,14 @@ export default function UpdateResidentDialog({ open, onClose, dataId }) {
                                 <TextField sx={{ m: 1, width: 270 }}
                                     inputRef={moveOutPlaceRef}
                                     defaultValue={data.moveOutPlace}
+                                    disabled={!editMode}
                                     label="Nơi chuyển đi"
                                     variant="standard" />
 
                                 <LocalizationProvider dateAdapter={AdapterDayjs} >
                                     <DatePicker
                                         value={moveOutDate}
+                                        disabled={!editMode}
                                         inputRef={moveOutDateRef}
                                         onChange={(newValue) => {
                                             setMoveOutDate(newValue)
@@ -422,6 +430,7 @@ export default function UpdateResidentDialog({ open, onClose, dataId }) {
                                 <LocalizationProvider dateAdapter={AdapterDayjs} >
                                     <DatePicker
                                         value={moveInDate}
+                                        disabled={!editMode}
                                         inputRef={moveInDateRef}
                                         onChange={(newValue) => {
                                             setMoveInDate(newValue)
@@ -447,17 +456,20 @@ export default function UpdateResidentDialog({ open, onClose, dataId }) {
                                 </LocalizationProvider>
                                 <TextField sx={{ m: 1, width: 270 }} label="Tổ quản lý"
                                     inputRef={scopeRef}
+                                    disabled={!editMode}
                                     defaultValue={data.scope}
                                     variant="standard" />
                             </div>
                             <div>
                                 <TextField multiline sx={{ m: 1, width: 1130 }} label="Lý do chuyển đi"
                                     defaultValue={data.moveOutReason}
+                                    disabled={!editMode}
                                     inputRef={moveOutReasonRef}
                                     variant="standard" />
 
                                 <TextField multiline sx={{ m: 1, width: 1130 }} label="Lý do chuyển đến"
                                     defaultValue={data.moveInReason}
+                                    disabled={!editMode}
                                     inputRef={moveInReasonRef}
                                     variant="standard" />
                             </div>

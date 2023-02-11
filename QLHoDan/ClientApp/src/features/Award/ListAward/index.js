@@ -43,7 +43,7 @@ export default function ListAwardEvent() {
     const { data, isLoading, error } = useQuery(['rewardEvents'], () => rewardApi.getAllRewardEvent(auth.token));
 
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
 
     const [openDetail, setOpenDetail] = useState(false);
     const [idRewardEvent, setIdRewardEvent] = useState(null);
@@ -66,14 +66,14 @@ export default function ListAwardEvent() {
         {
             isLoading ? <TableSkeleton /> :
                 <Fragment >
-                    {idRewardEvent && <AwardDetail idAward={idRewardEvent} open={openDetail} onClose={setOpenDetail} />}
-                    <TableContainer sx={{ maxHeight: 490 }}>
+                    {idRewardEvent && <AwardDetail key={idRewardEvent} idAward={idRewardEvent} open={openDetail} onClose={setOpenDetail} />}
+                    <TableContainer sx={{ height: 490 }}>
                         <Table stickyHeader aria-label="sticky table">
                             <TableHead>
                                 <TableRow>
-                                    {columns.map((column) => (
+                                    {columns.map((column, index) => (
                                         <TableCell
-                                            key={column.id}
+                                            key={column.id + index}
                                             align={column.align}
                                             style={{ minWidth: column.minWidth, fontSize: 15 }}
                                         >
@@ -86,10 +86,10 @@ export default function ListAwardEvent() {
                             <TableBody>
                                 {data
                                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    .map((row) => {
+                                    .map((row, i) => {
                                         return (
-                                            <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
-                                                {columns.map((column) => {
+                                            <TableRow hover role="checkbox" tabIndex={-1} key={i + 'row' + row.id}>
+                                                {columns.map((column, index) => {
                                                     let value = row[column.id];
                                                     if (column.id === 'isAccepted') {
                                                         value = value ? 'Đã phê duyệt' : 'Chưa phê duyệt';
@@ -98,7 +98,7 @@ export default function ListAwardEvent() {
                                                         value = value ? 'Đã phát thưởng' : 'Chưa phát thưởng';
                                                     }
                                                     return (
-                                                        <TableCell key={column.id + '' + row.id} align={column.align} style={{ fontSize: 15 }}>
+                                                        <TableCell key={column.id + 'TableCell' + row.id + index} align={column.align} style={{ fontSize: 15 }}>
                                                             <span>{value}</span>
                                                         </TableCell>
                                                     );
@@ -115,7 +115,7 @@ export default function ListAwardEvent() {
                         </Table>
                     </TableContainer>
                     <TablePagination
-                        rowsPerPageOptions={[10, 20, 100]}
+                        rowsPerPageOptions={[5, 10, 15]}
                         component="div"
                         count={data.length}
                         rowsPerPage={rowsPerPage}

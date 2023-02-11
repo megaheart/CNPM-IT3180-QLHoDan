@@ -153,11 +153,12 @@ export default function FullScreenDialog({ open, onClose, idHousehold, resetIfoI
                 {isLoading ? <Skeleton /> :
                     <Fragment>
                         <div className={cx('header-paper-population')}>
-                            <div className={cx('change-and-save')}>
-                                <Button variant="contained" disabled={editMode} color="primary" sx={{ fontSize: '1rem' }} onClick={handleEdit}>Chỉnh sửa</Button>
-                                {editMode && <Button variant="outlined" color='success'
-                                    sx={{ fontSize: '1rem' }} onClick={handleSave}>Lưu</Button>}
-                            </div>
+                            {editMode ?
+                                <Button variant="contained" color='success'
+                                    sx={{ fontSize: '1rem', width: 150 }} onClick={handleSave}>Lưu</Button>
+                                : <Button variant="contained" disabled={editMode}
+                                    color="primary" sx={{ fontSize: '1rem', width: 150 }} onClick={handleEdit}>Chỉnh sửa</Button>
+                            }
                             <Button variant="contained" color="error" sx={{ fontSize: '1rem' }} onClick={handlStartClose}>Đóng</Button>
                         </div>
                         <div className={cx('household-paper')}>

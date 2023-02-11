@@ -328,7 +328,7 @@ export default function AwardDetail({ open, onClose, idAward }) {
                                                     {columns.map((column) => {
                                                         let value = row[column.id];
                                                         return (
-                                                            <StyledTableCell key={column.id + '' + row.id} align={column.align} style={{ fontSize: 15 }}>
+                                                            <StyledTableCell key={column.id + '-' + row.id} align={column.align} style={{ fontSize: 15 }}>
                                                                 <span>{value}</span>
                                                             </StyledTableCell>
                                                         );
