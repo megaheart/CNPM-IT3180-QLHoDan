@@ -1,7 +1,7 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 
 
-function ConfirmBox({ open, onClose, onAgree, title }) {
+function ConfirmBox({ open, onClose, onAgree, title, content }) {
     return (
         <Dialog
             open={open}
@@ -14,7 +14,7 @@ function ConfirmBox({ open, onClose, onAgree, title }) {
             </DialogTitle>
             <DialogContent>
                 <DialogContentText sx={{ fontSize: 15 }} id="alert-dialog-description">
-                    Thao tác này sẽ xóa những gì vừa thay đổi, bạn có chắc chắn muốn đóng ?
+                    {content ? content : 'Thao tác này sẽ xóa những gì vừa thay đổi, bạn có chắc chắn muốn đóng ?'}
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
@@ -23,7 +23,8 @@ function ConfirmBox({ open, onClose, onAgree, title }) {
                     Đồng ý
                 </Button>
             </DialogActions>
-        </Dialog>);
+        </Dialog>
+    );
 }
 
 export default ConfirmBox;

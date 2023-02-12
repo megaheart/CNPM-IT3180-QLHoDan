@@ -46,7 +46,7 @@ export default function DashboardComponent() {
                             <ImgMediaCard
                                 sx={{ margin: '0 auto' }}
                                 content='Tổng số hộ khẩu: '
-                                number={(queryAllHousehold.isLoading || queryHouseholdMove.isLoading) ? 'Loadling' : queryAllHousehold.data.length + queryHouseholdMove.data.length}
+                                number={(queryAllHousehold.isLoading || queryHouseholdMove.isLoading) ? 'Loading...' : queryAllHousehold.data.length + queryHouseholdMove.data.length}
                                 imgLink={family}
                             />
                         </Grid>
@@ -54,7 +54,7 @@ export default function DashboardComponent() {
                             <ImgMediaCard
                                 sx={{ margin: '0 auto' }}
                                 content="Tổng số nhân khẩu: "
-                                number={(queryAllResident.isLoading) ? 'Loadling' : queryAllResident.data.length}
+                                number={(queryAllResident.isLoading) ? 'Loading...' : queryAllResident.data.length}
                                 imgLink={person}
                             />
                         </Grid>
@@ -62,7 +62,7 @@ export default function DashboardComponent() {
                             <ImgMediaCard
                                 sx={{ margin: '0 auto' }}
                                 content="Số hộ thường trú: "
-                                number={(queryAllHousehold.isLoading) ? 'Loadling' : queryAllHousehold.data.length}
+                                number={(queryAllHousehold.isLoading) ? 'Loading...' : queryAllHousehold.data.length}
                                 imgLink={door}
                             />
                         </Grid>
@@ -70,7 +70,7 @@ export default function DashboardComponent() {
                             <ImgMediaCard
                                 sx={{ margin: '0 auto' }}
                                 content="Số hộ tạm vắng: "
-                                number={(queryHouseholdMove.isLoading) ? 'Loadling' : queryHouseholdMove.data.length}
+                                number={(queryHouseholdMove.isLoading) ? 'Loading...' : queryHouseholdMove.data.length}
                                 imgLink={leave}
                             />
                         </Grid>

@@ -3,34 +3,34 @@ import SelectUnstyled, { selectUnstyledClasses } from '@mui/base/SelectUnstyled'
 import OptionUnstyled, { optionUnstyledClasses } from '@mui/base/OptionUnstyled';
 import PopperUnstyled from '@mui/base/PopperUnstyled';
 import FormControlUnstyled, {
-    useFormControlUnstyledContext,
+  useFormControlUnstyledContext,
 } from '@mui/base/FormControlUnstyled';
 import { styled, Box } from '@mui/system';
 import clsx from 'clsx';
 const blue = {
-    100: '#DAECFF',
-    200: '#99CCF3',
-    400: '#3399FF',
-    500: '#007FFF',
-    600: '#0072E5',
-    900: '#003A75',
+  100: '#DAECFF',
+  200: '#99CCF3',
+  400: '#3399FF',
+  500: '#007FFF',
+  600: '#0072E5',
+  900: '#003A75',
 };
 
 const grey = {
-    50: '#f6f8fa',
-    100: '#eaeef2',
-    200: '#d0d7de',
-    300: '#afb8c1',
-    400: '#8c959f',
-    500: '#6e7781',
-    600: '#57606a',
-    700: '#424a53',
-    800: '#32383f',
-    900: '#24292f',
+  50: '#f6f8fa',
+  100: '#eaeef2',
+  200: '#d0d7de',
+  300: '#afb8c1',
+  400: '#8c959f',
+  500: '#6e7781',
+  600: '#57606a',
+  700: '#424a53',
+  800: '#32383f',
+  900: '#24292f',
 };
 
 const StyledButton = styled('button')(
-    ({ theme }) => `
+  ({ theme }) => `
   font-family: IBM Plex Sans, sans-serif;
   font-size: 0.875rem;
   box-sizing: border-box;
@@ -71,28 +71,28 @@ const StyledButton = styled('button')(
   `,
 );
 const Label = styled(({ children, className }) => {
-    const formControlContext = useFormControlUnstyledContext();
-    const [dirty, setDirty] = React.useState(false);
+  const formControlContext = useFormControlUnstyledContext();
+  const [dirty, setDirty] = React.useState(false);
 
-    React.useEffect(() => {
-        if (formControlContext?.filled) {
-            setDirty(true);
-        }
-    }, [formControlContext]);
-
-    if (formControlContext === undefined) {
-        return <p>{children}</p>;
+  React.useEffect(() => {
+    if (formControlContext?.filled) {
+      setDirty(true);
     }
+  }, [formControlContext]);
 
-    const { error, required, filled } = formControlContext;
-    const showRequiredError = dirty && required && !filled;
+  if (formControlContext === undefined) {
+    return <p>{children}</p>;
+  }
 
-    return (
-        <p className={clsx(className, error || showRequiredError ? 'invalid' : '')}>
-            {children}
-            {required ? ' *' : ''}
-        </p>
-    );
+  const { error, required, filled } = formControlContext;
+  const showRequiredError = dirty && required && !filled;
+
+  return (
+    <p className={clsx(className, error || showRequiredError ? 'invalid' : '')}>
+      {children}
+      {required ? ' *' : ''}
+    </p>
+  );
 })`
   font-family: IBM Plex Sans, sans-serif;
   font-size: 0.875rem;
@@ -103,7 +103,7 @@ const Label = styled(({ children, className }) => {
   }
 `;
 const StyledListbox = styled('ul')(
-    ({ theme }) => `
+  ({ theme }) => `
   font-family: IBM Plex Sans, sans-serif;
   font-size: 0.875rem;
   box-sizing: border-box;
@@ -121,7 +121,7 @@ const StyledListbox = styled('ul')(
 );
 
 const StyledOption = styled(OptionUnstyled)(
-    ({ theme }) => `
+  ({ theme }) => `
   list-style: none;
   padding: 8px;
   border-radius: 8px;
@@ -162,28 +162,28 @@ const StyledPopper = styled(PopperUnstyled)`
 `;
 
 const CustomSelect = React.forwardRef(function CustomSelect(props, ref) {
-    const slots = {
-        root: StyledButton,
-        listbox: StyledListbox,
-        popper: StyledPopper,
-        ...props.slots,
-    };
+  const slots = {
+    root: StyledButton,
+    listbox: StyledListbox,
+    popper: StyledPopper,
+    ...props.slots,
+  };
 
-    return <SelectUnstyled {...props} ref={ref} slots={slots} />;
+  return <SelectUnstyled {...props} ref={ref} slots={slots} />;
 });
 
-export default function UnstyledSelectSimple({ values, defaultValue, labels, label, disabled = false, ...props }) {
+export default function UnstyledSelectSimple({ values, onChange, value, labels, label, disabled = false, ...props }) {
 
-    return (
-        <Box sx={{ mb: 2 }}>
-            <Label>{label}</Label>
-            <CustomSelect defaultValue={defaultValue} disabled={disabled}  >
-                {
-                    values.map((value, index) => {
-                        return <StyledOption key={labels[index] + '' + values[index]} value={value}>{labels[index]}</StyledOption>
-                    })
-                }
-            </CustomSelect>
-        </Box>
-    );
+  return (
+    <Box sx={{ mb: 2 }}>
+      <Label>{label}</Label>
+      <CustomSelect value={value} disabled={disabled}  >
+        {
+          values.map((v, index) => {
+            return <StyledOption onClick={() => { onChange(v) }} key={labels[index] + '' + values[index]} value={v}>{labels[index]}</StyledOption>
+          })
+        }
+      </CustomSelect>
+    </Box>
+  );
 }

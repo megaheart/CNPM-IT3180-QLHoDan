@@ -10,7 +10,6 @@ import {
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers';
-import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import useAuth from '~/hooks/useAuth';
 import {
     useMutation,
@@ -32,6 +31,8 @@ function CreateEvent({ checkChange }) {
     const [rewardDate, setRewardDate] = useState(null);
     const messageToSpecialAccountRef = useRef(null);
 
+    const closingFormDateRef = useRef(null);
+    const rewardDateRef = useRef(null);
 
     const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -93,7 +94,7 @@ function CreateEvent({ checkChange }) {
                 }
             }
 
-        }, [checkChange]
+        }, [checkChange, closingFormDate, rewardDate]
     );
 
     return (
@@ -136,23 +137,27 @@ function CreateEvent({ checkChange }) {
                 </Select>
             </FormControl>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DesktopDatePicker
+                <DatePicker
                     value={closingFormDate}
                     onChange={(newValue) => {
                         setClosingFormDate(newValue);
                     }}
-                    renderInput={({ InputProps }) =>
+                    inputRef={closingFormDateRef}
+                    renderInput={({ inputRef, inputProps, InputProps }) =>
                         <FormControl sx={{ m: 1, width: 500 }} variant="standard">
-                            <InputLabel sx={{ fontSize: 20 }} >
+                            <InputLabel sx={{ fontSize: 20 }} htmlFor="input_time" >
                                 Thời gian kết thúc xác nhận minh chứng
                             </InputLabel>
                             <Input
+                                inputRef={inputRef}
+                                id="input_time"
                                 sx={{ fontSize: 20 }}
                                 endAdornment={
                                     <InputAdornment position="start">
                                         {InputProps?.endAdornment}
                                     </InputAdornment>
                                 }
+                                {...inputProps}
                             />
                         </FormControl>
                     }
@@ -164,12 +169,16 @@ function CreateEvent({ checkChange }) {
                     onChange={(newValue) => {
                         setRewardDate(newValue);
                     }}
-                    renderInput={({ InputProps }) =>
+                    inputRef={rewardDateRef}
+                    renderInput={({ inputProps, inputRef, InputProps }) =>
                         <FormControl sx={{ m: 1, width: 500 }} variant="standard">
-                            <InputLabel sx={{ fontSize: 20 }} >
+                            <InputLabel sx={{ fontSize: 20 }} htmlFor="input_time_award" >
                                 Thời gian trao thưởng
                             </InputLabel>
                             <Input
+                                {...inputProps}
+                                inputRef={inputRef}
+                                id='input_time_award'
                                 sx={{ fontSize: 20 }}
                                 endAdornment={
                                     <InputAdornment position="start">

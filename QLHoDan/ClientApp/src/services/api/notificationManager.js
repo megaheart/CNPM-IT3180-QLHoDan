@@ -18,7 +18,7 @@ class NotificationManager {
 
     async getUnreadNotification(token) {
         const response = await axios.get(
-            `${API_NOTIFICATION}?isRead=${false}}`,
+            `${API_NOTIFICATION}?isRead=${false}`,
             config(token)
         );
         if (response && response.data) {
@@ -30,7 +30,7 @@ class NotificationManager {
     }
     async getReadNotification(token) {
         const response = await axios.get(
-            `${API_NOTIFICATION}?isRead=${true}}`,
+            `${API_NOTIFICATION}?isRead=${true}`,
             config(token)
         );
         if (response && response.data) {

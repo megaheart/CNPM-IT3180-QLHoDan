@@ -29,7 +29,7 @@ class RewardApi {
 
     async updateRewardEvent(token, rewardEvent) {
         const response = await axios.put(
-            `${API_REWARDS}/${rewardEvent.id}`,
+            `${API_REWARDS}`,
             rewardEvent,
             config(token)
         )

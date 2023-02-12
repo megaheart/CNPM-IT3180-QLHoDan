@@ -25,7 +25,7 @@ const cx = classNames.bind(styles);
 
 export default function Login() {
     //auth context
-    const { setAuth } = useAuth();
+    const { auth, setAuth } = useAuth();
     //user state
     const [username, setUserName] = useState('');
     const [password, setPassword] = useState('');
@@ -84,9 +84,22 @@ export default function Login() {
                     if (authenticationService.isAuthenticated()) {
                         const userData = authenticationService.User;
                         setAuth(userData);
+                        console.log(auth)
                     }
                     //setAuth(userData);
-                    navigate('/dashboard');
+                    let token = localStorage.getItem('AuthenticationToken');
+                    if (token) {
+                        const user = authenticationService.getUserFromToken(token);
+                        console.log(user)
+                        if (user.role === 'Household') {
+                            navigate('/dashboard_residentOrGuest');
+                        }
+                        else {
+                            navigate('/dashboard');
+                        }
+                    }
+
+
                 }).catch(
                     (e) => {
                         setStart(true);

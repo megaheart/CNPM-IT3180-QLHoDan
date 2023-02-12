@@ -109,24 +109,12 @@ const HelperText = styled(({ helperText, ...props }) => {
   font-size: 0.875rem;
 `;
 
-export default function UseFormControl({ label, defaultValue, onChange = false, helperText = false, inputRef = false, required = false, disabled = false }) {
-
-    const props = {
-        defaultValue: defaultValue,
-    }
-
-    if (onChange) {
-        props.onChange = onChange;
-    }
-
-    if (inputRef) {
-        props.ref = inputRef;
-    }
+export default function UseFormControl({ label, value, onChange, helperText = false, required = false, disabled = false }) {
 
     return (
-        <FormControlUnstyled defaultValue={defaultValue} {...props} disabled={disabled} required={required}>
+        <FormControlUnstyled value={value} disabled={disabled} required={required}>
             <Label>{label}</Label>
-            <Input ref={inputRef} />
+            <Input onChange={(e) => onChange(e.target.value)} />
             {helperText && <HelperText helperText={helperText} />}
         </FormControlUnstyled>
     );

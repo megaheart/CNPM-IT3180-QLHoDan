@@ -4,12 +4,12 @@ import useAuth from '~/hooks/useAuth';
 import validation from '~/services/validate/index.js';
 //material components
 import {
-    Button, Dialog, Slide, Snackbar, Alert, Paper,
+    Button, Dialog, Slide, Snackbar, Alert,
     InputLabel, InputAdornment, Input, FormControl, styled,
-    Table, TableBody, TableContainer, TableHead, TablePagination, TableRow
+    Table, TableBody, TableContainer, TableHead, TablePagination, TableRow, Backdrop, CircularProgress
 } from '@mui/material';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-
+import ConfirmBox from '~/components/component/Dialog/ConfirmBox';
 import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -29,6 +29,8 @@ import {
     useMutation,
     useQueryClient
 } from '@tanstack/react-query';
+
+import ChangeAwardPair from '../ChangeAwardPair';
 
 import styles from './Award.module.scss';
 
@@ -57,10 +59,10 @@ const Transition = forwardRef(function Transition(props, ref) {
 });
 
 const columns = [
-    { id: 'achievementType', label: 'Loại thành tích', width: 150 },
-    { id: 'achievementName', label: 'Miêu tả loại thành tích ', width: 170 },
-    { id: 'rewardName', label: 'Miêu tả Phần thưởng', width: 170 },
-    { id: 'rewardValue', label: 'Giá trị phần thưởng', width: 170 }
+    { id: 'achievementType', label: 'Loại thành tích', width: 180 },
+    { id: 'achievementName', label: 'Miêu tả loại thành tích ', width: 400 },
+    { id: 'rewardName', label: 'Miêu tả Phần thưởng', width: 300 },
+    { id: 'rewardValue', label: 'Giá trị phần thưởng', width: 200 }
 ];
 
 
@@ -68,38 +70,111 @@ export default function AwardDetail({ open, onClose, idAward }) {
     const { auth } = useAuth();
     //handle save button
     const [loading, setLoading] = useState(false);
-    //const [success, setSuccess] = useState(false);
+    const [editMode, setEditMode] = useState(false);
+    const [success, setSuccess] = useState(false);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(3);
+    const [isClose, setIsClose] = useState(false);
 
+    const [time, setTime] = useState(null);
+    const timeRef = useRef();
 
-    const idRef = useRef();
-    const titleRef = useRef();
-    const descriptionRef = useRef();
-    const [time, setTime] = useState(new Date());
-    const typeRef = useRef();
-    const totalValueRef = useRef();
-    const isAcceptedRef = useRef();
-    const idDoneRef = useRef();
     const [closingFormDate, setClosingFormDate] = useState(null);
+    const closingFormDateRef = useRef();
     const [rewardDate, setRewardDate] = useState(null);
+    const rewardDateRef = useRef();
     const [achievementRewardPairs, setAchievementRewardPairs] = useState([]);
+
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+
+    const typeRef = useRef();
+    const [type, setType] = useState('TTHT');
+
+    const [totalValue, setTotalValue] = useState('');
+
+    const [isAccepted, setIsAccepted] = useState(false);
+    const [isDone, setIsDone] = useState(false);
+
+    const [openBackdrop, setOpenBackdrop] = useState(false);
+
+    const [messageToSpecialAccount, setMessageToSpecialAccount] = useState('');
+    const queryClient = useQueryClient();
 
     const { data, isLoading } = useQuery(
         ['getRewardEventById', idAward],
         async () => await awardApi.getRewardEventById(auth.token, idAward),
-    )
+    );
+
+    const mutationChangeRewardEvent = useMutation(
+        async (data) => await awardApi.updateRewardEvent(auth.token, data),
+        {
+            onMutate: () => {
+
+            },
+            onError: () => {
+                alert('Có lỗi xảy ra, có thể bạn chưa thay đổi gì phần chi tiết đợt thưởng');
+            },
+            onSuccess: () => {
+                queryClient.invalidateQueries(['getRewardEventById', idAward]);
+                queryClient.invalidateQueries(['rewardEvents']);
+            },
+            onSettled: () => {
+
+            }
+        }
+    );
+
+    const mutationChangePair = useMutation(
+        async (data) => await awardApi.transferRewardFromAchivement(auth.token, idAward, data),
+        {
+            onMutate: () => {
+
+            },
+            onError: () => {
+                alert('Có lỗi xảy ra, vui lòng thử lại sau');
+            },
+            onSuccess: () => {
+                queryClient.invalidateQueries(['getRewardEventById', idAward]);
+                queryClient.invalidateQueries(['rewardEvents']);
+            },
+            onSettled: () => {
+
+            }
+        }
+    );
+
+    const [changePairDialog, setChangePairDialog] = useState(false);
+    const [pairToChange, setPairToChange] = useState(null);
+
+    const handleOpenChangePairDialog = (pair) => {
+        setPairToChange(pair);
+        setChangePairDialog(true);
+    }
+
+    const handleCloseChangePairDialog = () => {
+        setChangePairDialog(false);
+        setPairToChange(null);
+    }
+
+    const handleStartAddPair = () => {
+        setChangePairDialog(true);
+    }
+
 
     useEffect(
         () => {
-            if (data) {
-                setTime(dayjs(data.time) || null);
-                setClosingFormDate(dayjs(data.closingFormDate) || null);
-                setRewardDate(dayjs(data.rewardDate) || null);
-                setAchievementRewardPairs(data.achievementRewardPairs);
+            if (!isLoading && data) {
+                data.time && setTime(dayjs(data['time']));
+                data.closingFormDate && setClosingFormDate(dayjs(data['closingFormDate']));
+                data.rewardDate && setRewardDate(dayjs(data['rewardDate']));
+                data.achievementRewardPairs && setAchievementRewardPairs(data['achievementRewardPairs']);
+                setTitle(data['title']);
+                setDescription(data['description']);
+                setTotalValue(data['totalValue']);
             }
-        }, [data]
-    )
+        }, [data, isLoading]
+    );
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -110,253 +185,387 @@ export default function AwardDetail({ open, onClose, idAward }) {
         setPage(0);
     };
 
-    //handle when clode this dislog
-    // const [isClose, setIsClose] = useState(false);
-    // const handleCloseConfirmBox = () => {
-    //     setIsClose(false);
-    // };
+    const startEdit = () => {
+        setEditMode(true);
+    }
 
+    const handleAddPair = (pair) => {
+        setAchievementRewardPairs(
+            prev => [...prev, { ...pair, achievementType: prev.length + 1 }]
+        );
+    }
+    const handleChangePair = (pair) => {
+        setAchievementRewardPairs(
+            prev => prev.map(
+                (item) => item.achievementType === pair.achievementType ? pair : item
+            )
+        );
+    }
+    const handleDeletePair = (index) => {
+        setAchievementRewardPairs(
+            prev =>
+                prev.filter(
+                    (item) => item.achievementType !== index
+                ).map(
+                    (item, i) => ({ ...item, achievementType: i + 1 }
+                    )
+                ));
+    }
+
+
+    const handleReset = () => {
+        console.log(title)
+        console.log(type)
+        console.log(description)
+        console.log(time)
+        console.log(closingFormDate)
+        console.log(rewardDate)
+        console.log(totalValue)
+        console.log(isAccepted)
+        console.log(isDone)
+    }
+
+    const handleUpdate = () => {
+        setOpenBackdrop(true);
+        if (
+            title !== data.title ||
+            type !== data.type ||
+            description !== data.description ||
+            closingFormDate !== dayjs(data.closingFormDate) ||
+            rewardDate !== dayjs(data.rewardDate)
+        ) {
+            const data = {
+                id: idAward,
+                title: title,
+                description: description,
+                type: type,
+                closingFormDate: closingFormDate,
+                rewardDate: rewardDate,
+                messageToSpecialAccount: messageToSpecialAccount
+            }
+            mutationChangeRewardEvent.mutate(data);
+        }
+        console.log(achievementRewardPairs);
+        mutationChangePair.mutate(achievementRewardPairs);
+
+        setOpenBackdrop(false);
+        setSuccess(true);
+        setEditMode(false);
+    }
+
+    //handle when clode this dislog
+
+    const handleCloseConfirmBox = () => {
+        setIsClose(false);
+    };
     //start close this dialog
-    // const handlStartClose = () => {
-    //     onClose(!open);
-    // };
-    // // const [open, setOpen] = React.useState(false);
-    // const handleSuccess = () => {
-    //     setSuccess(false);
-    // };
-    // //handle close this dialog
+    const handlStartClose = () => {
+        if (editMode) {
+            setIsClose(true);
+        }
+        else {
+            handleClose();
+        }
+    };
+
+    const handleSuccess = () => {
+        setSuccess(false);
+    };
+    //handle close this dialog
     const handleClose = () => {
+        setAchievementRewardPairs((data && data.achievementRewardPairs) ? data['achievementRewardPairs'] : []);
+        setEditMode(false);
         onClose(!open);
-        //setIsClose(false);
+        setIsClose(false);
     };
     return (
         <div>
-            {/* <Snackbar open={success} autoHideDuration={3000} onClose={handleSuccess} >
+            <Snackbar open={success} autoHideDuration={3000} onClose={handleSuccess} >
                 <Alert onClose={handleSuccess} severity="success" sx={{ width: '100%', fontSize: 15 }}>
                     thành công !
                 </Alert>
-            </Snackbar> */}
+            </Snackbar>
+            <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1000 }}
+                open={openBackdrop}
+            >
+                <CircularProgress color="inherit" />
+            </Backdrop>
             <Dialog
                 fullWidth={true}
                 maxWidth='600'
                 open={open}
                 onClose={handleClose}
                 TransitionComponent={Transition}
-            > {isLoading ? <TableSkeleton /> :
-                <Fragment>
-                    <div className={cx('header-paper-resident')}>
+            >
 
-                        {/* <Button variant="contained" color="success"
-                            sx={{ fontSize: 15, margin: '2 0', width: 120 }} >Cập nhật</Button> */}
+                <ChangeAwardPair
+                    change={(d) => handleChangePair(d)}
+                    add={(pair) => { handleAddPair(pair) }}
+                    info={pairToChange}
+                    open={changePairDialog}
+                    onClose={handleCloseChangePairDialog} />
+                {isLoading ? <TableSkeleton /> :
+                    <Fragment>
+                        {loading && <LinearProgress />}
+                        <div className={cx('header-paper-resident')}>
 
-                        <Button variant="contained" color="error"
-                            sx={{ fontSize: 15, margin: '2 0', width: 60 }} onClick={handleClose}>Đóng</Button>
+                            {!editMode ?
+                                <div>
+                                    <Button variant="contained" color="primary" onClick={startEdit}
+                                        disabled={auth.role !== 'CommitteeChairman' && auth.role !== 'Accountant'}
+                                        sx={{ fontSize: 15, margin: '2px 0', width: 130 }} >Chỉnh sửa </Button>
+                                </div>
+                                :
+                                <div >
+                                    <Button variant="contained" color="primary" onClick={handleUpdate}
+                                        sx={{ fontSize: 15, margin: '2px 0', width: 130 }} >Cập nhật</Button>
 
-                    </div>
+                                    <Button variant="contained" color="success" onClick={handleReset}
+                                        sx={{ fontSize: 15, margin: '2px 4px', width: 130 }} >Reset</Button>
+                                </div>
+                            }
+                            <Button variant="contained" color="error"
+                                sx={{ fontSize: 15, margin: '2px 0', width: 60 }} onClick={handlStartClose}>Đóng</Button>
+                        </div>
 
-                    <div className={cx('resident-paper')}>
-                        {loading && <LinearProgress color="success" />}
-                        <h2 className={cx('title-resident')}>Chi tiết đợt thưởng</h2>
-                        <Grid container spacing={2}>
-                            <Grid item xs={3}>
-                                <InputBase
-                                    label='Mã đợt thưởng'
-                                    inputRef={idRef}
-                                    disabled
-                                    defaultValue={data.id}
-                                />
-                            </Grid>
-                            <Grid item xs={3}>
-                                <InputBase
-                                    label='Tên đợt thưởng'
-                                    inputRef={titleRef}
-                                    defaultValue={data.title}
-                                    disabled
-                                />
-                            </Grid>
-                            <Grid item xs={3}>
-                                <InputBase
-                                    label='Mô tả'
-                                    inputRef={descriptionRef}
-                                    defaultValue={data.description}
-                                    disabled
-                                />
-                            </Grid>
-                            <Grid item xs={3}>
-                                <LocalizationProvider dateAdapter={AdapterDayjs} >
-                                    <DatePicker
-                                        value={time}
-                                        onChange={(newValue) => {
-                                            setTime(newValue);
-                                        }}
-                                        disabled
-                                        renderInput={({ inputProps, InputProps }) =>
-                                            <FormControl sx={{ m: 1, width: 270 }} variant="standard">
-                                                <InputLabel htmlFor="input_login_account">
-                                                    Ngày đề xuất
-                                                </InputLabel>
-                                                <Input
-                                                    id="input_login_account"
-                                                    endAdornment={
-                                                        <InputAdornment position="start">
-                                                            {InputProps?.endAdornment}
-                                                        </InputAdornment>
-                                                    }
-                                                    {...inputProps}
-                                                />
-                                            </FormControl>
-                                        }
+                        <div className={cx('resident-paper')}>
+
+                            <h2 align='center' className={cx('title-resident')}>Chi tiết đợt thưởng</h2>
+                            <Grid container spacing={2}>
+                                <Grid item xs={3}>
+                                    <InputBase
+                                        label='Mã đợt thưởng'
+                                        disabled={true}
+                                        value={data.id}
                                     />
-                                </LocalizationProvider>
-                            </Grid>
-                            <Grid item xs={3}>
-                                <InputBase
-                                    label='Loại đợt thưởng'
-                                    inputRef={typeRef}
-                                    defaultValue={data.type}
-                                    disabled
-                                />
-                            </Grid>
-                            <Grid item xs={3}>
-                                <InputBase
-                                    label='Tổng tiền thưởng'
-                                    inputRef={totalValueRef}
-                                    defaultValue={data.totalValue}
-                                    disabled
-                                />
-                            </Grid>
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <InputBase
+                                        label='Tên đợt thưởng'
+                                        value={title}
+                                        disabled={!editMode}
+                                        onChange={setTitle}
+                                    />
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <InputBase
+                                        label='Mô tả'
+                                        value={description}
+                                        disabled={!editMode}
+                                        onChange={setDescription}
+                                    />
+                                </Grid>
 
-                            <Grid item xs={3}>
-                                <LocalizationProvider dateAdapter={AdapterDayjs} >
-                                    <DatePicker
-                                        value={closingFormDate}
-                                        onChange={(newValue) => {
-                                            setClosingFormDate(newValue);
-                                        }}
-                                        disabled
-                                        renderInput={({ inputProps, InputProps }) =>
-                                            <FormControl sx={{ m: 1, width: 270 }} variant="standard">
-                                                <InputLabel htmlFor="input_login_account">
-                                                    Ngày kết thúc minh chứng
-                                                </InputLabel>
-                                                <Input
-                                                    id="input_login_account"
-                                                    endAdornment={
-                                                        <InputAdornment position="start">
-                                                            {InputProps?.endAdornment}
-                                                        </InputAdornment>
-                                                    }
-                                                    {...inputProps}
-                                                />
-                                            </FormControl>
-                                        }
+                                <Grid item xs={3}>
+                                    <SelectBase
+                                        values={['TTHT', 'TT']}
+                                        labels={['Thưởng thành tích học tập', 'Dip đặc biệt']}
+                                        value={type}
+                                        label='Loại đợt thưởng'
+                                        disabled={!editMode}
+                                        inputRef={typeRef}
+                                        onChange={setType}
                                     />
-                                </LocalizationProvider>
-                            </Grid>
-                            <Grid item xs={3}>
-                                <LocalizationProvider dateAdapter={AdapterDayjs} >
-                                    <DatePicker
-                                        value={rewardDate}
-                                        onChange={(newValue) => {
-                                            setRewardDate(newValue);
-                                        }}
-                                        disabled
-                                        renderInput={({ inputProps, InputProps }) =>
-                                            <FormControl sx={{ m: 1, width: 270 }} variant="standard">
-                                                <InputLabel htmlFor="input_login_account">
-                                                    Thời gian nhận thưởng
-                                                </InputLabel>
-                                                <Input
-                                                    id="input_login_account"
-                                                    endAdornment={
-                                                        <InputAdornment position="start">
-                                                            {InputProps?.endAdornment}
-                                                        </InputAdornment>
-                                                    }
-                                                    {...inputProps}
-                                                />
-                                            </FormControl>
-                                        }
+                                </Grid>
+
+
+                                <Grid item xs={3}>
+                                    <SelectBase
+                                        values={[true, false]}
+                                        labels={['Đã duyệt', 'Chưa duyệt']}
+                                        value={isAccepted}
+                                        label='Trạng thái duyệt'
+                                        disabled={true}
                                     />
-                                </LocalizationProvider>
-                            </Grid>
-                            <Grid item xs={3}>
-                                <SelectBase
-                                    inputRef={isAcceptedRef}
-                                    values={[true, false]}
-                                    labels={['Đã duyệt', 'Chưa duyệt']}
-                                    defaultValue={data.isAccepted}
-                                    label='Trạng thái duyệt'
-                                    disabled
-                                />
-                            </Grid>
-                            <Grid item xs={3}>
-                                <SelectBase
-                                    inputRef={idDoneRef}
-                                    disabled
-                                    values={[1, 2]}
-                                    labels={['Đã hoàn thành', 'Chưa hoàn thành']}
-                                    defaultValue={data.isDone ? 1 : 2}
-                                    label='Trạng thái trao thưởng'
-                                />
-                            </Grid>
-                            {/* <Grid item xs={3}>
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <SelectBase
+                                        disabled={true}
+                                        values={[true, false]}
+                                        labels={['Đã hoàn thành', 'Chưa hoàn thành']}
+                                        value={isDone}
+                                        label='Trạng thái trao thưởng'
+                                    />
+                                </Grid>
+                                {editMode ?
+                                    <Grid item xs={6}>
+                                        <InputBase
+                                            key='message'
+                                            label='Tin nhắn gửi đến các cán bộ, kế toán'
+                                            value={messageToSpecialAccount}
+                                            onChange={setMessageToSpecialAccount}
+                                        />
+                                    </Grid>
+                                    :
+                                    <Grid item xs={6}>
+                                        <InputBase
+                                            key='totalSpend'
+                                            label='Tổng tiền thưởng'
+                                            value={totalValue}
+                                            disabled={true}
+                                        />
+                                    </Grid>
+                                }
+
+
+
+                                <Grid item xs={3}>
+                                    <LocalizationProvider dateAdapter={AdapterDayjs} >
+                                        <DatePicker
+                                            value={closingFormDate}
+                                            onChange={(newValue) => {
+                                                setClosingFormDate(newValue);
+                                            }}
+                                            inputRef={closingFormDateRef}
+                                            defaultValue={(data && data.closingFormDate) ? data.closingFormDate : null}
+                                            disabled={!editMode}
+                                            renderInput={({ inputRef, inputProps, InputProps }) =>
+                                                <FormControl sx={{ m: 1, width: 270 }} variant="standard">
+                                                    <InputLabel htmlFor="input_login_account">
+                                                        Ngày kết thúc minh chứng
+                                                    </InputLabel>
+                                                    <Input
+                                                        inputRef={inputRef}
+                                                        id="input_login_account"
+                                                        endAdornment={
+                                                            <InputAdornment position="start">
+                                                                {InputProps?.endAdornment}
+                                                            </InputAdornment>
+                                                        }
+                                                        {...inputProps}
+                                                    />
+                                                </FormControl>
+                                            }
+                                        />
+                                    </LocalizationProvider>
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <LocalizationProvider dateAdapter={AdapterDayjs} >
+                                        <DatePicker
+                                            value={rewardDate}
+                                            onChange={(newValue) => {
+                                                setRewardDate(newValue);
+                                            }}
+                                            inputRef={rewardDateRef}
+                                            defaultValue={(data && data.rewardDate) ? data.rewardDate : null}
+                                            disabled={!editMode}
+                                            renderInput={({ inputRef, inputProps, InputProps }) =>
+                                                <FormControl sx={{ m: 1, width: 270 }} variant="standard">
+                                                    <InputLabel htmlFor="input_login_account">
+                                                        Thời gian nhận thưởng
+                                                    </InputLabel>
+                                                    <Input
+                                                        inputRef={inputRef}
+                                                        id="input_login_account"
+                                                        endAdornment={
+                                                            <InputAdornment position="start">
+                                                                {InputProps?.endAdornment}
+                                                            </InputAdornment>
+                                                        }
+                                                        {...inputProps}
+                                                    />
+                                                </FormControl>
+                                            }
+                                        />
+                                    </LocalizationProvider>
+                                </Grid>
+                                {!editMode && <Grid item xs={3}>
+                                    <LocalizationProvider dateAdapter={AdapterDayjs} >
+                                        <DatePicker
+                                            value={time}
+                                            onChange={(newValue) => {
+                                                setTime(newValue);
+                                            }}
+                                            inputRef={timeRef}
+                                            defaultValue={(data && data.time) ? data.time : null}
+                                            disabled={!editMode}
+                                            renderInput={({ inputRef, inputProps, InputProps }) =>
+                                                <FormControl sx={{ m: 1, width: 270 }} variant="standard">
+                                                    <InputLabel htmlFor="input_login_account">
+                                                        Ngày đề xuất
+                                                    </InputLabel>
+                                                    <Input
+                                                        inputRef={inputRef}
+                                                        id="input_login_account"
+                                                        endAdornment={
+                                                            <InputAdornment position="start">
+                                                                {InputProps?.endAdornment}
+                                                            </InputAdornment>
+                                                        }
+                                                        {...inputProps}
+                                                    />
+                                                </FormControl>
+                                            }
+                                        />
+                                    </LocalizationProvider>
+                                </Grid>
+                                }
+                                {/* <Grid item xs={3}>
                             </Grid> */}
-                        </Grid>
-                        <TableContainer sx={{ height: 200 }}>
-                            <Table stickyHeader aria-label="sticky table">
-                                <TableHead>
-                                    <StyledTableRow sx={{ backgroundColor: '#000' }}>
-                                        {columns.map((column, index) => (
-                                            <StyledTableCell
-                                                key={column.id}
-                                                align={column.align}
-                                                style={{ width: column.width, fontSize: 15 }}
-                                            >
-                                                {column.label}
+                            </Grid>
+                            <TableContainer sx={{ height: 210 }}>
+                                <Table aria-label="sticky table">
+                                    <TableHead>
+                                        <StyledTableRow sx={{ backgroundColor: '#000' }}>
+                                            {columns.map((column, index) => (
+                                                <StyledTableCell
+                                                    key={column.id}
+                                                    align={column.align}
+                                                    style={{ width: column.width, fontSize: 15 }}
+                                                >
+                                                    {column.label}
+                                                </StyledTableCell>
+                                            ))}
+                                            <StyledTableCell align="center" style={{ fontSize: 15 }}>
+                                                <Button disabled={!editMode} variant='outlined' color='primary'
+                                                    onClick={handleStartAddPair}
+                                                    sx={{ width: 100, color: '#fff', borderColor: '#fff' }}  >Thêm</Button>
                                             </StyledTableCell>
-                                        ))}
-                                        {/* <TableCell></TableCell> */}
-                                    </StyledTableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {achievementRewardPairs
-                                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                        .map((row) => {
-                                            return (
-                                                <StyledTableRow hover role="checkbox" tabIndex={-1} key={row.id}>
-                                                    {columns.map((column) => {
-                                                        let value = row[column.id];
-                                                        return (
-                                                            <StyledTableCell key={column.id + '-' + row.id} align={column.align} style={{ fontSize: 15 }}>
-                                                                <span>{value}</span>
-                                                            </StyledTableCell>
-                                                        );
-                                                    })}
-                                                    {/* <TableCell align="center" sx={{ height: 80, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: 1 }} >
-                                                            <Button onClick={() => { viewDetail(row.id) }} variant='contained' sx={{ height: 30, width: 100 }} >Chi tiết</Button>
-                                                            <Button variant='contained' color='error' sx={{ height: 30, width: 100 }}  >Xóa</Button>
-                                                        </TableCell> */}
-                                                </StyledTableRow>
-                                            );
-                                        })}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                        <TablePagination
-                            rowsPerPageOptions={[3, 6, 9]}
-                            component="div"
-                            count={achievementRewardPairs.length}
-                            rowsPerPage={rowsPerPage}
-                            page={page}
-                            onPageChange={handleChangePage}
-                            onRowsPerPageChange={handleChangeRowsPerPage}
-                        />
-                    </div>
-                </Fragment>
+                                        </StyledTableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {achievementRewardPairs
+                                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                            .map((row) => {
+                                                return (
+                                                    <StyledTableRow hover role="checkbox" tabIndex={-1} key={'row' + row.achievementType}>
+                                                        {columns.map((column, index) => {
+                                                            let value = row[column.id];
+                                                            return (
+                                                                <StyledTableCell key={'cell' + row.achievementType + '-' + index} align={column.align} style={{ fontSize: 15 }}>
+                                                                    <span>{value}</span>
+                                                                </StyledTableCell>
+                                                            );
+                                                        })}
+                                                        <StyledTableCell align="center" style={{ fontSize: 15 }} >
+                                                            <Button disabled={!editMode} variant='contained'
+                                                                onClick={() => { handleOpenChangePairDialog(row) }}
+                                                                color='primary' sx={{ width: 100, marginRight: 3 }}  >Sửa</Button>
+                                                            <Button disabled={!editMode} variant='contained'
+                                                                onClick={() => { handleDeletePair(row.achievementType) }}
+                                                                color='error' sx={{ width: 100 }}  >Xóa</Button>
+                                                        </StyledTableCell>
+                                                    </StyledTableRow>
+                                                );
+                                            })}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                            <TablePagination
+                                rowsPerPageOptions={[3, 6, 9]}
+                                component="div"
+                                count={achievementRewardPairs.length}
+                                rowsPerPage={rowsPerPage}
+                                page={page}
+                                onPageChange={handleChangePage}
+                                onRowsPerPageChange={handleChangeRowsPerPage}
+                            />
+                        </div>
+                    </Fragment>
                 }
             </Dialog>
-            {/* <ConfirmBox open={isClose} onClose={handleCloseConfirmBox} onAgree={handleClose} /> */}
+            <ConfirmBox title='Đóng cửa sổ ?' open={isClose} onClose={handleCloseConfirmBox} onAgree={handleClose} />
         </div >
     );
 }

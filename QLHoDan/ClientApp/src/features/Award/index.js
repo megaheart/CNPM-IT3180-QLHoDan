@@ -1,18 +1,18 @@
 import styles from './Award.module.scss';
+import useAuth from '~/hooks/useAuth';
 import classNames from 'classnames/bind';
 import { useState, useCallback, useRef } from 'react';
 import { Button, Dialog, CircularProgress, Box, Fab, Slide, Snackbar, Alert, TextField, Collapse } from '@mui/material';
 import { green } from '@mui/material/colors';
 import ConfirmBox from '~/components/component/Dialog/ConfirmBox';
-//icons material
-import CheckIcon from '@mui/icons-material/Check';
-import SaveIcon from '@mui/icons-material/Save';
+
 import CreateEvent from './CreateEvent';
 import ListAwardEvent from './ListAward'
 
 const cx = classNames.bind(styles);
 
 export default function PersistentDrawerRight() {
+    const { auth } = useAuth();
 
     const [status, setStatus] = useState(1);
     //handle save button
@@ -46,14 +46,16 @@ export default function PersistentDrawerRight() {
             <div className={cx('header-award')}>
                 <h1>{status === 2 ? 'Thêm dịp phát thưởng' : 'Danh sách dịp phát thưởng'}</h1>
                 <div>
-                    {status === 2 ?
-                        <Button onClick={handeReturn} variant="contained" color="error" sx={{ fontSize: 15 }}>
-                            Quay lại
-                        </Button>
-                        :
-                        <Button onClick={handleAddEvent} variant="contained" color="primary" sx={{ fontSize: 15 }}>
-                            Thêm dịp phát thưởng
-                        </Button>
+                    {auth.role === 'CommitteeChairman' ?
+                        status === 2 ?
+                            <Button onClick={handeReturn} variant="contained" color="error" sx={{ fontSize: 15 }}>
+                                Quay lại
+                            </Button>
+                            :
+                            <Button onClick={handleAddEvent} variant="contained" color="primary" sx={{ fontSize: 15 }}>
+                                Thêm dịp phát thưởng
+                            </Button>
+                        : null
                     }
                 </div>
             </div>
