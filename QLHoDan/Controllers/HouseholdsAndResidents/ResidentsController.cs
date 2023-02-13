@@ -322,9 +322,20 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             if (model.MoveInDate != null) resident.MoveInDate = model.MoveInDate.Value;
             if (model.MoveInReason != null) resident.MoveInReason = model.MoveInReason;
             //if (model.FullName != null) IsDead = false;
-            if (model.MoveOutDate != null) resident.MoveOutDate = model.MoveOutDate;
-            if (model.MoveOutPlace != null) resident.MoveOutPlace = model.MoveOutPlace;
-            if (model.MoveOutReason != null) resident.MoveOutReason = model.MoveOutReason;
+            if (model.MoveOutPlace != null && model.MoveOutDate != null && model.MoveOutReason != null)
+            {
+                resident.MoveOutDate = model.MoveOutDate;
+                resident.MoveOutPlace = model.MoveOutPlace;
+                resident.MoveOutReason = model.MoveOutReason;
+            }
+            else if (!(model.MoveOutPlace == null && model.MoveOutDate == null && model.MoveOutReason == null))
+            {
+                return BadRequest(new RequestError()
+                {
+                    Code = "InvalidMoveOut",
+                    Description = "Phải thay đổi đồng thời cả nơi chuyển đi, ngày chuyển đi và lý do chuyển đi.",
+                });
+            }
 
             _context.Resident.Update(resident);
             try

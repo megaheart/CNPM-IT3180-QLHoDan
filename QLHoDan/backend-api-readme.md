@@ -329,6 +329,7 @@
         {
             "userName": "string",
             "fullName": "string",
+            "role": number,
             "scope": number,
             "note": "string"|null
         },
@@ -339,6 +340,7 @@
     |-------|-------|
     |userName|Tên đăng nhập vào tài khoản|
     |fullName|Tên đầy đủ của người sở hữu tài khoản|
+    |role|Cấp độ tài khoản (1 - Chủ tịch xã, 2 - Kế toán, 3 - Tổ trưởng)|
     |scope|Tổ phụ trách quản lý tài khoản|
     |note|Ghi chú của cấp quản lý cho tài khoản|
 
@@ -367,6 +369,7 @@
         "userName": "string",
         "password": "string",
         "fullName": "string",
+        "role": number,
         "scope": number,
         "note": "string"
     }
@@ -376,6 +379,7 @@
     |userName|Tên đăng nhập vào tài khoản|
     |password|Mật khẩu của tài khoản|
     |fullName|Tên đầy đủ của người sở hữu tài khoản|
+    |role|Cấp độ tài khoản (1 - Chủ tịch xã, 2 - Kế toán, 3 - Tổ trưởng)|
     |scope|Tổ phụ trách quản lý tài khoản|
     |note|*[tuỳ chọn]* Ghi chú của cấp quản lý cho tài khoản|
 
@@ -797,6 +801,11 @@
     - [404 NotFound]
 
         *Hộ khẩu không tồn tại trong CSDL để cập nhật*
+
+    - [400 BadRequest] InvalidMoveOut
+
+        *Phải thay đổi đồng thời cả nơi chuyển đi, ngày chuyển đi và lý do chuyển đi. Chứ thay đổi một hai cái mà không thay đổi cả thì dữ liệu sẽ không hợp lệ*
+
 ### Xoá hộ khẩu
 <span style="color:#ea4335; width: 50px; display: inline-block">**DELETE**</span> ```https://localhost:7265/api/Households/{householdId}```
 
@@ -1146,6 +1155,11 @@
     - [404 NotFound]
 
         *Nhân khẩu khẩu không tồn tại trong CSDL để cập nhật*
+
+    - [400 BadRequest] InvalidMoveOut
+
+        *Phải thay đổi đồng thời cả nơi chuyển đi, ngày chuyển đi và lý do chuyển đi. Chứ thay đổi một hai cái mà không thay đổi cả thì dữ liệu sẽ không hợp lệ*
+    
 ### Xoá nhân khẩu
 <span style="color:#ea4335; width: 50px; display: inline-block">**DELETE**</span> ```https://localhost:7265/api/Residents/{idCode}```
 
@@ -1188,48 +1202,24 @@
 # Module Phát thưởng
 ## Quản lý đợt trao thưởng
 ### Lấy ra danh sách các đợt trao thưởng
-<span style="color:#34a853; width: 50px; display: inline-block">**GET**</span> ```https://localhost:7265/api/RewardCeremonies```
+<span style="color:#34a853; width: 50px; display: inline-block">**GET**</span> ```https://localhost:7265/api/RewardCeremonies[?allowPostingForm={boolean}&type={string}]```
 
 *Lấy ra danh sách dịp trao thưởng (thông tin khá sơ lược), chỉ người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch phường) mới dùng được.*
 
-<!-- - **Query Params**
+- **Query Params**
     |Tham số|Miêu tả|
     |-------|-------|
-    |movedOut|*[tuỳ chọn]* `true` để lấy danh sách hộ khẩu đã chuyển đi, `false` để lấy danh sách những hộ khẩu đang thường trú<br/>Mặc định là `false`| -->
+    |allowPostingForm|*[tuỳ chọn]* `true` để lấy danh sách dịp trao thưởng còn cho phép gửi form, `false` để lấy danh sách dịp trao thưởng KHÔNG cho phép gửi form, `null` hoặc bỏ qua để lấy toàn bộ danh sách đợt trao thưởng.<br/>Mặc định là `null`.|
+    |type|*[tuỳ chọn]* Loại form (TTHT – phát thưởng cho thành tích học tập, TT – phát thưởng trung thu) muốn lấy danh sách.<br/>Đừng ghi vào nếu muốn lấy ra toàn bộ form.|
 
 - **Request Header**
     |Tham số|Miêu tả|
     |-------|-------|
     |Authorization|"Bearer " + &lt;Một chuỗi kí tự là token nhận được sau khi đăng nhập&gt;|
 
-- **Response Body khi thành công**
-    ```json
-    [
-        {
-            "id": number,
-            "title": "string",
-            "time": "DateTime",
-            "type": "string",
-            "totalValue": number,
-            "isAccepted": boolean,
-            "isDone": boolean,
-            "closingFormDate": "DateTime",
-            "rewardDate": "DateTime"
-        },
-        ...
-    ]
-    ```
-    |Tham số  |Miêu tả  |
-    |---------|---------|
-    |id|mã định danh đợt thưởng|
-    |title|Tên đợt thưởng|
-    |time|Ngày giờ phút giây chủ tịch đề xuất kế hoạch phát thưởng|
-    |type|TTHT – phát thưởng cho thành tích học tập, TT – phát thưởng trung thu|
-    |totalValue|Tổng tiền cho việc phát thưởng|
-    |isAccepted|Chủ tịch phường đã duyệt danh sách phát thưởng chưa|
-    |isDone|Đã phát thưởng chưa|
-    |closingFormDate|Ngày đóng nhận form minh chứng|
-    |rewardDate|Thời gian nhận thưởng|
+- **Response Body khi thành công (Json)**
+
+    Trả về danh sách các [RewardCeremonyBriefInfo](#rewardceremonybriefinfo)
 
     Ex:
 
@@ -1400,10 +1390,6 @@
 
         *Không tìm thấy đợt thưởng có id như đầu vào*
 
-    - [409 Conflict]
-
-        *Đợt thưởng thêm vào trùng tên với đợt thưởng đã tồn tại trong CSDL*
-
 ### Thêm đợt thưởng mới
 <span style="color:#fbbc05; width: 50px; display: inline-block">**POST**</span> ```https://localhost:7265/api/RewardCeremonies```
 
@@ -1486,9 +1472,14 @@
     - [404 NotFound]
 
         *Xảy ra khi quá trình thêm Đợt thưởng vào CSDL bị lỗi (cách khắc phục đó là request lại lần nữa)*
+
     - [409 Conflict]
 
         *Tên đợt thưởng đã tồn tại trong CSDL*
+
+    - [400 BadRequest] InvalidClosingFormDate
+
+        *`ClosingFormDate` không được phép lớn hơn `RewardDate`.*
 
 ### Cập nhật đợt thưởng
 <span style="color:#4285f4; width: 50px; display: inline-block">**PUT**</span>```https://localhost:7265/api/RewardCeremonies```
@@ -1543,6 +1534,10 @@
     - [404 NotFound]
 
         *Đợt thưởng không tồn tại trong CSDL để cập nhật*
+
+    - [400 BadRequest] InvalidClosingFormDate
+
+        *`ClosingFormDate` không được phép lớn hơn `RewardDate`.*
 
 ### Thiết lập Bảng chuyển đổi loại thành tích thành giá trị phần thưởng cho đợt thưởng
 <span style="color:#fbbc05; width: 50px; display: inline-block">**POST**</span> ```https://localhost:7265/api/RewardCeremonies/setARPairs/{id}```
@@ -1743,13 +1738,510 @@
 
         *Đợt thưởng không tồn tại trong CSDL để xoá*
 
+    - [400 NotFound] CannotDeleteAcceptedRewardCeremony
+
+        *Đợt thưởng đã được phê duyệt và thông báo đến toàn thể người dân nên không thể rút lại.*
+
     - [400 BadRequest] ForeignKeyConstraintFailed
 
         *Xảy ra khi xoá một phần tử mà một số hàng trong các bảng khác có khoá ngoài trỏ đến phần tử này.*
 
         *Phần tử này hiện tại không thể bị xoá. Thay vào đó hãy cảnh báo người dùng rằng đợt thưởng này không thể xoá (Nó đã được các dữ liệu khác đề cập đến, cũng như điều này đảm bảo thông tin của đợt thưởng này là một thông tin hợp lệ với thực tiễn, không phải một mẫu thử nghiệm.)*
 
+## Form minh chứng thành tích
+### Lấy ra danh sách form minh chứng thành tích
+<span style="color:#34a853; width: 50px; display: inline-block">**GET**</span> ```https://localhost:7265/api/forms/AchievementEvidence[?rewardCeremonyId={int}&isChecked={boolean}]```
 
+*Lấy ra danh sách form minh chứng thành tích. Phạm vi trả về phụ thuộc vào quyền hạn của tài khoản:*
+
+1. Chủ tịch phường, kế toán: Sẽ trả về form minh chứng của toàn bộ phường
+2. Tổ trưởng: Sẽ trả về form minh chứng của chỉ tổ phụ trách
+3. Hộ dân: Sẽ trả về form minh chứng của chỉ cá nhân tài khoản đó gửi lên
+
+- **Query Params**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |rewardCeremonyId|*[tuỳ chọn]* Để lấy danh sách form minh chứng thành tích của đợt thưởng có Id bằng `rewardCeremonyId`.<br/> Đừng ghi vào nếu muốn lấy ra toàn bộ đợt thưởng|
+    |isChecked|*[tuỳ chọn]* Đừng ghi vào nếu muốn lấy ra toàn bộ form.<br/> Để `true` nếu muốn lấy ra chỉ những form ĐÃ ĐƯỢC DUYỆT hoặc BỊ TỪ CHỐI (những form đã được các cán bộ kiểm tra qua). Để `false` nếu muốn lấy ra chỉ những form chưa được kiểm tra.|
+
+- **Request Header**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |Authorization|"Bearer " + &lt;Một chuỗi kí tự là token nhận được sau khi đăng nhập&gt;|
+
+- **Response Body khi thành công (Json)**
+    
+    Trả về một danh sách các [FormBriefInfo](#formbriefinfo) (click vào để xem giải thích)
+
+    Ex:
+    ```json
+    [
+        {
+            "id": 1,
+            "formType": "AchievementEvidence",
+            "title": "Form title",
+            "createdTime": "2022-01-01T00:00:00",
+            "isAccepted": true,
+            "notAcceptedReason": "Reason for not accepting",
+            "account": "user123"
+        },
+        ...
+    ]
+    ```
+- **Lỗi**
+    - [401 Unauthorized]
+
+        *JWT Token không hợp lệ*
+
+
+### Lấy thông tin chi tiết của form minh chứng thành tích
+<span style="color:#34a853; width: 50px; display: inline-block">**GET**</span>
+```https://localhost:7265/api/forms/AchievementEvidence/{id}```
+
+*Lấy ra thông tin chi tiết của form minh chứng thành tích. Phạm vi trả về phụ thuộc vào quyền hạn của tài khoản:*
+
+1. Chủ tịch phường, kế toán: Sẽ trả về form minh chứng của toàn bộ phường
+2. Tổ trưởng: Sẽ trả về form minh chứng của chỉ tổ phụ trách
+3. Hộ dân: Sẽ trả về form minh chứng của chỉ cá nhân tài khoản đó gửi lên
+
+- **Route Params**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |id|mã định danh của form minh chứng thành tích|
+
+- **Request Header**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |Authorization|"Bearer " + &lt;Một chuỗi kí tự là token nhận được sau khi đăng nhập&gt;|
+
+- **Response Body khi thành công (Json)**
+    | Property Name | Data Type | Description |
+    | --- | --- | --- |
+    | id | number | ID của form |
+    | resident | [ResidentBriefInfo](#residentbriefinfo) | Thông tin tóm tắt của các cháu (có bao gồm Id, ngày sinh, họ và tên) |
+    | rewardCeremony | [RewardCeremonyBriefInfo](#rewardceremonybriefinfo) | Dịp thưởng muốn nộp minh chứng đến |
+    | achievementName | string | Tiêu đề thành tích |
+    | achievementType | number, nullable | Phân loại thành tích (dạng số nguyên dương) |
+    | imageLinks | string[] | Danh sách các đường dẫn đến ảnh minh chứng |
+    | createdTime | string (date-time format) | Giờ phút ngày tháng năm form được gửi lên |
+    | isAccepted | boolean | Trạng thái đã duyệt hay chưa |
+    | notAcceptedReason | string, nullable | Lý do không duyệt |
+    | account | string | Tài khoản người gửi form |
+
+    - ℹ️ **Lưu ý:** Form **CHƯA** được kiểm tra khi `notAcceptedReason = null` và `isAccepted = false`. Form **ĐÃ** được duyệt khi `notAcceptedReason = null` và `isAccepted = true`. Form **BỊ TỪ CHỐI** khi `notAcceptedReason != null`.
+
+    Ex:
+
+    ```json
+    //Ví dụ cho đợt thưởng thành tích
+    {
+        "id": 0,
+        "resident": {
+            "identityCode": "000001",
+            "fullName": "Nguyễn Văn Quảng",
+            "dateOfBirth": "1970-10-01T00:00:00",
+            "isMale": true,
+            "householdId": "001",
+            "relationShip": "Chủ hộ",
+            "scope": 1
+        },
+        "rewardCeremony": {
+            "id": 1,
+            "title": "First Reward Ceremony",
+            "time": "2022-12-25T12:00:00Z",
+            "type": "TTHT",
+            "totalValue": 10000,
+            "isAccepted": true,
+            "isDone": true,
+            "closingFormDate": "2022-12-30T12:00:00Z",
+            "rewardDate": "2022-12-31T12:00:00Z"
+        },
+        "achievementName": "Hsg quốc gia hoá",
+        "achievementType": null,
+        "imageLinks": [
+            "hdbhsgb.png"
+        ],
+        "createdTime": "2022-06-07T19:06:58.209Z",
+        "isAccepted": false,
+        "notAcceptedReason": null,
+        "account": "acc2"
+    }
+    ```
+    
+
+- **Lỗi**
+    - [401 Unauthorized]
+
+        *JWT Token không hợp lệ*
+
+    - [404 NotFound]
+
+        *Không tìm thấy form có id như đầu vào*
+
+    - [400 BadRequest] IdS_ScopeOutOfManagement
+
+        *Tổ trưởng không thể xem form thuộc phạm vi quản lý của tổ khác*
+
+### Gửi form minh chứng thành tích
+<span style="color:#fbbc05; width: 50px; display: inline-block">**POST**</span> ```https://localhost:7265/api/forms/AchievementEvidence```
+
+*Gửi form minh chứng thành tích.*
+
+
+- **Request Header**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |Authorization|"Bearer " + &lt;Một chuỗi kí tự là token nhận được sau khi đăng nhập&gt;|
+
+- **Request Body (form-data)**
+
+    | Property         | Type | Description | Example |
+    |------------------|-----------|-------------|-----|
+    | `ResidentIdCode`   | string    | ID của các cháu (vì các cháu chưa có CMND) | 123456789123 |
+    | `RewardCeremonyId` | number    | ID của dịp thưởng muốn nộp minh chứng đến | 2 |
+    | `AchievementName`  | string    | Tiêu đề thành tích | Học sinh giỏi huyện |
+    | `Images`       | IFormFileCollection | danh sách Ảnh minh chứng | (binary) |
+
+
+- **Response Body khi thành công (Json)**
+
+    [FormBriefInfo](#formbriefinfo) của form mới gửi lên, có chứa Id của cái form đó
+    
+- **Lỗi**
+    - [401 Unauthorized]
+
+        *JWT Token không hợp lệ*
+
+    - [404 NotFound]
+
+        *Xảy ra khi quá trình thêm Đợt thưởng vào CSDL bị lỗi (cách khắc phục đó là request lại lần nữa)*
+
+    - [400 BadRequest] ResidentNotFound
+
+        *Nhân khẩu không tồn tại trong CSDL.*
+
+    - [400 BadRequest] RewardCeremonyNotFound
+
+        *Đợt thưởng không tồn tại trong CSDL.*
+
+    - [400 BadRequest] RewardCeremonyNotBeAccepted
+
+        *Đợt thưởng chưa được duyệt nên không nhận form.*
+
+    - [400 BadRequest] OverDue
+
+        *Thời gian nhận form của đợt thưởng đã hết.*
+
+    - [400 BadRequest] InvalidRewardCeremony
+
+        *Đợt thưởng dịp đặc biệt không nhận form học tập.*
+
+### Duyệt form minh chứng thành tích
+<span style="color:#fbbc05; width: 50px; display: inline-block">**POST**</span> ```https://localhost:7265/api/forms/AchievementEvidence/accept/{id}```
+
+*Phê duyệt hoặc từ chối form minh chứng thành tích. Phạm vi trả về phụ thuộc vào quyền hạn của tài khoản:*
+
+1. Chủ tịch phường, kế toán: Duyệt được form minh chứng của toàn bộ phường
+2. Tổ trưởng: Chỉ duyệt được form minh chứng của chỉ tổ phụ trách
+
+- **Route Params**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |id|mã định danh của form minh chứng thành tích|
+
+- **Request Header**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |Authorization|"Bearer " + &lt;Một chuỗi kí tự là token nhận được sau khi đăng nhập&gt;|
+
+- **Request Body (Json)**
+    | Property Name | Type | Description |
+    | --- | --- | --- |
+    | Accept | bool | Có chấp nhận không hay là từ chối |
+    | NotAcceptReason | string | *[Tuỳ chọn]* Lý do từ chối, **bắt buộc phải có nếu như từ chối** |
+    | AchievementType | number | *[Tuỳ chọn]* (Dạng số nguyên dương) Phân loại thành tích, **bắt buộc phải có nếu như chấp nhận** |
+
+    Ex:
+
+    ```json
+    //Nếu chấp nhận
+    {
+        "accept": true,
+        "notAcceptReason": null,
+        "achievementType": 1
+    }
+    ```
+    ```json
+    //Nếu TỪ CHỐI
+    {
+        "accept": false,
+        "notAcceptReason": "Minh chứng này đã được dùng từ năm ngoái rồi nhé :)",
+        "achievementType": null
+    }
+    ```
+- **Response Body khi thành công**
+    
+    Không có gì
+
+- **Lỗi**
+    - [401 Unauthorized]
+
+        *JWT Token không hợp lệ*
+
+    - [403 Forbidden]
+
+        *Tài khoản không đủ quyền để truy cập. Tài khoản không phải người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch phường)*
+
+    - [404 NotFound]
+
+        *Không tìm thấy form có id như đầu vào*
+
+    - [400 BadRequest] IdS_ScopeOutOfManagement
+
+        *Tổ trưởng không thể xét duyệt form thuộc phạm vi quản lý của tổ khác*
+
+    - [400 BadRequest] CheckedForm
+
+        *Form đã được kiểm tra (phê duyệt hoặc bị từ chối) nên không thể kiểm tra lại nữa.*
+
+### Rút lại form minh chứng thành tích
+<span style="color:#ea4335; width: 50px; display: inline-block">**DELETE**</span> ```https://localhost:7265/api/forms/AchievementEvidence/{id}```
+
+*Rút lại form minh chứng thành tích (có thể do thấy sai hay gì đó). Hành động này chỉ thực hiện được khi form chưa được duyệt.*
+
+- **Route Params**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |id|mã định danh của form minh chứng thành tích|
+
+- **Request Header**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |Authorization|"Bearer " + &lt;Một chuỗi kí tự là token nhận được sau khi đăng nhập&gt;|
+
+- **Response Body khi thành công**
+    
+    Không có
+
+- **Lỗi**
+    - [401 Unauthorized]
+
+        *JWT Token không hợp lệ*
+
+    - [404 NotFound]
+
+        *Đợt thưởng không tồn tại trong CSDL để xoá*
+
+    - [400 BadRequest] CheckedForm
+
+        *Form đã được phê duyệt hoặc bị từ chối nên không thể rút lại.*
+
+## Form chọn quà cho dịp đặc biệt
+### Lấy ra danh sách form chọn quà cho dịp đặc biệt
+<span style="color:#34a853; width: 50px; display: inline-block">**GET**</span> ```https://localhost:7265/api/forms/ChoosingPresents[?rewardCeremonyId={int}]```
+
+*Lấy ra danh sách form chọn quà cho dịp đặc biệt. Phạm vi trả về phụ thuộc vào quyền hạn của tài khoản:*
+
+1. Chủ tịch phường, kế toán: Sẽ trả về form của toàn bộ phường
+2. Tổ trưởng: Sẽ trả về form của chỉ tổ phụ trách
+3. Hộ dân: Sẽ trả về form của chỉ cá nhân tài khoản đó gửi lên
+
+- **Query Params**
+  |Tham số|Miêu tả|
+  |-------|-------|
+  |rewardCeremonyId|*[tuỳ chọn]* Để lấy danh sách form chọn quà cho dịp đặc biệt của đợt thưởng có Id bằng `rewardCeremonyId`.<br/> Đừng ghi vào nếu muốn lấy ra toàn bộ đợt thưởng|
+
+- **Request Header**
+  |Tham số|Miêu tả|
+  |-------|-------|
+  |Authorization|"Bearer " + &lt;Một chuỗi kí tự là token nhận được sau khi đăng nhập&gt;|
+
+- **Response Body khi thành công (Json)**
+  
+  Trả về một danh sách các [FormBriefInfo](#formbriefinfo) (click vào để xem giải thích)
+
+  Ex:
+  ```json
+  [
+    {
+      "id": 1,
+      "formType": "ChoosingPresents",
+      "title": "Form title",
+      "createdTime": "2022-01-01T00:00:00",
+      "isAccepted": true,
+      "notAcceptedReason": "Reason for not accepting",
+      "account": "user123"
+    },
+    ...
+  ]
+  ```
+- **Lỗi**
+  - [401 Unauthorized]
+
+    *JWT Token không hợp lệ*
+
+
+### Lấy thông tin chi tiết của form chọn quà cho dịp đặc biệt
+<span style="color:#34a853; width: 50px; display: inline-block">**GET**</span>
+```https://localhost:7265/api/forms/ChoosingPresents/{id}```
+
+*Lấy ra thông tin chi tiết của form chọn quà cho dịp đặc biệt. Phạm vi trả về phụ thuộc vào quyền hạn của tài khoản:*
+
+1. Chủ tịch phường, kế toán: Sẽ trả về form của toàn bộ phường
+2. Tổ trưởng: Sẽ trả về form của chỉ tổ phụ trách
+3. Hộ dân: Sẽ trả về form của chỉ cá nhân tài khoản đó gửi lên
+
+- **Route Params**
+  |Tham số|Miêu tả|
+  |-------|-------|
+  |id|mã định danh của form chọn quà cho dịp đặc biệt|
+
+- **Request Header**
+  |Tham số|Miêu tả|
+  |-------|-------|
+  |Authorization|"Bearer " + &lt;Một chuỗi kí tự là token nhận được sau khi đăng nhập&gt;|
+
+- **Response Body khi thành công (Json)**
+  | Property Name | Data Type | Description |
+  | --- | --- | --- |
+  | id | number | ID của form |
+  | resident | [ResidentBriefInfo](#residentbriefinfo) | Thông tin tóm tắt của các cháu (có bao gồm Id, ngày sinh, họ và tên) |
+  | rewardCeremony | [RewardCeremonyBriefInfo](#rewardceremonybriefinfo) | Dịp thưởng muốn nộp đến |
+  | presentsType | number | Loại quà cháu muốn nhận |
+  | presentsName | string | Tên của loại quà cháu muốn nhận |
+  | createdTime | string (date-time format) | Giờ phút ngày tháng năm form được gửi lên |
+  | account | string | Tài khoản người gửi form |
+
+
+  Ex:
+
+  ```json
+  //Ví dụ cho đợt phát quà dịp đặc biệt
+  {
+    "id": 0,
+    "resident": {
+      "identityCode": "000001",
+      "fullName": "Nguyễn Văn Quảng",
+      "dateOfBirth": "1970-10-01T00:00:00",
+      "isMale": true,
+      "householdId": "001",
+      "relationShip": "Chủ hộ",
+      "scope": 1
+    },
+    "rewardCeremony": {
+      "id": 1,
+      "title": "First Reward Ceremony",
+      "time": "2022-12-25T12:00:00Z",
+      "type": "TT",
+      "totalValue": 10000,
+      "isAccepted": true,
+      "isDone": true,
+      "closingFormDate": "2022-12-30T12:00:00Z",
+      "rewardDate": "2022-12-31T12:00:00Z"
+    },
+    "presentsType": 1,
+    "presentsName": "1 Kẹo mút",
+    "createdTime": "2022-06-07T19:06:58.209Z",
+    "account": "acc2"
+  }
+  ```
+  
+
+- **Lỗi**
+  - [401 Unauthorized]
+
+    *JWT Token không hợp lệ*
+
+  - [404 NotFound]
+
+    *Không tìm thấy form có id như đầu vào*
+
+  - [400 BadRequest] IdS_ScopeOutOfManagement
+
+    *Tổ trưởng không thể xem form thuộc phạm vi quản lý của tổ khác*
+
+### Gửi form chọn quà cho dịp đặc biệt
+<span style="color:#fbbc05; width: 50px; display: inline-block">**POST**</span> ```https://localhost:7265/api/forms/ChoosingPresents```
+
+*Gửi form chọn quà cho dịp đặc biệt.*
+
+
+- **Request Header**
+  |Tham số|Miêu tả|
+  |-------|-------|
+  |Authorization|"Bearer " + &lt;Một chuỗi kí tự là token nhận được sau khi đăng nhập&gt;|
+
+- **Request Body (form-data)**
+
+  | Property     | Type | Description | Example |
+  |------------------|-----------|-------------|-----|
+  | `ResidentIdCode`  | string  | ID của các cháu (vì các cháu chưa có CMND) | 123456789123 |
+  | `RewardCeremonyId` | number  | ID của dịp thưởng muốn nộp đến | 2 |
+  | `PresentsType` | number  | Loại phần quà muốn nhận | 1 |
+
+  - ℹ️ **Lưu ý:** Danh sách các số `PresentsType` hợp lệ chính là danh sách giá trị của thuộc tính `achievementType` trong các phần tử trong [Bảng chuyển đổi loại thành tích thành giá trị phần thưởng cho đợt thưởng](#thiết-lập-bảng-chuyển-đổi-loại-thành-tích-thành-giá-trị-phần-thưởng-cho-đợt-thưởng). Giải thích cho dễ hiểu thì ta xem **loại thành tích** trong đợt thưởng thành tích (`achievementType`) là **loại quà** (`PresentsType`) trong đợt thưởng dịp đặc biệt. Tức là nói, được loại thành tích là A thì nhận quà là B trong đợt thưởng thành tích, tương ứng với đợt thưởng dịp đặc biệt thì nếu chọn loại quà là A thì sẽ nhận quà là B (quà khác với loại quà).
+
+- **Response Body khi thành công (Json)**
+
+  [FormBriefInfo](#formbriefinfo) của form mới gửi lên, có chứa Id của cái form đó
+  
+- **Lỗi**
+  - [401 Unauthorized]
+
+    *JWT Token không hợp lệ*
+
+  - [404 NotFound]
+
+    *Xảy ra khi quá trình thêm Đợt thưởng vào CSDL bị lỗi (cách khắc phục đó là request lại lần nữa)*
+
+  - [400 BadRequest] ResidentNotFound
+
+    *Nhân khẩu không tồn tại trong CSDL.*
+
+  - [400 BadRequest] RewardCeremonyNotFound
+
+    *Đợt thưởng không tồn tại trong CSDL.*
+
+  - [400 BadRequest] RewardCeremonyNotBeAccepted
+
+    *Đợt thưởng chưa được duyệt nên không nhận form.*
+
+  - [400 BadRequest] OverDue
+
+    *Thời gian nhận form của đợt thưởng đã hết.*
+
+    - [400 BadRequest] InvalidRewardCeremony
+
+        *Đợt thưởng thành tích học tập không nhận form chọn quà dịp đặc biệt.*
+
+
+### Rút lại form chọn quà cho dịp đặc biệt
+<span style="color:#ea4335; width: 50px; display: inline-block">**DELETE**</span> ```https://localhost:7265/api/forms/ChoosingPresents/{id}```
+
+*Rút lại form chọn quà cho dịp đặc biệt (có thể do thấy sai hay gì đó). Hành động này chỉ thực hiện được khi form chưa được duyệt.*
+
+- **Route Params**
+  |Tham số|Miêu tả|
+  |-------|-------|
+  |id|mã định danh của form chọn quà cho dịp đặc biệt|
+
+- **Request Header**
+  |Tham số|Miêu tả|
+  |-------|-------|
+  |Authorization|"Bearer " + &lt;Một chuỗi kí tự là token nhận được sau khi đăng nhập&gt;|
+
+- **Response Body khi thành công**
+  
+  Không có
+
+- **Lỗi**
+  - [401 Unauthorized]
+
+    *JWT Token không hợp lệ*
+
+  - [404 NotFound]
+
+    *Đợt thưởng không tồn tại trong CSDL để xoá*
 
 # Các kiểu dữ liệu được sử dụng nhiều lần
 
@@ -1796,3 +2288,86 @@
 |criminalRecord|Tiền án|
 |moveInDate|ngày chuyển đến|
 |moveInReason|lý do chuyển đến|
+
+## FormBriefInfo
+| Property | Type | Description |
+| --- | --- | --- |
+| `id` | int | Id của form (cùng loại form thì id luôn khác nhau, nhưng khác loại form thì id có thể trùng) |
+| `formType` | string | Loại form |
+| `title` | string | Tiêu đề của form |
+| `createdTime` | DateTime | Giờ phút ngày tháng năm form được gửi lên |
+| `isAccepted` | bool | Đã duyệt chưa |
+| `notAcceptedReason` | string | Lý do không duyệt |
+| `account` | string | Tài khoản người gửi (Phải là Tài Khoản được chủ hộ sử dụng) |
+
+- ℹ️ **Lưu ý:** 
+    1. Form **CHƯA** được kiểm tra khi `notAcceptedReason = null` và `isAccepted = false`. Form **ĐÃ** được duyệt khi `isAccepted = true`. Form **BỊ TỪ CHỐI** khi `notAcceptedReason != null`.
+    2. `formType` và `id` có thể được sử dụng khi cần lấy thông tin chi tiết của form hoặc rút lại (xoá) form bằng cách dùng sau `api/forms/<formType>/<id>`
+
+
+Ex:
+
+```json
+{
+  "id": 1,
+  "formType": "AchievementEvidence",
+  "title": "Form title",
+  "createdTime": "2022-01-01T00:00:00",
+  "isAccepted": true,
+  "notAcceptedReason": "Reason for not accepting",
+  "account": "user123"
+}
+```
+## ResidentBriefInfo
+
+| Property | Type | Description |
+| --- | --- | --- |
+|identityCode|string|Số CMND/CCCD/Mã định danh điện tử của nhân khẩu|
+|fullName|string|Họ và tên nhân khẩu|
+|dateOfBirth|string (date-time format)|Ngày tháng năm sinh|
+|isMale|boolean|Giới tính **(Nam: *true*/ Nữ: *false*)**|
+|householdId|string|Số hộ khẩu mà nhân khẩu thuộc về|
+|relationShip|string|Quan hệ của nhân khẩu với chủ hộ|
+|scope|number|Tổ phụ trách quản lý nhân khẩu|
+
+Ex:
+```json
+{
+    "identityCode": "000001",
+    "fullName": "Nguyễn Văn Quảng",
+    "dateOfBirth": "1970-10-01T00:00:00",
+    "isMale": true,
+    "householdId": "001",
+    "relationShip": "Chủ hộ",
+    "scope": 1
+}
+```
+
+## RewardCeremonyBriefInfo
+| Property | Type | Description |
+| --- | --- | --- |
+|id|number|mã định danh đợt thưởng|
+|title|string|Tên đợt thưởng|
+|time|string (date-time format)|Ngày giờ phút giây chủ tịch đề xuất kế hoạch phát thưởng|
+|type|string|TTHT – phát thưởng cho thành tích học tập, TT – phát thưởng trung thu|
+|totalValue|number|Tổng tiền cho việc phát thưởng|
+|isAccepted|boolean|Chủ tịch phường đã duyệt danh sách phát thưởng chưa|
+|isDone|boolean|Đã phát thưởng chưa|
+|closingFormDate|string (date-time format)|Ngày đóng nhận form minh chứng|
+|rewardDate|string (date-time format)|Thời gian nhận thưởng|
+
+Ex:
+
+```json
+{
+    "id": 1,
+    "title": "First Reward Ceremony",
+    "time": "2022-12-25T12:00:00Z",
+    "type": "TTHT",
+    "totalValue": 10000,
+    "isAccepted": true,
+    "isDone": true,
+    "closingFormDate": "2022-12-30T12:00:00Z",
+    "rewardDate": "2022-12-31T12:00:00Z"
+}
+```

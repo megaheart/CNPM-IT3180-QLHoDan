@@ -27,6 +27,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<ChangingHouseholdForm> ChangingHouseholdForm { set; get; }
     public DbSet<NotificationMessage> NotificationMessage { set; get; }
     public DbSet<AchievementEvidenceForm> AchievementEvidenceForm { set; get; }
+    public DbSet<ChoosingPresentsForm> ChoosingPresentsForm { set; get; }
     public DbSet<AchievementRewardPair> AchievementRewardPair { set; get; }
     public DbSet<RewardCeremony> RewardCeremony { set; get; }
     public DbSet<RewardRecord> RewardRecord { set; get; }
@@ -64,6 +65,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<NotificationMessage>().Property(hk => hk.Id).ValueGeneratedOnAdd();
         modelBuilder.Entity<AchievementEvidenceForm>().HasKey(hk => hk.Id);
         modelBuilder.Entity<AchievementEvidenceForm>().Property(hk => hk.Id).ValueGeneratedOnAdd();
+        modelBuilder.Entity<ChoosingPresentsForm>().HasKey(hk => hk.Id);
+        modelBuilder.Entity<ChoosingPresentsForm>().Property(hk => hk.Id).ValueGeneratedOnAdd();
         modelBuilder.Entity<AchievementRewardPair>().HasKey(g => g.Id);
         modelBuilder.Entity<AchievementRewardPair>().Property(hk => hk.Id).ValueGeneratedOnAdd();
         //modelBuilder.Entity<AchievementRewardPair>().Property<int?>("RewardCeremonyId").IsRequired(true);
@@ -169,8 +172,21 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<AchievementEvidenceForm>()
             .HasOne<Resident>(nk => nk.Resident).WithMany()
             .OnDelete(DeleteBehavior.NoAction);
-            //.HasForeignKey<AchievementEvidenceForm>("IdCode");
+        //.HasForeignKey<AchievementEvidenceForm>("IdCode");
 
+        modelBuilder.Entity<AchievementEvidenceForm>()
+            .HasOne<RewardCeremony>(a => a.RewardCeremony).WithMany()
+            .HasForeignKey(a => a.RewardCeremonyId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<ChoosingPresentsForm>()
+            .HasOne<Resident>(nk => nk.Resident).WithMany()
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<ChoosingPresentsForm>()
+            .HasOne<RewardCeremony>(a => a.RewardCeremony).WithMany()
+            .HasForeignKey(a => a.RewardCeremonyId)
+            .OnDelete(DeleteBehavior.NoAction);
 
         modelBuilder.Entity<AchievementRewardPair>()
             .HasOne<RewardCeremony>(nk => nk.RewardCeremony)
@@ -188,8 +204,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .HasOne<Resident>(ls => ls.Resident).WithMany()
             .OnDelete(DeleteBehavior.NoAction);
         //.HasForeignKey<RewardRecord>("IdCode");
-        modelBuilder.Entity<AchievementEvidenceForm>()
-            .HasOne<Resident>(a => a.Resident).WithMany();
     }
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
