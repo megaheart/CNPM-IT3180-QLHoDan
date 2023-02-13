@@ -1,4 +1,4 @@
-﻿namespace QLHoDan.Models.Reward
+﻿namespace QLHoDan.Models.Reward.RewardCeremonies
 {
     public class AchievementReward
     {

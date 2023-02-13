@@ -10,6 +10,7 @@
 
         public List<string> ImageLinks { set; get; } = new List<string>();  // Minh chứng (đường đẫn đến ảnh của giấy chứng tử)
         public string Account { set; get; } // Username tài khoản hộ dân gửi 
+        public int AccountScope { set; get; } // scope của tài khoản người gửi
 
     }
 
