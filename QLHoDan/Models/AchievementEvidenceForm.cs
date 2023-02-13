@@ -18,5 +18,4 @@ namespace QLHoDan.Models
         public string Account { set; get; } // Username tài khoản người gửi (Phải là Tài Khoản được chủ hộ sử dụng)
         public int AccountScope { set; get; } // scope của tài khoản người gửi
     }
-
 }

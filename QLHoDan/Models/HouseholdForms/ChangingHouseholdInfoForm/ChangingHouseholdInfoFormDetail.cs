@@ -1,14 +1,15 @@
-﻿using System;
+﻿using QLHoDan.Models.Api;
+using QLHoDan.Models.HouseholdsAndResidents.ResidentApi;
+using QLHoDan.Models.HouseholdsAndResidents.HouseholdApi;
 
-namespace QLHoDan.Models
+namespace QLHoDan.Models.HouseholdForms.ChangingHouseholdInfoForm
 {
-    //Đơn xin thay đổi thông tin hộ khẩu
-    public class ChangingHouseholdInfoForm
-	{
-        public int Id { set; get; } // ID
-        public Household Household { set; get; } // Số hộ khẩu
+    public class ChangingHouseholdInfoFormDetail
+    {
+        public int Id { set; get; } // id
+        public HouseholdBriefInfo Household { set; get; } // Số hộ khẩu
         public string? Address { set; get; } // địa chỉ Thường trú mới
-        public Resident? Owner { set; get; }//Chủ hộ mới
+        public ResidentBriefInfo? Owner { set; get; }//Chủ hộ mới
         public int? Scope { set; get; } // Tổ Phụ Trách mới
         public string Reason { set; get; } //Lý do thay đổi
         public DateTime CreatedTime { set; get; }
@@ -16,7 +17,5 @@ namespace QLHoDan.Models
         public string? NotAcceptedReason { set; get; } // Đã duyệt chưa
 
         public string Account { set; get; } // Username tài khoản hộ dân gửi 
-        public int AccountScope { set; get; } // scope của tài khoản người gửi
     }
-
 }
