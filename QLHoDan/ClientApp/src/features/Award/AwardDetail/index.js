@@ -24,6 +24,7 @@ import { InputBase, SelectBase } from '../components';
 import Grid from '@mui/material/Grid';
 
 import TableSkeleton from '~/page/Skeleton';
+import AwardListEstimate from '../AwardListEstimate';
 
 import awardApi from '~/services/api/awardApi';
 import {
@@ -84,6 +85,8 @@ export default function AwardDetail({ open, onClose, idAward }) {
 
     const [time, setTime] = useState(null);
     const timeRef = useRef();
+
+    const [estimateAward, setEstimateAward] = useState(false);
 
     const [closingFormDate, setClosingFormDate] = useState(null);
     const closingFormDateRef = useRef();
@@ -324,7 +327,6 @@ export default function AwardDetail({ open, onClose, idAward }) {
     }
 
 
-
     //handle when clode this dislog
 
     const handleCloseConfirmBox = () => {
@@ -363,6 +365,7 @@ export default function AwardDetail({ open, onClose, idAward }) {
             >
                 <CircularProgress color="inherit" />
             </Backdrop>
+            <AwardListEstimate open={estimateAward} onClose={setEstimateAward} />
             <AcceptCeremory
                 open={acceptDialog}
                 actionAgree={handleAcceptEvent}
@@ -397,9 +400,12 @@ export default function AwardDetail({ open, onClose, idAward }) {
                                             sx={{ fontSize: 15, margin: '2px 4px', width: 235 }} >Phê duyệt đợt thưởng</Button>
                                         : !data.isDone ?
                                             <Button variant="contained" color="success" onClick={handleDone}
-                                                sx={{ fontSize: 15, margin: '2px 4px', width: 235 }} >Kết thúc đợt thưởng</Button>
+                                                sx={{ fontSize: 15, margin: '2px 4px', maxWidth: 235 }} >Kết thúc đợt thưởng</Button>
                                             : null
                                     }
+                                    <Button variant="contained" color="primary" onClick={() => setEstimateAward(true)}
+                                        disabled={auth.role !== 'CommitteeChairman' && auth.role !== 'Accountant' && !data.isAccepted}
+                                        sx={{ fontSize: 15, margin: '2px 4px', maxWidth: 300 }} >Danh sách thưởng dự kiến </Button>
                                 </div>
                                 :
                                 <div >
@@ -407,7 +413,7 @@ export default function AwardDetail({ open, onClose, idAward }) {
                                         sx={{ fontSize: 15, margin: '2px 4px', width: 130 }} >Cập nhật</Button>
 
                                     <Button variant="contained" color="success" onClick={handleOpenAcceptDialog}
-                                        sx={{ fontSize: 15, margin: '2px 4px', width: 235 }} >Phê duyệt đợt thưởng</Button>
+                                        sx={{ fontSize: 15, margin: '2px 4px', maxWidth: 235 }} >Phê duyệt đợt thưởng</Button>
 
                                     {/* <Button variant="contained" color="success" onClick={handleReset}
                                         sx={{ fontSize: 15, margin: '2px 4px', width: 130 }} >Reset</Button> */}

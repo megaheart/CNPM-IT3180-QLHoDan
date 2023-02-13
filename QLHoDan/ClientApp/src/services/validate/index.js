@@ -81,6 +81,18 @@ const checkIdentification = (s) => {
     };
 };
 
+// function validateIdCard(idCard) {
+//     if (nid.length !== 12 && nid.length !== 9) return false;
+//     if (nid.length === 9) {
+//         const idCardPattern = /^\d{9}$/;
+//         return idCardPattern.test(idCard);
+//     }
+//     if (nid.length === 12) {
+//         const idCardPattern = /^\d{12}$/;
+//         return idCardPattern.test(idCard);
+//     }
+// }
+
 const checkName = (s) => {
     const isFullName = /^([a-z]{1,10})(\s[a-z]{1,10})*$/;
     let str = s;

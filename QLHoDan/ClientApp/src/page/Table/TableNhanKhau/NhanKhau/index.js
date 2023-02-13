@@ -22,8 +22,8 @@ import {
 
 //column field
 const columns = [
-    { id: 'identityCode', label: 'CMND/CCCD', width: 100, align: 'left', headerAlign: 'center' },
-    { id: 'fullName', label: 'Họ và tên', width: 200, align: 'left', headerAlign: 'left' },
+    { id: 'identityCode', label: 'CMND/CCCD', width: 50, align: 'left', headerAlign: 'center' },
+    { id: 'fullName', label: 'Họ và tên', width: 220, align: 'left', headerAlign: 'left' },
     { id: 'dateOfBirth', label: 'Ngày sinh', type: 'date', width: 150, align: 'left', headerAlign: 'left' },
     { id: 'isMale', label: 'Giới tính', width: 100, align: 'left', headerAlign: 'left' },
     { id: 'householdId', label: 'Sổ hộ khẩu', width: 120, align: 'left', headerAlign: 'left' },
@@ -34,8 +34,6 @@ const columns = [
 
 
 export default function TableNhanKhau({ action, typeTable }) {
-
-
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -174,7 +172,7 @@ export default function TableNhanKhau({ action, typeTable }) {
     };
 
     return (
-        <div style={{ height: '90%', width: '100%', margin: '10' }}>
+        <div style={{ height: '90%', width: '100%', margin: '0' }}>
             {(type && type.mutation) && <AddResidentDialog open={isCreateMode} onClose={closeCreateMode} type={type} />}
             <Snackbar open={success} autoHideDuration={3000} onClose={handleCloseSnackbar}>
                 <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%', fontSize: 15 }}>
@@ -210,7 +208,7 @@ export default function TableNhanKhau({ action, typeTable }) {
                 </DialogActions>
             </Dialog>
 
-            {error ? <ErrorData /> : isLoading ? <TableSkeleton /> : <TableContainer sx={{ height: 470, backgroundColor: '#fff' }}>
+            {error ? <ErrorData /> : isLoading ? <TableSkeleton /> : <TableContainer sx={{ height: 395, backgroundColor: '#fff' }}>
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead >
                         <TableRow>
@@ -220,9 +218,7 @@ export default function TableNhanKhau({ action, typeTable }) {
                                     align={column.align}
                                     style={{ width: column.width }}
                                 >
-                                    <span>
-                                        {column.label}
-                                    </span>
+                                    {column.label}
                                 </TableCell>
                             ))}
                             <TableCell align='right'>
@@ -249,11 +245,11 @@ export default function TableNhanKhau({ action, typeTable }) {
                                             }
                                             return (
                                                 <TableCell key={`${value}-${i}-tablecell`} align={column.align}>
-                                                    <span>
-                                                        {column.format && typeof value === 'number'
-                                                            ? column.format(value)
-                                                            : value}
-                                                    </span>
+
+                                                    {column.format && typeof value === 'number'
+                                                        ? column.format(value)
+                                                        : value}
+
                                                 </TableCell>
                                             );
                                         })}

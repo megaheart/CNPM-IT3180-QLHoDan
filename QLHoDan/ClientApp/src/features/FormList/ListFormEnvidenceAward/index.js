@@ -14,6 +14,8 @@ import TableSkeleton from '~/page/Skeleton';
 import ConfirmBox from '~/components/component/Dialog/ConfirmBox';
 import ErrorData from '~/page/ErrorData';
 
+import FormAwardDetail from '../FormAwardDetail';
+
 import formEnvidenceAward from '~/services/api/formEnvidenceAward';
 
 import {
@@ -32,31 +34,26 @@ const columns = [
     { id: 'notAcceptedReason', label: 'Lý do từ chối', width: 190 },
     { id: 'account', label: 'Tài khoản gửi', width: 170 }
 ];
+
 const data = [
     {
         id: 1,
         formType: 'Đề cử',
         title: 'Đề cử cho nhân viên A',
         createdTime: '2021-10-10',
-        isAccepted: true,
+        isAccepted: 'Đã duyệt',
         notAcceptedReason: 'Không có lý do',
         account: 'admin'
-    },
-    {
-        id: 2,
-        formType: 'Đề cử',
-        title: 'Đề cử cho nhân viên A',
-        createdTime: '2021-10-10',
-        isAccepted: true,
-        notAcceptedReason: 'Không có lý do',
-        account: 'admin'
-    },
+    }
 ]
+
 
 export default function ListFormAward({ type }) {
     const { auth } = useAuth();
 
-    //const { data, isLoading, error } = useQuery(['formsEnvidenceAward', auth.username], () => formEnvidenceAward.getAllFormEnvidenceAward(auth.token));
+    // const { data, isLoading, error } = useQuery(['formsEnvidenceAward', auth.username], () => formEnvidenceAward.getAllFormEnvidenceAward(auth.token));
+
+    // console.log(data)
 
     //backdrop
     const [openBackdrop, setOpenBackdrop] = useState(false);
@@ -89,16 +86,16 @@ export default function ListFormAward({ type }) {
 
     };
 
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
     const [openDetail, setOpenDetail] = useState(false);
-    const [idRewardEvent, setIdRewardEvent] = useState(null);
+    const [idForm, setIdForm] = useState(null);
 
     const viewDetail = (id) => {
-        setIdRewardEvent(id);
+        setIdForm(id);
         setOpenDetail(true);
     };
 
@@ -144,6 +141,7 @@ export default function ListFormAward({ type }) {
                         content='Bạn có chắc chắn muốn xoá đợt thưởng này không?'
                         title='Xóa đợt thưởng này'
                     />
+                    {idForm && <FormAwardDetail open={openDetail} onClose={setOpenDetail} idAwardForm={idForm} />}
                     <Snackbar open={success} autoHideDuration={3000} onClose={handleCloseSnackbar}>
                         <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%', fontSize: 15 }}>
                             Xoá đợt thưởng thành công!
@@ -184,7 +182,7 @@ export default function ListFormAward({ type }) {
                                                     }
                                                     return (
                                                         <TableCell key={column.id + 'TableCell' + row.id + index} align={column.align} style={{ fontSize: 15 }}>
-                                                            <span>{value}</span>
+                                                            {value}
                                                         </TableCell>
                                                     );
                                                 })}

@@ -171,7 +171,7 @@ export default function ListAwardEvent() {
                                                     }
                                                     return (
                                                         <TableCell key={column.id + 'TableCell' + row.id + index} align={column.align} style={{ fontSize: 15 }}>
-                                                            <span>{value}</span>
+                                                            {value}
                                                         </TableCell>
                                                     );
                                                 })}
