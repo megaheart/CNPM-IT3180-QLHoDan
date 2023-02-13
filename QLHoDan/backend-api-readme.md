@@ -2179,7 +2179,7 @@
   | `RewardCeremonyId` | number  | ID của dịp thưởng muốn nộp đến | 2 |
   | `PresentsType` | number  | Loại phần quà muốn nhận | 1 |
 
-  - ℹ️ **Lưu ý:** Danh sách các số `PresentsType` hợp lệ chính là danh sách giá trị của thuộc tính `achievementType` trong các phần tử trong [Bảng chuyển đổi loại thành tích thành giá trị phần thưởng cho đợt thưởng](#thiết-lập-bảng-chuyển-đổi-loại-thành-tích-thành-giá-trị-phần-thưởng-cho-đợt-thưởng). Giải thích cho dễ hiểu thì ta xem **loại thành tích** trong đợt thưởng thành tích (`achievementType`) là **loại quà** (`PresentsType`) trong đợt thưởng dịp đặc biệt. Tức là nói, được loại thành tích là A thì nhận quà là B trong đợt thưởng thành tích, tương ứng với đợt thưởng dịp đặc biệt thì nếu chọn loại quà là A thì sẽ nhận quà là B (quà khác với loại quà).
+  - ℹ️ **Lưu ý:** Danh sách các số `PresentsType` hợp lệ chính là danh sách giá trị của thuộc tính `achievementType` của các phần tử trong [Bảng chuyển đổi loại thành tích thành giá trị phần thưởng cho đợt thưởng](#thiết-lập-bảng-chuyển-đổi-loại-thành-tích-thành-giá-trị-phần-thưởng-cho-đợt-thưởng). Giải thích cho dễ hiểu thì ta xem **loại thành tích** trong đợt thưởng thành tích (`achievementType`) là **loại quà** (`PresentsType`) trong đợt thưởng dịp đặc biệt. Tức là nói, được loại thành tích là A thì nhận quà là B trong đợt thưởng thành tích, tương ứng với đợt thưởng dịp đặc biệt thì nếu chọn loại quà là A thì sẽ nhận quà là B (quà khác với loại quà).
 
 - **Response Body khi thành công (Json)**
 
@@ -2242,6 +2242,189 @@
   - [404 NotFound]
 
     *Đợt thưởng không tồn tại trong CSDL để xoá*
+## Quản lý lịch sử phát thưởng
+### Lấy danh sách phát thưởng dự kiến của một đợt trao thưởng
+<span style="color:#34a853; width: 50px; display: inline-block">**GET**</span> ```https://localhost:7265/api/RewardRecords/preview?rewardCeremonyId={number}```
+
+*Lấy danh sách phát thưởng dự kiến của một đợt trao thưởng, chỉ thư kí, chủ tịch phường mới dùng được.*
+
+*Danh sách phát thưởng dự kiến phải dựa trên form minh chứng đã được phê duyệt (với đợt trao thưởng thành tích) hoặc form chọn phần quà (với đợt trao thưởng dịp đặc biệt).*
+
+- **Query Params**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |rewardCeremonyId| mã của đợt trao thưởng |
+
+- **Request Header**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |Authorization|"Bearer " + &lt;Một chuỗi kí tự là token nhận được sau khi đăng nhập&gt;|
+
+- **Response Body khi thành công**
+    | Property Name | Data Type | Description |
+    | --- | --- | --- |
+    | resident | [ResidentBriefInfo](#residentbriefinfo) | Thông tin tóm tắt của các cháu (có bao gồm Id, ngày sinh, họ và tên) |
+    | rewardCeremony | [RewardCeremonyBriefInfo](#rewardceremonybriefinfo) | Dịp thưởng muốn nộp minh chứng đến |
+    | achievementName | string | Tiêu đề thành tích |
+    | achievementType | number, nullable | Phân loại thành tích (dạng số nguyên dương) |
+    | rewardName | string | Tên phần thưởng - Miêu tả Phần thưởng |
+    | rewardValue | string | Giá trị phần thưởng (số tiền) |
+
+    Ex:
+    ```json
+    {
+        "resident": {
+            "identityCode": "000001",
+            "fullName": "Nguyễn Văn Quảng",
+            "dateOfBirth": "1970-10-01T00:00:00",
+            "isMale": true,
+            "householdId": "001",
+            "relationShip": "Chủ hộ",
+            "scope": 1
+        },
+        "rewardCeremony": {
+            "id": 1,
+            "title": "First Reward Ceremony",
+            "time": "2022-12-25T12:00:00Z",
+            "type": "TTHT",
+            "totalValue": 10000,
+            "isAccepted": true,
+            "isDone": true,
+            "closingFormDate": "2022-12-30T12:00:00Z",
+            "rewardDate": "2022-12-31T12:00:00Z"
+        },
+        "achievementName": "Hsg quốc gia hoá",
+        "achievementType": null,
+        "rewardName": "Bút bi thiên long",
+        "rewardValue": 5000
+    }
+    ```
+- **Lỗi**
+    - [401 Unauthorized]
+
+        *JWT Token không hợp lệ*
+
+    - [403 Forbidden]
+
+        *Tài khoản không đủ quyền để truy cập. Tài khoản không phải thư kí, chủ tịch phường.*
+
+    - [400 BadRequest] RewardCeremonyNotFound
+
+        *Đợt thưởng không tồn tại trong CSDL.*
+
+    - [400 BadRequest] RewardCeremonyNotHaveAchievementRewardPairs
+
+        *Đợt thưởng không có Bảng chuyển đổi loại thành tích thành giá trị phần thưởng.*
+
+### Lưu danh sách phát thưởng dự kiến của một đợt trao thưởng vào lịch sử trao thưởng
+<span style="color:#fbbc05; width: 50px; display: inline-block">**POST**</span> ```https://localhost:7265/api/RewardRecords/savePreview?rewardCeremonyId={number}```
+
+*Lưu danh sách phát thưởng dự kiến của một đợt trao thưởng vào lịch sử trao thưởng, chỉ thư kí, chủ tịch phường mới dùng được.*
+
+*Quá trình lưu vào này đại diện cho quá trình phê duyệt chấp nhận danh sách trao thưởng, danh sách này sẽ được sử dụng như danh sách chính thức cho việc trao thưởng thực tế. Người dân lúc này có thể kiểm tra được phần quà mà con em mình nhận được.*
+
+*Danh sách phát thưởng dự kiến phải dựa trên form minh chứng đã được phê duyệt (với đợt trao thưởng thành tích) hoặc form chọn phần quà (với đợt trao thưởng dịp đặc biệt).*
+
+- **Query Params**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |rewardCeremonyId| mã của đợt trao thưởng |
+
+- **Request Header**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |Authorization|"Bearer " + &lt;Một chuỗi kí tự là token nhận được sau khi đăng nhập&gt;|
+
+- **Response Body khi thành công**
+
+    Không có
+
+- **Lỗi**
+    - [401 Unauthorized]
+
+        *JWT Token không hợp lệ*
+
+    - [403 Forbidden]
+
+        *Tài khoản không đủ quyền để truy cập. Tài khoản không phải thư kí, chủ tịch phường.*
+
+    - [400 BadRequest] RewardCeremonyNotFound
+
+        *Đợt thưởng không tồn tại trong CSDL.*
+
+    - [400 BadRequest] RewardCeremonyNotHaveAchievementRewardPairs
+
+        *Đợt thưởng không có Bảng chuyển đổi loại thành tích thành giá trị phần thưởng.*
+
+### Lấy lịch sử trao thưởng
+<span style="color:#34a853; width: 50px; display: inline-block">**GET**</span> ```https://localhost:7265/api/RewardRecords?[rewardCeremonyId={number}&residentId={string}]```
+
+*Lấy lịch sử trao thưởng.*
+
+- **Query Params**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |rewardCeremonyId| *[tuỳ chọn]* mã của đợt trao thưởng , nếu bỏ qua thì trả về toàn bộ|
+    |residentId| *[tuỳ chọn]* số định danh điện tử của cháu được phát quà, nếu bỏ qua thì trả về toàn bộ|
+
+- **Request Header**
+    |Tham số|Miêu tả|
+    |-------|-------|
+    |Authorization|"Bearer " + &lt;Một chuỗi kí tự là token nhận được sau khi đăng nhập&gt;|
+
+- **Response Body khi thành công**
+    | Property Name | Data Type | Description |
+    | --- | --- | --- |
+    | id | number | ID của bản ghi lịch sử |
+    | resident | [ResidentBriefInfo](#residentbriefinfo) | Thông tin tóm tắt của các cháu (có bao gồm Id, ngày sinh, họ và tên) |
+    | rewardCeremony | [RewardCeremonyBriefInfo](#rewardceremonybriefinfo) | Dịp thưởng muốn nộp minh chứng đến |
+    | achievementName | string | Tiêu đề thành tích |
+    | achievementType | number, nullable | Phân loại thành tích (dạng số nguyên dương) |
+    | rewardName | string | Tên phần thưởng - Miêu tả Phần thưởng |
+    | rewardValue | string | Giá trị phần thưởng (số tiền) |
+
+    Ex:
+    ```json
+    {
+        "id": 3,
+        "resident": {
+            "identityCode": "000001",
+            "fullName": "Nguyễn Văn Quảng",
+            "dateOfBirth": "1970-10-01T00:00:00",
+            "isMale": true,
+            "householdId": "001",
+            "relationShip": "Chủ hộ",
+            "scope": 1
+        },
+        "rewardCeremony": {
+            "id": 1,
+            "title": "First Reward Ceremony",
+            "time": "2022-12-25T12:00:00Z",
+            "type": "TTHT",
+            "totalValue": 10000,
+            "isAccepted": true,
+            "isDone": true,
+            "closingFormDate": "2022-12-30T12:00:00Z",
+            "rewardDate": "2022-12-31T12:00:00Z"
+        },
+        "achievementName": "Hsg quốc gia hoá",
+        "achievementType": null,
+        "rewardName": "Bút bi thiên long",
+        "rewardValue": 5000
+    }
+    ```
+- **Lỗi**
+    - [401 Unauthorized]
+
+        *JWT Token không hợp lệ*
+
+    - [403 Forbidden]
+
+        *Tài khoản không đủ quyền để truy cập. Tài khoản không phải thư kí, chủ tịch phường.*
+
+    - [400 BadRequest] RewardCeremonyNotFound
+
+        *Đợt thưởng không tồn tại trong CSDL.*
 
 # Các kiểu dữ liệu được sử dụng nhiều lần
 

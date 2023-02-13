@@ -60,6 +60,7 @@ namespace QLHoDan.Controllers.Reward
             {
                 return Unauthorized(new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") );
             }
+            //Hộ dân
             if (user.Role > 3)
             {
                 return Ok(_context.AchievementEvidenceForm.Include(f => f.Resident).Include(f => f.RewardCeremony)
@@ -76,6 +77,7 @@ namespace QLHoDan.Controllers.Reward
                                     Account = f.Account,
                                 }));
             }
+            //Tổ trưởng
             else if (user.Role == 3)
             {
                 return Ok(_context.AchievementEvidenceForm.Include(f => f.Resident).Include(f => f.RewardCeremony)
@@ -92,6 +94,7 @@ namespace QLHoDan.Controllers.Reward
                                     Account = f.Account,
                                 }));
             }
+            //CHủ tịch xã + kế toán
             else return Ok(_context.AchievementEvidenceForm.Include(f => f.Resident).Include(f => f.RewardCeremony)
                                 .Where(f => !rewardCeremonyId.HasValue || rewardCeremonyId.Value == f.Id)
                                 .Where(f => isChecked == null || (f.IsAccepted == true || !string.IsNullOrEmpty(f.NotAcceptedReason)) == isChecked)

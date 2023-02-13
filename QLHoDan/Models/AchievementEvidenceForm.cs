@@ -8,6 +8,8 @@ namespace QLHoDan.Models
         public Resident Resident { set; get; } // ID của các cháu (vì các cháu chưa có CMND)
         public RewardCeremony RewardCeremony { set; get; } // Dịp thưởng muốn nộp minh chứng đến
         public int RewardCeremonyId { set; get; } // ID của dịp thưởng muốn nộp minh chứng đến
+        // ID của các cháu (vì các cháu chưa có CMND)
+        public string ResidentIdentityCode { set; get; }
         public string AchievementName { set; get; } // Tiêu đề thành tích
         public int? AchievementType { set; get; } // Phân loại thành tích
         public List<string> ImageLinks { set; get; } = new List<string>();// đường dẫn đến Ảnh minh chứng

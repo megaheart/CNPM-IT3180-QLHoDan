@@ -171,6 +171,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         //modelBuilder.Entity<AchievementEvidenceForm>().Property<string>("IdCode").IsRequired(false);
         modelBuilder.Entity<AchievementEvidenceForm>()
             .HasOne<Resident>(nk => nk.Resident).WithMany()
+            .HasForeignKey(f => f.ResidentIdentityCode)
             .OnDelete(DeleteBehavior.NoAction);
         //.HasForeignKey<AchievementEvidenceForm>("IdCode");
 
@@ -181,6 +182,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
         modelBuilder.Entity<ChoosingPresentsForm>()
             .HasOne<Resident>(nk => nk.Resident).WithMany()
+            .HasForeignKey(f => f.ResidentIdentityCode)
             .OnDelete(DeleteBehavior.NoAction);
 
         modelBuilder.Entity<ChoosingPresentsForm>()

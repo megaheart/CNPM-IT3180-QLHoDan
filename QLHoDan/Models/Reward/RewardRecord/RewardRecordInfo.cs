@@ -1,13 +1,15 @@
-﻿namespace QLHoDan.Models
+﻿using QLHoDan.Models.HouseholdsAndResidents.ResidentApi;
+using QLHoDan.Models.Reward.RewardCeremonies;
+
+namespace QLHoDan.Models.Reward.RewardRecord
 {
-    public class RewardRecord
+    public class RewardRecordInfo
     {
-        // ID
-        public int Id{set;get;}
+        public int Id { get; set; }
         // ID đợt phát thưởng
-        public RewardCeremony RewardCeremony{set;get;}
+        public RewardCeremonyBriefInfo RewardCeremony { set; get; }
         // Cháu nhận thưởng
-        public Resident Resident { set;get;}
+        public ResidentBriefInfo Resident { set; get; }
         // Loại thành tích
         public int AchievementType { set; get; }
         // Tên thành tích - Miêu tả loại thành tích
@@ -16,10 +18,5 @@
         public string RewardName { set; get; }
         // Giá trị phần thưởng (số tiền)
         public double RewardValue { set; get; }
-        // ID của dịp thưởng muốn nộp minh chứng đến
-        public int RewardCeremonyId { set; get; }
-        // ID của các cháu (vì các cháu chưa có CMND)
-        public string ResidentIdentityCode { set; get; } 
-
     }
 }
