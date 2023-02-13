@@ -2,6 +2,7 @@
 import { NKTable, HKTable, ResidentHistory, ManagerAccountResident, ManagerSpecialAccount } from '~/page/Table';
 import { HKForm, NKForm, RequireRemoving, DeathConfirm, SeparateHousehold, ChangePopulation, ChangeHousehold, FixHouseholdNumber, ConfirmAchievement } from '~/page/Form';
 import ForgetPassword from '~/page/Authentication/ForgetPassword';
+import DashboardForUser from '~/page/DashboardForUser';
 import { Login, Register, Authentication } from '~/page/Authentication';
 import Profile from '~/page/Account';
 import Notification from '~/page/Notification';
@@ -23,7 +24,8 @@ const ROLES = {
 }
 
 const routes = [
-    { path: '/dashboard', element: DashboardComponent, layout: DefaultLayout, id: 'db', role: [ROLES.ADMIN, ROLES.MANAGER, ROLES.ACCOUNTANT, ROLES.USER] },
+    { path: '/dashboard', element: DashboardComponent, layout: DefaultLayout, id: 'db', role: [ROLES.ADMIN, ROLES.MANAGER, ROLES.ACCOUNTANT] },
+    { path: '/dashboard_residentOrGuest', element: DashboardForUser, layout: DefaultLayout, id: 'dbu', role: [ROLES.USER] },
     {
         path: '/addnew',
         subRoutes: [

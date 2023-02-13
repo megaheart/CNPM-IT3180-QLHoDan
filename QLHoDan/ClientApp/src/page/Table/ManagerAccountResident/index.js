@@ -1,38 +1,36 @@
 //hooks
 import { useState } from 'react';
-import useAuth from '~/hooks/useAuth';
-
 //pages
 import householdAccountManager from '~/services/api/householdApi';
 import AddHouseholAcccount from '../DiaLog/AddHouseholdAccount';
 import ChangeHouseholdAccount from '../DiaLog/ChangeHouseholdAccount';
-import ConfirmBox from '../DiaLog/ConfirmBox';
+//import ConfirmBox from '../DiaLog/ConfirmBox';
 //icon
 import TableSkeleton from '~/page/Skeleton';
 import SearchIcon from '@mui/icons-material/Search';
 //css
-import styles from './ManagerAccountResident.module.scss';
-import classNames from 'classnames';
+//import styles from './ManagerAccountResident.module.scss';
+//import classNames from 'classnames';
 
 import {
     Snackbar, Alert, Button, TableRow, TablePagination, TableHead,
     TableContainer, TableCell, TableBody, Table, Paper, Input, InputAdornment
     , Backdrop, CircularProgress
 } from '@mui/material';
-
+import useAuth from '~/hooks/useAuth';
 import {
     useQuery,
     useMutation,
     useQueryClient
 } from '@tanstack/react-query';
 
-const cx = classNames.bind(styles);
+// const cx = classNames.bind(styles);
 
 const columns = [
-    { id: 'userName', label: 'Tên đăng nhập', width: 150 },
-    { id: 'fullName', label: 'Họ và tên', width: 150 },
-    { id: 'scope', label: 'Tổ phụ trách', width: 100 },
-    { id: 'note', label: 'Lưu ý', width: 100 },
+    { id: 'userName', label: 'Tên đăng nhập', width: 170 },
+    { id: 'fullName', label: 'Họ và tên', width: 250 },
+    { id: 'scope', label: 'Tổ phụ trách', width: 200 },
+    { id: 'note', label: 'Lưu ý', width: 200 },
 ];
 
 
@@ -43,8 +41,6 @@ export default function ManagerAccountResident() {
     //handle save button
     const [message, setMessage] = useState('');
     const [success, setSuccess] = useState(false);
-    // Comfirm box dialog
-    const [isClose, setIsClose] = useState(false);
 
     // Add new household account dialog
     const [open, setOpen] = useState(false);
@@ -121,26 +117,14 @@ export default function ManagerAccountResident() {
         setPage(0);
     };
 
-    const startConfirmBox = () => {
-        setIsClose(true);
-    };
-
-    const handleCloseConfirmBox = () => {
-        setIsClose(false);
-    }
-
-    const handleAgree = () => {
-        setIsClose(false);
-    }
-
     const handleChangeAccount = (row) => {
         setIsChange(true);
         setAccountInfo(row);
     };
 
-    const handleDeleteAccount = () => {
+    // const handleDeleteAccount = () => {
 
-    };
+    // };
 
     return (
         <Paper sx={{ width: '100%' }}>
@@ -156,23 +140,7 @@ export default function ManagerAccountResident() {
                     {message + ' '} tài khoản thành công !
                 </Alert>
             </Snackbar>
-            <ConfirmBox sx={{ marginLeft: 10 }} open={isClose} onClose={handleCloseConfirmBox} onAgree={handleAgree} />
-            <div className={cx('tool-bar')}>
-                <div className={cx('item-tool')}>
-                    <Button variant='contained' onClick={() => setOpen(true)} >Tạo tài khoản mới</Button>
-                </div>
-                <div className={cx('item-tool')}>
-                    <Input
-                        id="input-with-icon-adornment"
-                        startAdornment={
-                            <InputAdornment position="start">
-                                <SearchIcon />
-                            </InputAdornment>
-                        }
-                    />
-                </div>
-            </div>
-            {isLoading ? <TableSkeleton /> : <TableContainer sx={{ maxHeight: 500 }}>
+            {isLoading ? <TableSkeleton /> : <TableContainer sx={{ height: 400 }}>
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead>
                         <TableRow>
@@ -180,12 +148,14 @@ export default function ManagerAccountResident() {
                                 <TableCell
                                     key={column.id}
                                     align={column.align}
-                                    style={{ minWidth: column.minWidth, fontSize: 15 }}
+                                    style={{ width: column.width, fontSize: 15 }}
                                 >
                                     {column.label}
                                 </TableCell>
                             ))}
-                            <TableCell></TableCell>
+                            <TableCell align='center'>
+                                <Button variant='contained' color='success' onClick={() => setOpen(true)} >Tạo tài khoản mới</Button>
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -204,9 +174,9 @@ export default function ManagerAccountResident() {
                                                 </TableCell>
                                             );
                                         })}
-                                        <TableCell align="right">
+                                        <TableCell align="center">
                                             <Button variant='contained' onClick={() => handleChangeAccount(row)} >Sửa</Button>
-                                            <Button variant='contained' color='error' onClick={startConfirmBox} >Xóa</Button>
+                                            {/* <Button variant='contained' color='error' onClick={startConfirmBox} >Xóa</Button> */}
                                         </TableCell>
                                     </TableRow>
                                 );

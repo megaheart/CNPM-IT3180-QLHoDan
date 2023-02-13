@@ -27,7 +27,7 @@ export default function ResidentChangeDialog({ open, onClose, selectedValue }) {
             TransitionComponent={Transition}
         >
             <div className={cx('header-paper-change')}>
-                <Button variant="contained" color="error" sx={{ fontSize: '1.5rem', margin: '2 0', textAlign: 'right', width: 50 }} onClick={handleClose}>Đóng</Button>
+                <Button variant="contained" color="error" sx={{ fontSize: 15, margin: '2 0', textAlign: 'right' }} onClick={handleClose}>Đóng</Button>
             </div>
             <div className={cx('body-paper-change')}>
                 <div>

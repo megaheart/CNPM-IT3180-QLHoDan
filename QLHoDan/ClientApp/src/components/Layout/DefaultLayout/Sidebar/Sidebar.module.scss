@@ -93,10 +93,10 @@
     align-items: center;
     justify-content: flex-start;
     padding-left: 20px;
-    max-height: 300px;
-    overflow-y: scroll;
+    max-height: 375px;
+    overflow-y: hidden;
     &::-webkit-scrollbar {
-        width: 1px;
+        width: 10px;
     }
 }
 .nav-btn-collapse {

@@ -1,7 +1,7 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 
 
-function ConfirmBox({ open, onClose, onAgree }) {
+function ConfirmBox({ open, onClose, onAgree, title }) {
     return (
         <Dialog
             open={open}
@@ -10,7 +10,7 @@ function ConfirmBox({ open, onClose, onAgree }) {
             aria-describedby="alert-dialog-description"
         >
             <DialogTitle sx={{ fontSize: 20 }} id="alert-dialog-title">
-                {"Xóa hộ khẩu ?"}
+                {title}
             </DialogTitle>
             <DialogContent>
                 <DialogContentText sx={{ fontSize: 15 }} id="alert-dialog-description">

@@ -52,7 +52,6 @@ export default function ForgetPassword() {
         try {
             const checkUser = validation.checkUsername(username);
             const checkPass = validation.checkPassword(password);
-            console.log(checkUser, checkPass)
             if (!checkUser.isValid) {
                 setUsernameError(checkUser.message);
                 userRef.current.focus();
@@ -67,7 +66,6 @@ export default function ForgetPassword() {
             else {
                 setPasswordError('');
                 const user = await accountApi.checkLogin({ username });
-                console.log(user)
                 if (user.length === 0) {
                     setStart(true);
                     setErrMsg('Tài khoản không tồn tại');

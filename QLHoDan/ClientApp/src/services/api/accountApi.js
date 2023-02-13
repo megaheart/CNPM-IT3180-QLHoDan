@@ -1,42 +1,26 @@
 import axios from 'axios';
-// return axios.post(API_ACCOUNT_CHANGEPASSWORD_URL, { oldPassword, newPassword },
-//     {
-//         headers: {
-//             'Content-Type': 'application/json',
-//             'Authorization': `${token}`
-//         }
-//     });
-import { API_ACCOUNT_CHANGEPASSWORD_URL } from '~/AppConstant';
+import config from './configHeader';
+import {
+    API_ACCOUNT_CHANGEPASSWORD_URL,
+    API_ACCOUNT_PROFILE_URL
+} from '~/AppConstant';
 class AccountApi {
     changePassword = async (token, oldPassword, newPassword) => {
-        // return new Promise((resolve, reject) => {
-        //     fetch(API_ACCOUNT_CHANGEPASSWORD_URL, {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //             'Authorization': `Bearer ${token}`
-        //         },
-        //         body: JSON.stringify({
-        //             oldPassword,
-        //             newPassword
-        //         })
-        //     }).then((response) => {
-        //         if (response.status === 200) {
-        //             resolve(response);
-        //         }
-        //         else {
-        //             console.log(response);
-        //         }
-        //     })
-        //         .catch((error) => { reject(error); });
-        // });
-        return axios.post(API_ACCOUNT_CHANGEPASSWORD_URL, { oldPassword, newPassword },
+        return axios.post(
+            API_ACCOUNT_CHANGEPASSWORD_URL,
             {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+                oldPassword,
+                newPassword
+            },
+            config(token)
+        );
+    };
+    async getProfile(token) {
+        const res = await axios.get(
+            API_ACCOUNT_PROFILE_URL,
+            config(token)
+        )
+        return res.data
     }
 }
 

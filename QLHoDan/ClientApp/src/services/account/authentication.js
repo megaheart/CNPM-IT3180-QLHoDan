@@ -36,7 +36,6 @@ class Authentication {
 
                 }
                 else {
-                    console.log(response);
                     response.json().then((data) => {
                         reject(data);
                     })
@@ -65,7 +64,6 @@ class Authentication {
                     });
                 }
                 else {
-                    console.log(response);
                     response.json().then((data) => {
                         reject(data);
                     })
