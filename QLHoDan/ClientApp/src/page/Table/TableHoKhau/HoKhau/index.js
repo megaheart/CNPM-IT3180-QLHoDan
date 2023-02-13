@@ -10,6 +10,7 @@ import {
 import FullScreenDialog from '../../DiaLog/fullScreen';
 import AddHouseholDialog from '../../DiaLog/AddHouseHold';
 import TableSkeleton from '../../../Skeleton/index';
+import ErrorData from '~/page/ErrorData';
 
 //call api
 import householdManager from '~/services/api/householdManager';
@@ -179,7 +180,7 @@ export default function TableHoKhau({ action, typeTable }) {
                 />
             }
 
-            {(isLoading || allResidents.isLoading || !data) ? <TableSkeleton /> : <TableContainer sx={{ height: 395, backgroundColor: '#fff' }}>
+            {error ? <ErrorData /> : (isLoading || allResidents.isLoading || !data) ? <TableSkeleton /> : <TableContainer sx={{ height: 395, backgroundColor: '#fff' }}>
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead >
                         <TableRow>

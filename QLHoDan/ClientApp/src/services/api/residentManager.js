@@ -11,7 +11,9 @@ class ResidentManager {
             config(token)
         );
         if (response && response.data) {
-            return response.data;
+            return response.data.filter(
+                (resident) => resident.householdId !== null
+            );
         }
     }
 
@@ -21,6 +23,9 @@ class ResidentManager {
         );
         if (response && response.data) {
             return response.data;
+        }
+        else {
+            return response;
         }
     }
 
@@ -39,6 +44,19 @@ class ResidentManager {
         );
         if (response && response.data) {
             return response.data;
+        }
+    }
+    async getResidentTemporory(token) {
+        const response = await axios.get(
+            `${API_GET_ALL_RESIDENT}`, config(token)
+        );
+        if (response && response.data) {
+            return response.data.filter(
+                (resident) => resident.householdId === null
+            )
+        }
+        else {
+            console.log('ERROR WHILE GETTING RESIDENT TEMPORORY')
         }
     }
 

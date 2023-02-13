@@ -11,10 +11,10 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Button from '@mui/material/Button';
 import TableSkeleton from '~/page/Skeleton';
-import rewardApi from '../../../services/api/awardApi';
 import ConfirmBox from '~/components/component/Dialog/ConfirmBox';
 import ErrorData from '~/page/ErrorData';
-import AwardDetail from '../AwardDetail';
+
+import formEnvidenceAward from '~/services/api/formEnvidenceAward';
 
 import {
     useQuery,
@@ -24,24 +24,39 @@ import {
     from '@tanstack/react-query';
 
 const columns = [
-    { id: 'id', label: 'Mã ', width: 150 },
-    { id: 'title', label: 'Tên đợt ', width: 170 },
-    { id: 'time', label: 'Ngày đề xuất', width: 170 },
-    { id: 'type', label: 'Loại thưởng', width: 170 },
-    { id: 'totalValue', label: 'Tổng giá trị ', width: 170 },
-    { id: 'isAccepted', label: 'Phê duyệt', width: 190 },
-    { id: 'isDone', label: 'Trạng thái', width: 170 },
-    { id: 'closingFormDate', label: 'Ngày kết thúc minh chứng', width: 170 },
-    {
-        id: 'rewardDate', label: 'Ngày phát thưởng', width: 170,
-    }
+    { id: 'id', label: 'ID ', width: 150 },
+    { id: 'formType', label: 'Loại', width: 170 },
+    { id: 'title', label: 'Tiêu đề', width: 170 },
+    { id: 'createdTime', label: 'Ngày gửi', width: 170 },
+    { id: 'isAccepted', label: 'Đã duyệt', width: 170 },
+    { id: 'notAcceptedReason', label: 'Lý do từ chối', width: 190 },
+    { id: 'account', label: 'Tài khoản gửi', width: 170 }
 ];
+const data = [
+    {
+        id: 1,
+        formType: 'Đề cử',
+        title: 'Đề cử cho nhân viên A',
+        createdTime: '2021-10-10',
+        isAccepted: true,
+        notAcceptedReason: 'Không có lý do',
+        account: 'admin'
+    },
+    {
+        id: 2,
+        formType: 'Đề cử',
+        title: 'Đề cử cho nhân viên A',
+        createdTime: '2021-10-10',
+        isAccepted: true,
+        notAcceptedReason: 'Không có lý do',
+        account: 'admin'
+    },
+]
 
-
-export default function ListAwardEvent() {
+export default function ListFormAward({ type }) {
     const { auth } = useAuth();
 
-    const { data, isLoading, error } = useQuery(['rewardEvents', auth.token], () => rewardApi.getAllRewardEvent(auth.token));
+    //const { data, isLoading, error } = useQuery(['formsEnvidenceAward', auth.username], () => formEnvidenceAward.getAllFormEnvidenceAward(auth.token));
 
     //backdrop
     const [openBackdrop, setOpenBackdrop] = useState(false);
@@ -52,27 +67,29 @@ export default function ListAwardEvent() {
 
     const [open, setOpen] = useState(false);
 
-    const queryClient = useQueryClient();
+    //const queryClient = useQueryClient();
 
-    const mutationDelete = useMutation((id) => rewardApi.deleteRewardEvent(auth.token, id), {
-        onMutate: () => {
-            setOpenBackdrop(true);
-        },
-        onError: () => {
-            alert('Không thể xóa đợt thưởng này !')
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries(['rewardEvents', auth.token]);
-            setSuccess(true);
-        },
-        onSettled: () => {
-            setOpenBackdrop(false);
-        }
-    });
+    // const mutationDelete = useMutation((id) => rewardApi.deleteRewardEvent(auth.token, id), {
+    //     onMutate: () => {
+    //         setOpenBackdrop(true);
+    //     },
+    //     onError: () => {
+    //         alert('Không thể xóa đợt thưởng này !')
+    //     },
+    //     onSuccess: () => {
+    //         queryClient.invalidateQueries(['formsEnvidenceAward', auth.username]);
+    //         setSuccess(true);
+    //     },
+    //     onSettled: () => {
+    //         setOpenBackdrop(false);
+    //     }
+    // });
 
     const deleteById = (id) => {
-        mutationDelete.mutate(id);
+
     };
+
+    const [isLoading, setIsLoading] = useState(true);
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -138,7 +155,6 @@ export default function ListAwardEvent() {
                     >
                         <CircularProgress color="inherit" />
                     </Backdrop>
-                    {error ? <ErrorData /> : idRewardEvent && <AwardDetail key={idRewardEvent} idAward={idRewardEvent} open={openDetail} onClose={setOpenDetail} />}
                     <TableContainer sx={{ height: 500 }}>
                         <Table stickyHeader aria-label="sticky table">
                             <TableHead>
@@ -166,9 +182,6 @@ export default function ListAwardEvent() {
                                                     if (column.id === 'isAccepted') {
                                                         value = value ? 'Đã phê duyệt' : 'Chưa phê duyệt';
                                                     }
-                                                    if (column.id === 'isDone') {
-                                                        value = value ? 'Đã phát thưởng' : 'Chưa phát thưởng';
-                                                    }
                                                     return (
                                                         <TableCell key={column.id + 'TableCell' + row.id + index} align={column.align} style={{ fontSize: 15 }}>
                                                             <span>{value}</span>
@@ -178,11 +191,6 @@ export default function ListAwardEvent() {
 
                                                 <TableCell align="center" sx={{ height: 120, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: 1 }} >
                                                     <Button onClick={() => { viewDetail(row.id) }} variant='contained' sx={{ height: 30, width: 100 }} >Chi tiết</Button>
-                                                    <Button variant='contained'
-                                                        color='error' sx={{ height: 30, width: 100 }}
-                                                        onClick={() => { handleClickOpen(row.id) }}
-                                                        disabled={auth.role !== 'CommitteeChairman'}
-                                                    >Xóa</Button>
                                                 </TableCell>
                                             </TableRow>
                                         );

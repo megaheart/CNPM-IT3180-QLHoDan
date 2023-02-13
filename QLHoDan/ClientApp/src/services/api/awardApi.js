@@ -52,6 +52,15 @@ class RewardApi {
         return response.data;
     }
 
+    async acceptRewardEvent(token, id, data) {
+        const response = await axios.post(
+            `${API_REWARDS}/accept/${id}`,
+            data,
+            config(token)
+        );
+        return response.data;
+    }
+
     async deleteRewardEvent(token, id) {
         const response = await axios.delete(
             `${API_REWARDS}/${id}`,

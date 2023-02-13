@@ -45,7 +45,8 @@ export default function UpdateResidentDialog({ open, onClose, dataId, setSuccess
             setLoading(true);
         },
         onError: () => {
-            alert('Có lỗi xảy ra, vui lòng thử lại !')
+
+            setLoading(false);
         },
         onSuccess: async () => {
             await queryClient.invalidateQueries(['residentDetail', dataId]);

@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import TableSkeleton from '../../../Skeleton/index'
 import AddResidentDialog from '../../DiaLog/AddResident';
+import ErrorData from '~/page/ErrorData';
 
 //api
 import residentManager from '~/services/api/residentManager';
@@ -69,7 +70,7 @@ export default function TableNhanKhau({ action, typeTable }) {
     const mutationAdd = useMutation({
         mutationFn: async (resident) => residentManager.createResident(auth.token, resident),
         onSuccess: async () => {
-            queryClient.invalidateQueries(['residents']);
+            queryClient.invalidateQueries(['residents', typeTable]);
         }
     });
 
@@ -77,7 +78,7 @@ export default function TableNhanKhau({ action, typeTable }) {
         {
             mutationFn: async (resident) => residentManager.updateResident(auth.token, resident),
             onSuccess: async () => {
-                queryClient.invalidateQueries(['residents']);
+                queryClient.invalidateQueries(['residents', typeTable]);
             }
         }
     )
@@ -86,7 +87,7 @@ export default function TableNhanKhau({ action, typeTable }) {
         {
             mutationFn: async (id) => residentManager.deleteResident(auth.token, id),
             onSuccess: async () => {
-                queryClient.invalidateQueries(['residents']);
+                queryClient.invalidateQueries(['residents', typeTable]);
             }
         }
     )
@@ -94,16 +95,28 @@ export default function TableNhanKhau({ action, typeTable }) {
 
     const viewResidentDetail = async (identification) => {
         setOpenBackdrop(true);
-        const data = await residentManager.getResident(auth.token, identification);
-        setType(
-            {
-                type: 'VIEW_AND_UPDATE',
-                mutation: mutationUpdate,
-                data: data
-            }
-        );
-        setOpenBackdrop(false);
-        setIsCreateMode(true);
+        const data = await residentManager.getResident(auth.token, identification)
+            .catch(
+                (err) => {
+                    alert('Bạn không thể xem thông tin nhân khẩu này. (Có thể do không thuộc tổ quản lý)');
+                    return;
+                }
+            );
+        if (data) {
+            setType(
+                {
+                    type: 'VIEW_AND_UPDATE',
+                    mutation: mutationUpdate,
+                    data: data
+                }
+            );
+            setOpenBackdrop(false);
+            setIsCreateMode(true);
+        }
+        else {
+            setOpenBackdrop(false);
+        }
+
     }
 
     const deleteResindent = async (id) => {
@@ -182,7 +195,7 @@ export default function TableNhanKhau({ action, typeTable }) {
                 aria-describedby="alert-dialog-description"
             >
                 <DialogTitle sx={{ fontSize: 20 }} id="alert-dialog-title">
-                    {"Xóa hộ khẩu ?"}
+                    {"Xóa nhân khẩu ?"}
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText sx={{ fontSize: 15 }} id="alert-dialog-description">
@@ -197,7 +210,7 @@ export default function TableNhanKhau({ action, typeTable }) {
                 </DialogActions>
             </Dialog>
 
-            {isLoading ? <TableSkeleton /> : <TableContainer sx={{ height: 470, backgroundColor: '#fff' }}>
+            {error ? <ErrorData /> : isLoading ? <TableSkeleton /> : <TableContainer sx={{ height: 470, backgroundColor: '#fff' }}>
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead >
                         <TableRow>
@@ -205,7 +218,7 @@ export default function TableNhanKhau({ action, typeTable }) {
                                 <TableCell
                                     key={column.id}
                                     align={column.align}
-                                    style={{ width: column.width, fontSize: 15 }}
+                                    style={{ width: column.width }}
                                 >
                                     <span>
                                         {column.label}
@@ -213,7 +226,7 @@ export default function TableNhanKhau({ action, typeTable }) {
                                 </TableCell>
                             ))}
                             <TableCell align='right'>
-                                <Button variant='contained' sx={{ fontSize: 16 }} onClick={handleCreateResident}>Thêm nhân khẩu</Button>
+                                <Button variant='contained' sx={{ fontSize: 13 }} onClick={handleCreateResident}>Thêm nhân khẩu</Button>
                             </TableCell>
                         </TableRow>
                     </TableHead>
@@ -235,7 +248,7 @@ export default function TableNhanKhau({ action, typeTable }) {
                                                 );
                                             }
                                             return (
-                                                <TableCell key={`${value}-${i}-tablecell`} align={column.align} style={{ fontSize: 15 }}>
+                                                <TableCell key={`${value}-${i}-tablecell`} align={column.align}>
                                                     <span>
                                                         {column.format && typeof value === 'number'
                                                             ? column.format(value)

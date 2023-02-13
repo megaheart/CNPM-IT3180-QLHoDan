@@ -29,6 +29,7 @@ import {
 } from '@tanstack/react-query';
 import householdManager from '~/services/api/householdManager';
 import residentManager from '~/services/api/residentManager';
+import ErrorData from '~/page/ErrorData';
 const cx = classNames.bind(styles);
 const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -41,7 +42,7 @@ export default function FullScreenDialog({ open, onClose, idHousehold, resetIfoI
 
     const { auth } = useAuth();
     //loading data
-    const { data, isLoading } = useQuery(['householdDetail', typeTable, idHousehold], () => householdManager.getHousehold(auth.token, idHousehold));
+    const { data, isLoading, error } = useQuery(['householdDetail', typeTable, idHousehold], () => householdManager.getHousehold(auth.token, idHousehold));
 
     //edit mode
     const [editMode, setEditMode] = useState(false);
@@ -150,7 +151,7 @@ export default function FullScreenDialog({ open, onClose, idHousehold, resetIfoI
                 TransitionComponent={Transition}
             >
                 {loading && <LinearProgress />}
-                {isLoading ? <Skeleton /> :
+                {error ? <ErrorData /> : isLoading ? <Skeleton /> :
                     <Fragment>
                         <div className={cx('header-paper-population')}>
                             {editMode ?

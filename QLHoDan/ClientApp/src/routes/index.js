@@ -9,8 +9,10 @@ import Notification from '~/page/Notification';
 import Guest, { Guest_Add_Household, Guest_Add_Resident } from '~/page/GuestUI';
 import DashboardComponent from '~/page/Dashboard';
 import PersistentDrawerRight from '~/features/Award';
-import HistoryAward from '~/features/Award/HistoryAward'
+import HistoryAward from '~/features/Award/HistoryAward';
+import EnvidenceAward from '~/features/Award/EnvidenceAward';
 // import ErrorLogin from '~/page/Error'
+import ErrorLogin from '~/page/ErrorLogin';
 //layout
 import DefaultLayout from '~/components/Layout/DefaultLayout'
 import AuthenticationLayout from '~/components/Layout/AuthenticationLayout'
@@ -26,6 +28,7 @@ const ROLES = {
 const routes = [
     { path: '/dashboard', element: DashboardComponent, layout: DefaultLayout, id: 'db', role: [ROLES.ADMIN, ROLES.MANAGER, ROLES.ACCOUNTANT] },
     { path: '/dashboard_residentOrGuest', element: DashboardForUser, layout: DefaultLayout, id: 'dbu', role: [ROLES.USER] },
+    { path: '/envidence/award', element: EnvidenceAward, layout: DefaultLayout, id: 'e-a', role: [ROLES.ACCOUNTANT, ROLES.ADMIN, ROLES.USER, ROLES.MANAGER] },
     {
         path: '/addnew',
         subRoutes: [
@@ -62,7 +65,7 @@ const routes = [
     },
     { path: '/notification', element: Notification, layout: DefaultLayout, id: 'noti', role: [ROLES.ADMIN, ROLES.ACCOUNTANT, ROLES.MANAGER, ROLES.USER] },
     { path: '/profile', element: Profile, layout: DefaultLayout, id: 'pro', role: [ROLES.ADMIN, ROLES.ACCOUNTANT, ROLES.MANAGER, ROLES.USER] },
-    { path: '/error', element: Error, layout: DefaultLayout, id: 'log', role: [ROLES.ADMIN, ROLES.ACCOUNTANT, ROLES.MANAGER, ROLES.USER] },
+    { path: '/error', element: ErrorLogin, layout: DefaultLayout, id: 'log', role: [ROLES.ADMIN, ROLES.ACCOUNTANT, ROLES.MANAGER, ROLES.USER] },
 
 ];
 

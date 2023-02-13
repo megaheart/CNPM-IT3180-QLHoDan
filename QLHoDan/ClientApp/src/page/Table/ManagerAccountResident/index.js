@@ -5,7 +5,7 @@ import householdAccountManager from '~/services/api/householdApi';
 import AddHouseholAcccount from '../DiaLog/AddHouseholdAccount';
 import ChangeHouseholdAccount from '../DiaLog/ChangeHouseholdAccount';
 //import ConfirmBox from '../DiaLog/ConfirmBox';
-//icon
+import ErrorData from '~/page/ErrorData';
 import TableSkeleton from '~/page/Skeleton';
 import SearchIcon from '@mui/icons-material/Search';
 //css
@@ -140,7 +140,7 @@ export default function ManagerAccountResident() {
                     {message + ' '} tài khoản thành công !
                 </Alert>
             </Snackbar>
-            {isLoading ? <TableSkeleton /> : <TableContainer sx={{ height: 400 }}>
+            {error ? <ErrorData /> : isLoading ? <TableSkeleton /> : <TableContainer sx={{ height: 400 }}>
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead>
                         <TableRow>

@@ -3,7 +3,7 @@ import useAuth from '~/hooks/useAuth';
 
 import TableSkeleton from '~/page/Skeleton';
 import ConfirmBox from '../DiaLog/ConfirmBox';
-
+import ErrorData from '~/page/ErrorData';
 import {
     Snackbar, Alert, Button, TableRow, TablePagination, TableHead,
     TableContainer, TableCell, TableBody, Table, Paper, Input, InputAdornment
@@ -66,6 +66,9 @@ export default function ManagerSpecialAccount() {
                 }, 1000
             )
             queryClient.invalidateQueries({ queryKey: ['specialAccount'] });
+        },
+        onSettled: () => {
+            setOpenBackdrop(false);
         }
     });
 
@@ -84,6 +87,9 @@ export default function ManagerSpecialAccount() {
                 }, 1000
             )
             queryClient.invalidateQueries({ queryKey: ['specialAccount'] });
+        },
+        onSettled: () => {
+            setOpenBackdrop(false);
         }
     });
 
@@ -135,7 +141,7 @@ export default function ManagerSpecialAccount() {
                     {message + ' '} tài khoản thành công !
                 </Alert>
             </Snackbar>
-            {isLoading ? <TableSkeleton /> :
+            {error ? <ErrorData /> : isLoading ? <TableSkeleton /> :
                 <Fragment>
                     <TableContainer sx={{ height: 400 }}>
                         <Table stickyHeader aria-label="sticky table">

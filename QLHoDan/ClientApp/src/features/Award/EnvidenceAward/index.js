@@ -1,13 +1,13 @@
 
-import residentManager from '~/services/api/residentManager';
 
-import TableNhanKhau from './NhanKhau/index.js';
 import { styled } from '@mui/system';
 import TabsUnstyled from '@mui/base/TabsUnstyled';
 import TabsListUnstyled from '@mui/base/TabsListUnstyled';
 import TabPanelUnstyled from '@mui/base/TabPanelUnstyled';
 import { buttonUnstyledClasses } from '@mui/base/ButtonUnstyled';
 import TabUnstyled, { tabUnstyledClasses } from '@mui/base/TabUnstyled';
+
+import ListFormAward from '~/features/FormList/ListFormEnvidenceAward';
 
 const blue = {
   50: '#F0F7FF',
@@ -90,42 +90,22 @@ const TabsList = styled(TabsListUnstyled)(
   `,
 );
 
-export default function UnstyledTabsCustomized() {
+export default function EnvidenceAward() {
   return (
     <TabsUnstyled defaultValue={0}>
       <TabsList>
-        <Tab>Hiện có</Tab>
-        <Tab>Chuyển đi</Tab>
-        <Tab>Khai tử</Tab>
-        <Tab>Tạm trú</Tab>
+        <Tab>Tất cả</Tab>
+        <Tab>Đang xét</Tab>
+        <Tab>Đã duyệt</Tab>
       </TabsList>
       <TabPanel value={0}>
-        <TableNhanKhau
-          key='1'
-          action={residentManager.getAllResident}
-          typeTable='current'
-        />
+        <ListFormAward />
       </TabPanel>
       <TabPanel value={1}>
-        <TableNhanKhau
-          key='2'
-          action={residentManager.getResidentMove}
-          typeTable='move'
-        />
+        <ListFormAward />
       </TabPanel>
       <TabPanel value={2}>
-        <TableNhanKhau
-          key='3'
-          action={residentManager.getResidentDead}
-          typeTable='dead'
-        />
-      </TabPanel>
-      <TabPanel value={3}>
-        <TableNhanKhau
-          key='4'
-          action={residentManager.getResidentTemporory}
-          typeTable='temporary'
-        />
+        <ListFormAward />
       </TabPanel>
     </TabsUnstyled>
   );

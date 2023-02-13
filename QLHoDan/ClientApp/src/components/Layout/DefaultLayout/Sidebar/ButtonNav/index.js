@@ -7,6 +7,7 @@ import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { FindInPage } from '@mui/icons-material';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
 
 import authenticationService from '~/services/account/authentication';
 
@@ -64,6 +65,7 @@ const navForResident = [
         id: 'addnew'
     },
     { icon: <AccountBoxIcon />, title: 'Tài khoản', link: '/profile', id: 'profile' },
+    { icon: <ForwardToInboxIcon />, title: 'Phần thưởng', link: '/envidence/award', id: 'award' },
     { icon: <NotificationsNoneIcon />, title: 'Thông báo', link: '/notification', id: 'notification' },
     { icon: <LogoutIcon />, title: 'Đăng xuất', link: '/login', id: 'logout', isLogout: true, action: loggout },
 ];
@@ -84,6 +86,7 @@ const navForAdmin = [
         collapse: [
             { icon: <TableViewIcon />, title: 'Danh sách dịp', id: 'award1', linkCol: '/award' },
             { icon: <TableViewIcon />, title: 'Lịch sử', id: 'award2', linkCol: '/historyAward' },
+            { icon: <ForwardToInboxIcon />, title: 'Minh chứng', linkCol: '/envidence/award', id: 'award' },
         ]
     },
     { icon: <AccountBoxIcon />, title: 'Tài khoản', link: '/profile', id: 'profile' },
@@ -107,6 +110,7 @@ const navForEmplyee = [
         collapse: [
             { icon: <TableViewIcon />, title: 'Danh sách dịp', id: 'award1', linkCol: '/award' },
             { icon: <TableViewIcon />, title: 'Lịch sử', id: 'award2', linkCol: '/historyAward' },
+            { icon: <ForwardToInboxIcon />, title: 'Minh chứng', linkCol: '/envidence/award', id: 'award' },
         ]
     },
     { icon: <AccountBoxIcon />, title: 'Tài khoản', link: '/profile', id: 'profile' },

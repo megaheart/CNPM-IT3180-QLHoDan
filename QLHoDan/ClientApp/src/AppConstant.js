@@ -33,3 +33,8 @@ export const API_REWARDS = `${API_URL}/RewardCeremonies`;
 export const API_ACCOUNT_SPECIAL = `${API_ACCOUNT_URL}/special`;
 
 export const API_NOTIFICATION = `${API_URL}/Notification`;
+
+export const API_ENVIDENCE_AWARD = `${API_URL}/forms/AchievementEvidence`;
+
+export const API_CHOOSE_AWARD = `${API_URL}/forms/ChoosingPresents`;
+

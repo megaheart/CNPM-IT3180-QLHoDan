@@ -17,6 +17,32 @@ function getLastName(string) {
     return '';
 };
 
+// function timeSince(date) {
+//     var seconds = Math.floor((new Date() - date) / 1000);
+//     var interval = Math.floor(seconds / 31536000);
+
+//     if (interval >= 1) {
+//         return interval + " năm trước";
+//     }
+//     interval = Math.floor(seconds / 2592000);
+//     if (interval >= 1) {
+//         return interval + " tháng trước";
+//     }
+//     interval = Math.floor(seconds / 86400);
+//     if (interval >= 1) {
+//         return interval + " ngày trước";
+//     }
+//     interval = Math.floor(seconds / 3600);
+//     if (interval >= 1) {
+//         return interval + " giờ trước";
+//     }
+//     interval = Math.floor(seconds / 60);
+//     if (interval >= 1) {
+//         return interval + " phút trước";
+//     }
+//     return Math.floor(seconds) + " giây trước";
+// }
+
 function timeSince(date) {
     var seconds = Math.floor((new Date() - date) / 1000);
     var interval = Math.floor(seconds / 31536000);
@@ -24,24 +50,30 @@ function timeSince(date) {
     if (interval > 1) {
         return interval + " năm trước";
     }
+    seconds = seconds - interval * 31536000;
     interval = Math.floor(seconds / 2592000);
     if (interval > 1) {
         return interval + " tháng trước";
     }
+    seconds = seconds - interval * 2592000;
     interval = Math.floor(seconds / 86400);
     if (interval > 1) {
         return interval + " ngày trước";
     }
+    seconds = seconds - interval * 86400;
     interval = Math.floor(seconds / 3600);
     if (interval > 1) {
         return interval + " giờ trước";
     }
+    seconds = seconds - interval * 3600;
     interval = Math.floor(seconds / 60);
     if (interval > 1) {
         return interval + " phút trước";
     }
+    seconds = seconds - interval * 60;
     return Math.floor(seconds) + " giây trước";
 }
+
 
 function Notification({ markRead, content, sender, senderName, time, iden }) {
 

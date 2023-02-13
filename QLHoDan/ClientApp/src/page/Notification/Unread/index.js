@@ -74,7 +74,9 @@ export default function UnReadNotification() {
             {(isLoading || !data) ? <NotificationSkeleton /> :
                 <Stack sx={{ width: '60%', fontSize: 15, margin: '0 auto', backgroundColor: '#fff' }} spacing={0}>
                     {
-                        data.map((item) => {
+                        data.length > 0 ? data.sort((a, b) => {
+                            return new Date(b.time) - new Date(a.time);
+                        }).map((item) => {
 
                             return (
                                 <Notification
@@ -89,6 +91,10 @@ export default function UnReadNotification() {
                             )
                         }
                         )
+                            :
+                            <div style={{ height: 500, width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                <h2>Không có thông báo nào</h2>
+                            </div>
                     }
                 </Stack>
             }

@@ -1,4 +1,4 @@
-import { forwardRef, useState, useRef, useEffect, Fragment } from 'react';
+import { forwardRef, useState, useRef, useEffect, Fragment, useCallback } from 'react';
 import useAuth from '~/hooks/useAuth';
 //validate
 import validation from '~/services/validate/index.js';
@@ -15,6 +15,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers';
 import LinearProgress from '@mui/material/LinearProgress';
+
+import ErrorData from '~/page/ErrorData';
 //style
 import classNames from 'classnames/bind';
 
@@ -29,6 +31,8 @@ import {
     useMutation,
     useQueryClient
 } from '@tanstack/react-query';
+
+import AcceptCeremory from '~/components/component/FormDialog';
 
 import ChangeAwardPair from '../ChangeAwardPair';
 
@@ -68,6 +72,8 @@ const columns = [
 
 export default function AwardDetail({ open, onClose, idAward }) {
     const { auth } = useAuth();
+
+    const [acceptDialog, setAcceptDialog] = useState(false);
     //handle save button
     const [loading, setLoading] = useState(false);
     const [editMode, setEditMode] = useState(false);
@@ -101,11 +107,11 @@ export default function AwardDetail({ open, onClose, idAward }) {
     const [messageToSpecialAccount, setMessageToSpecialAccount] = useState('');
     const queryClient = useQueryClient();
 
-    const { data, isLoading } = useQuery(
+    const { data, isLoading, error } = useQuery(
         ['getRewardEventById', idAward],
         async () => await awardApi.getRewardEventById(auth.token, idAward),
     );
-
+    console.log(error)
     const mutationChangeRewardEvent = useMutation(
         async (data) => await awardApi.updateRewardEvent(auth.token, data),
         {
@@ -144,6 +150,56 @@ export default function AwardDetail({ open, onClose, idAward }) {
         }
     );
 
+    const mutationAcceptRewardEvent = useMutation(
+        async (data) => await awardApi.acceptRewardEvent(auth.token, idAward, data),
+        {
+            onMutate: () => {
+                setOpenBackdrop(true);
+            },
+            onError: () => {
+                alert('Có lỗi xảy ra, vui lòng thử lại sau');
+            },
+            onSuccess: () => {
+                queryClient.invalidateQueries(['getRewardEventById', idAward]);
+                queryClient.invalidateQueries(['rewardEvents']);
+                setSuccess(true);
+            },
+            onSettled: () => {
+                setOpenBackdrop(false);
+            }
+        }
+    );
+
+    const mutationDoneEvent = useMutation(
+        async (id) => await awardApi.markDoneRewardEvent(auth.token, id),
+        {
+            onMutate: () => {
+                setOpenBackdrop(true);
+            },
+            onError: () => {
+                alert('Có lỗi xảy ra, vui lòng thử lại sau');
+            },
+            onSuccess: () => {
+                queryClient.invalidateQueries(['getRewardEventById', idAward]);
+                queryClient.invalidateQueries(['rewardEvents']);
+                setSuccess(true);
+            },
+            onSettled: () => {
+                setOpenBackdrop(false);
+            }
+        }
+    );
+
+
+    const handleAcceptEvent = useCallback(
+        (data) => {
+            mutationAcceptRewardEvent.mutate(data);
+            setAcceptDialog(false);
+        }, [mutationAcceptRewardEvent]
+    )
+
+
+
     const [changePairDialog, setChangePairDialog] = useState(false);
     const [pairToChange, setPairToChange] = useState(null);
 
@@ -161,6 +217,14 @@ export default function AwardDetail({ open, onClose, idAward }) {
         setChangePairDialog(true);
     }
 
+    const handleOpenAcceptDialog = () => {
+        setAcceptDialog(true);
+    }
+
+    const handeNotAgreeDialog = () => {
+        setAcceptDialog(false);
+    }
+
 
     useEffect(
         () => {
@@ -169,6 +233,8 @@ export default function AwardDetail({ open, onClose, idAward }) {
                 data.closingFormDate && setClosingFormDate(dayjs(data['closingFormDate']));
                 data.rewardDate && setRewardDate(dayjs(data['rewardDate']));
                 data.achievementRewardPairs && setAchievementRewardPairs(data['achievementRewardPairs']);
+                setIsAccepted(data['isAccepted']);
+                setIsDone(data['isDone']);
                 setTitle(data['title']);
                 setDescription(data['description']);
                 setTotalValue(data['totalValue']);
@@ -225,6 +291,10 @@ export default function AwardDetail({ open, onClose, idAward }) {
         console.log(isDone)
     }
 
+    const handleDone = () => {
+        mutationDoneEvent.mutate(idAward);
+    }
+
     const handleUpdate = () => {
         setOpenBackdrop(true);
         if (
@@ -252,6 +322,8 @@ export default function AwardDetail({ open, onClose, idAward }) {
         setSuccess(true);
         setEditMode(false);
     }
+
+
 
     //handle when clode this dislog
 
@@ -282,7 +354,7 @@ export default function AwardDetail({ open, onClose, idAward }) {
         <div>
             <Snackbar open={success} autoHideDuration={3000} onClose={handleSuccess} >
                 <Alert onClose={handleSuccess} severity="success" sx={{ width: '100%', fontSize: 15 }}>
-                    thành công !
+                    Thành công !
                 </Alert>
             </Snackbar>
             <Backdrop
@@ -291,6 +363,11 @@ export default function AwardDetail({ open, onClose, idAward }) {
             >
                 <CircularProgress color="inherit" />
             </Backdrop>
+            <AcceptCeremory
+                open={acceptDialog}
+                actionAgree={handleAcceptEvent}
+                actionCancel={handeNotAgreeDialog}
+            />
             <Dialog
                 fullWidth={true}
                 maxWidth='600'
@@ -305,7 +382,7 @@ export default function AwardDetail({ open, onClose, idAward }) {
                     info={pairToChange}
                     open={changePairDialog}
                     onClose={handleCloseChangePairDialog} />
-                {isLoading ? <TableSkeleton /> :
+                {error ? <ErrorData /> : isLoading ? <TableSkeleton /> :
                     <Fragment>
                         {loading && <LinearProgress />}
                         <div className={cx('header-paper-resident')}>
@@ -314,15 +391,27 @@ export default function AwardDetail({ open, onClose, idAward }) {
                                 <div>
                                     <Button variant="contained" color="primary" onClick={startEdit}
                                         disabled={auth.role !== 'CommitteeChairman' && auth.role !== 'Accountant'}
-                                        sx={{ fontSize: 15, margin: '2px 0', width: 130 }} >Chỉnh sửa </Button>
+                                        sx={{ fontSize: 15, margin: '2px 4px', width: 130 }} >Chỉnh sửa </Button>
+                                    {(!data.isAccepted) ?
+                                        <Button variant="contained" color="success" onClick={handleOpenAcceptDialog}
+                                            sx={{ fontSize: 15, margin: '2px 4px', width: 235 }} >Phê duyệt đợt thưởng</Button>
+                                        : !data.isDone ?
+                                            <Button variant="contained" color="success" onClick={handleDone}
+                                                sx={{ fontSize: 15, margin: '2px 4px', width: 235 }} >Kết thúc đợt thưởng</Button>
+                                            : null
+                                    }
                                 </div>
                                 :
                                 <div >
                                     <Button variant="contained" color="primary" onClick={handleUpdate}
-                                        sx={{ fontSize: 15, margin: '2px 0', width: 130 }} >Cập nhật</Button>
+                                        sx={{ fontSize: 15, margin: '2px 4px', width: 130 }} >Cập nhật</Button>
 
-                                    <Button variant="contained" color="success" onClick={handleReset}
-                                        sx={{ fontSize: 15, margin: '2px 4px', width: 130 }} >Reset</Button>
+                                    <Button variant="contained" color="success" onClick={handleOpenAcceptDialog}
+                                        sx={{ fontSize: 15, margin: '2px 4px', width: 235 }} >Phê duyệt đợt thưởng</Button>
+
+                                    {/* <Button variant="contained" color="success" onClick={handleReset}
+                                        sx={{ fontSize: 15, margin: '2px 4px', width: 130 }} >Reset</Button> */}
+
                                 </div>
                             }
                             <Button variant="contained" color="error"

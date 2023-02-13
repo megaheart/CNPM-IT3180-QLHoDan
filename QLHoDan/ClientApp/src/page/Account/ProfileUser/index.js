@@ -115,6 +115,7 @@ export default function User() {
                     InputLabelProps={{ style: { fontSize: 20 } }}
                     helperText={errorCur && errorMessageCurrentPassword}
                     error={errorCur}
+                    type='password'
                     variant="standard"
                 />
                 <TextField
@@ -126,6 +127,7 @@ export default function User() {
                     variant="standard"
                     error={errorNew}
                     value={newPassword}
+                    type='password'
                     onChange={handleChangeInputNew}
                 />
                 <TextField
@@ -136,18 +138,19 @@ export default function User() {
                     helperText={errorNew && errorMessageNewPassword}
                     variant="standard"
                     error={errorNew}
+                    type='password'
                     value={confirmPassword}
                     onChange={handleChangeInputConfirm}
                 />
+                <div>
+                    <button
+                        className={cx('btn-update')}
+                        onClick={handleUpdate}>
+                        Cập nhật
+                    </button>
+                </div>
+            </div>
 
-            </div>
-            <div>
-                <button
-                    className={cx('btn-update')}
-                    onClick={handleUpdate}>
-                    Cập nhật
-                </button>
-            </div>
         </div>
     )
 }

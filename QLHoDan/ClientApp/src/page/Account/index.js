@@ -23,7 +23,7 @@ import User from './ProfileUser';
 const cx = classNames.bind(styles);
 
 export default function Profile() {
-    const [value, setValue] = useState('1');
+    const [value, setValue] = useState('2');
     // const { auth } = useAuth();
 
     const handleChange = (event, newValue) => {
@@ -37,16 +37,12 @@ export default function Profile() {
         <div className={cx('account-wrapper')}>
             <Header />
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '70%' }}>
-                <TabContext value={value}>
-                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                        <TabList onChange={handleChange} aria-label="lab API tabs example" >
-                            <Tab sx={{ fontSize: 15 }} label="Thông tin người dùng" value="1" />
+                <TabContext centered value={value}>
+                    <Box sx={{ borderBottom: 1, borderColor: 'divider', margin: '0 auto' }}>
+                        <TabList centered onChange={handleChange} aria-label="lab API tabs example" >
                             <Tab sx={{ fontSize: 15 }} label="Đổi mật khẩu" value="2" />
                         </TabList>
                     </Box>
-                    <TabPanel sx={{ width: '100%' }} value="1">
-                        <AccountSetting />
-                    </TabPanel>
                     <TabPanel sx={{ width: '100%' }} value="2">
                         <User />
                     </TabPanel>
