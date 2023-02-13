@@ -56,7 +56,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             if (await _userManager.IsInRoleAsync(user, "ScopeLeader"))
             {
                 return Ok(_context.Resident
-                    .Where(nk => nk.IsManaged && nk.IsDead == isDead && nk.MoveOutDate.HasValue == movedOut) 
+                    .Where(nk => nk.IsManaged && nk.IsDead == isDead && nk.MoveOutDate.HasValue == movedOut && nk.Scope == user.Scope) 
                     .Select(nk => new ResidentBriefInfo()
                     {
                         IdentityCode = nk.IdentityCode,
