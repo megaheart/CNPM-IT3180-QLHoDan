@@ -273,20 +273,32 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
                     member.Scope = model.Scope.Value;
                 });
             }
-            if (model.MoveOutPlace != null)
+            bool moveOut = model.MoveOutPlace != null && model.MoveOutDate != null && model.MoveOutReason != null;
+            if (moveOut)
             {
                 household.MoveOutPlace = model.MoveOutPlace;
-            }
-            if (model.MoveOutDate != null)
-            {
                 household.MoveOutDate = model.MoveOutDate;
-            }
-            if (household.MoveOutReason != null)
-            {
                 household.MoveOutReason = model.MoveOutReason;
+                household.Members.ForEach(resident =>
+                {
+                    resident.MoveOutDate = model.MoveOutDate;
+                    resident.MoveOutPlace = model.MoveOutPlace;
+                    resident.MoveOutReason = model.MoveOutReason;
+                    _context.Resident.Update(resident);
+                });
+            }
+            else if (!(model.MoveOutPlace == null && model.MoveOutDate == null && model.MoveOutReason == null))
+            {
+                return BadRequest(new RequestError()
+                {
+                    Code = "InvalidMoveOut",
+                    Description = "Phải thay đổi đồng thời cả nơi chuyển đi, ngày chuyển đi và lý do chuyển đi.",
+                });
             }
 
-            if(model.NonExistMembers != null)
+            
+
+            if (model.NonExistMembers != null)
             {
                 foreach (var mem in model.NonExistMembers)
                 {
@@ -315,6 +327,12 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
                         Scope = household.Scope,
                     };
                     resident.Household = household;
+                    if (moveOut)
+                    {
+                        resident.MoveOutDate = model.MoveOutDate;
+                        resident.MoveOutPlace = model.MoveOutPlace;
+                        resident.MoveOutReason = model.MoveOutReason;
+                    }
                     _context.Resident.Add(resident);
                 }
             }

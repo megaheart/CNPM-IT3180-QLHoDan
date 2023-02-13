@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using QLHoDan.Data;
 using QLHoDan.Models;
 using QLHoDan.Models.Api;
-using QLHoDan.Models.Reward;
+using QLHoDan.Models.Reward.RewardCeremonies;
 using QLHoDan.Services;
 using System.Data;
 using System.Linq;
@@ -37,13 +37,26 @@ namespace QLHoDan.Controllers.Reward
         /// </summary>
         [HttpGet]
         [Authorize(/*Roles = "CommitteeChairman, Accountant, ScopeLeader"*/)]
-        public async Task<ActionResult<IEnumerable<RewardCeremonyBriefInfo>>> GetRewardCeremonies()
+        public async Task<ActionResult<IEnumerable<RewardCeremonyBriefInfo>>> 
+                GetRewardCeremonies([FromQuery] bool? allowPostingForm = null, [FromQuery] string? type = null)
         {
             if (_context.Household == null)
             {
                 return NotFound();
             }
-            return Ok(_context.RewardCeremony
+            var id = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return Unauthorized(new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else."));
+            }
+            var list = _context.RewardCeremony.Where(r => allowPostingForm == null || (r.IsAccepted == true && r.ClosingFormDate > DateTime.Now.Date) == allowPostingForm);
+            list = list.Where(r => type == null || type == r.Type);
+            if(user.Role > 3)
+            {
+                list = list.Where(r => r.IsAccepted == true);
+            }
+            return Ok(list
                     .Select(r => new RewardCeremonyBriefInfo()
                     {
                         Id = r.Id,
@@ -115,6 +128,10 @@ namespace QLHoDan.Controllers.Reward
             {
                 return Conflict();
             }
+            if (model.RewardDate < model.ClosingFormDate)
+            {
+                return BadRequest(new RequestError("InvalidClosingFormDate", "`ClosingFormDate` không được phép lớn hơn `RewardDate`."));
+            }
             RewardCeremony rewardceremony = new RewardCeremony()
             {
                 Title = model.Title,
@@ -124,8 +141,8 @@ namespace QLHoDan.Controllers.Reward
                 TotalValue = 0,
                 IsAccepted = false,
                 IsDone = false,
-                ClosingFormDate = model.ClosingFormDate,
-                RewardDate = model.RewardDate,
+                ClosingFormDate = model.ClosingFormDate.Date,
+                RewardDate = model.RewardDate.Date,
             };
 
             //if(model.ExistMemberIds != null)
@@ -212,11 +229,15 @@ namespace QLHoDan.Controllers.Reward
             }
             if (model.ClosingFormDate != null)
             {
-                r.ClosingFormDate = model.ClosingFormDate.Value;
+                r.ClosingFormDate = model.ClosingFormDate.Value.Date;
             }
             if (model.RewardDate != null)
             {
-                r.RewardDate = model.RewardDate.Value;
+                if(model.RewardDate < r.ClosingFormDate)
+                {
+                    return BadRequest(new RequestError("InvalidClosingFormDate", "`ClosingFormDate` không được phép lớn hơn `RewardDate`."));
+                }
+                r.RewardDate = model.RewardDate.Value.Date;
             }
 
             _context.RewardCeremony.Update(r);
@@ -382,6 +403,8 @@ namespace QLHoDan.Controllers.Reward
             {
                 return NotFound();
             }
+            if (r.IsAccepted)
+                return BadRequest(new RequestError("CannotDeleteAcceptedRewardCeremony", "Đợt thưởng đã được phê duyệt và thông báo đến toàn thể người dân nên không thể rút lại."));
             _context.AchievementRewardPair.Where(x => x.RewardCeremonyId == id).ExecuteDelete();
             _context.RewardCeremony.Remove(r);
             try

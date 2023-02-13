@@ -61,5 +61,20 @@ namespace QLHoDan.Services
             }
             return null;
         }
+        /// <summary>
+        /// Xoá ảnh trên ổ cứng
+        /// </summary>
+        /// <param name="id">id của bức ảnh muốn xoá</param>
+        /// <returns>Thành công hay không.</returns>
+        public bool RemoveImage(string id)
+        {
+            string path = Path.Combine(imgFolder, id);
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+                return true;
+            }
+            return false;
+        }
     }
 }
