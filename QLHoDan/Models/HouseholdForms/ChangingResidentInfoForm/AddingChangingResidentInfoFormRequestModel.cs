@@ -1,11 +1,9 @@
-﻿
-using System;
+﻿using QLHoDan.Models.HouseholdsAndResidents.ResidentApi;
 
-namespace QLHoDan.Models
+namespace QLHoDan.Models.HouseholdForms.ChangingResidentInfoForm
 {
-	public class ChangingResidentInfoForm
-	{
-        public int Id { set; get; } // id
+    public class AddingChangingResidentInfoFormRequestModel
+    {
         public string? FullName { set; get; } // Họ và tên (fullName)
         public string? Alias { set; get; } // Bí danh (alias)
         public DateTime? DateOfBirth { set; get; } // Ngày tháng năm sinh (dateOfBirth)
@@ -16,15 +14,9 @@ namespace QLHoDan.Models
         public string? Nation { set; get; } // Quốc tịch
         public string? Job { set; get; } // Nghề nghiệp
         public string? Workplace { set; get; } // Nơi làm việc
-        public Resident Resident { set; get; } // CMND/CCCD, số giấy khai sinh
+        public string ResidentIdCode { set; get; } // CMND/CCCD, số giấy khai sinh
         public string? AcademicLevel { set; get; } // trình độ học vấn
         public string? CriminalRecord { set; get; } //Tiền án
         public string Reason { set; get; } //Lý do thay đổi
-        public DateTime CreatedTime { set; get; }
-        public bool IsAccepted { set; get; } // Đã duyệt chưa
-        public string? NotAcceptedReason { set; get; } // Đã duyệt chưa
-        public string Account { set; get; } // Username tài khoản hộ dân gửi 
-        public int AccountScope { set; get; } // scope của tài khoản người gửi
     }
-
 }

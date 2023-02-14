@@ -14,7 +14,7 @@ namespace QLHoDan.Models
 		public string Account{set;get;} // Username tài khoản người gửi (chính là số CMND luôn)
         public DateTime CreatedTime { set; get; }
         public bool IsAccepted { set; get; } // Đã duyệt chưa
-        public bool NotAcceptedReason { set; get; } // Đã duyệt chưa
+        public string? NotAcceptedReason { set; get; } // Đã duyệt chưa
 
 
 
