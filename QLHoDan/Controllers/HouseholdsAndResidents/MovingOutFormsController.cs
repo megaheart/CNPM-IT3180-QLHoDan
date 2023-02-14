@@ -101,7 +101,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
         }
         // GET: api/forms/MovingOut/5
         /// <summary>
-        ///Lấy ra thông tin chi tiết của form minh chứng thành tích. Phạm vi trả về phụ thuộc vào quyền hạn của tài khoản:<br/>
+        ///Lấy ra thông tin chi tiết của form xin chuyển đi. Phạm vi trả về phụ thuộc vào quyền hạn của tài khoản:<br/>
         ///1. Chủ tịch phường, kế toán: Sẽ trả về form minh chứng của toàn bộ phường<br/>
         ///2. Tổ trưởng: Sẽ trả về form minh chứng của chỉ tổ phụ trách<br/>
         ///3. Hộ dân: Sẽ trả về form minh chứng của chỉ cá nhân tài khoản đó gửi lên
@@ -179,7 +179,10 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             {
                 return BadRequest(new RequestError("ResidentNotFound", "Nhân khẩu không tồn tại trong CSDL."));
             }
-
+            if (!resident.MoveOutDate.HasValue)
+            {
+                return BadRequest(new RequestError("ResidentMovedOut", "Nhân khẩu đã chuyển đi rồi không chuyển đi nữa."));
+            }
             MovingOutForm f = new MovingOutForm()
             {
                 Resident = resident,
@@ -211,7 +214,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
 
         // POST: api/forms/MovingOut/accept/5
         /// <summary>
-        ///Phê duyệt hoặc từ chối form minh chứng thành tích. Phạm vi trả về phụ thuộc vào quyền hạn của tài khoản:<br/>
+        ///Phê duyệt hoặc từ chối form xin chuyển đi. Phạm vi trả về phụ thuộc vào quyền hạn của tài khoản:<br/>
         ///1. Chủ tịch phường, kế toán: Duyệt được form minh chứng của toàn bộ phường<br/>
         ///2. Tổ trưởng: Chỉ duyệt được form minh chứng của chỉ tổ phụ trách
         /// </summary>
@@ -249,6 +252,11 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             if (model.Accept)
             {
                 msg = $"{FormHelper.GetFormTitle(form)} đã được phê duyệt.";
+                var resident = form.Resident;
+                resident.MoveOutPlace = form.MoveOutPlace;
+                resident.MoveOutDate = form.MoveOutDate;
+                resident.MoveOutReason = form.MoveOutReason;
+                _context.Resident.Update(resident);
             }
             else
             {

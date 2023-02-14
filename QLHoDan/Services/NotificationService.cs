@@ -290,5 +290,17 @@ namespace QLHoDan.Services
 
 
         }
+        public async Task ForceNotify(string sender,string userName, string message)
+        {
+            _context.NotificationMessage.Add(new NotificationMessage()
+            {
+                Time = DateTime.Now,
+                Content = message,
+                IsRead = false,
+                Sender = sender,
+                Receiver = userName
+            });
+            await _context.SaveChangesAsync();
+        }
     }
 }

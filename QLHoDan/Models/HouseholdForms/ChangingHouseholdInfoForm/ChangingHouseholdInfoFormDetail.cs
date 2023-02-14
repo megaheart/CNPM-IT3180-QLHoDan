@@ -7,7 +7,7 @@ namespace QLHoDan.Models.HouseholdForms.ChangingHouseholdInfoForm
     public class ChangingHouseholdInfoFormDetail
     {
         public int Id { set; get; } // id
-        public HouseholdBriefInfo Household { set; get; } // Số hộ khẩu
+        public string HouseholdId { set; get; } // Số hộ khẩu
         public string? Address { set; get; } // địa chỉ Thường trú mới
         public ResidentBriefInfo? Owner { set; get; }//Chủ hộ mới
         public int? Scope { set; get; } // Tổ Phụ Trách mới

@@ -1,5 +1,4 @@
-﻿using Humanizer;
-using QLHoDan.Models;
+﻿using QLHoDan.Models;
 
 namespace QLHoDan.Utilities
 {
@@ -26,12 +25,22 @@ namespace QLHoDan.Utilities
         {
             return $"Cháu {f.Resident.FullName} gửi lựa chọn quà cho sự kiện {f.RewardCeremony.Title}";
         }
+
         /// <summary>
         /// Lấy tiêu đề cho form
         /// </summary>
         /// <param name="f">Form</param>
         /// <returns>tiêu đề của form</returns>
-       public static string GetFormTitle(MovingOutForm f)
+        public static string GetFormTitle(HouseholdForm f)
+        {
+            return $"Đăng kí hộ khẩu, nhân khẩu (Số hộ khẩu: {f.HouseholdId})";
+        }
+        /// <summary>
+        /// Lấy tiêu đề cho form
+        /// </summary>
+        /// <param name="f">Form</param>
+        /// <returns>tiêu đề của form</returns>
+        public static string GetFormTitle(MovingOutForm f)
         {
             return $"Công dân {f.Resident.FullName} (CCCD: {f.Resident.IdentityCode}) gửi đơn xin chuyển đi.";
         }

@@ -135,6 +135,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
                     return BadRequest(new RequestError("IdS_ScopeOutOfManagement", "Tổ trưởng tổ " + user.Scope + " không thể chỉnh sửa form của tổ " + form.AccountScope + "."));
                 }
             }
+            var owner = form.NewHousehold.Members.First(r => r.RelationShip == "Chủ hộ");
             ChangingHouseholdFormDetail changinghouseholdformdetail = new ChangingHouseholdFormDetail()
             {
                 Id = form.Id,
@@ -142,8 +143,8 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
                 {
                     HouseholdId = form.NewHousehold.HouseholdId,
                     Scope = form.NewHousehold.Scope,
-                    OwnerFullName = null,  /////// Không biết điền ntn ...
-                    OwnerIDCode = null,
+                    OwnerFullName = owner.FullName,
+                    OwnerIDCode = owner.IdentityCode,
                     CreatedTime = form.NewHousehold.CreatedTime
                 },
                 Resident = new ResidentBriefInfo()
@@ -179,22 +180,25 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
                 return Unauthorized(new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else."));
             }
 
-            var household = await _context.Household.FindAsync(model.HouseholdIdCode);
+            var household = await _context.Household.FindAsync(model.NewHouseholdId);
             if (household == null)
             {
-                return BadRequest(new RequestError("ResidentNotFound", "Hộ khẩu không tồn tại trong CSDL."));
+                return BadRequest(new RequestError("HouseholdNotFound", "Hộ khẩu không tồn tại trong CSDL."));
             }
 
             var resident = await _context.Resident.FindAsync(model.ResidentIdCode);
             if (resident == null)
             {
-                return BadRequest(new RequestError("OwnerNotFound", "Nhân khẩu không tồn tại trong CSDL."));
+                return BadRequest(new RequestError("ResidentNotFound", "Nhân khẩu không tồn tại trong CSDL."));
             }
             if (resident.HouseholdId == household.HouseholdId)
             {
-                return BadRequest(new RequestError("InvalidHousehold", "Hộ khẩu mới phải khác hộ khẩu cũ"));
+                return BadRequest(new RequestError("InvalidHouseholdId", "Hộ khẩu mới phải khác hộ khẩu cũ"));
             }
-
+            if (resident.RelationShip == "Chủ hộ")
+            {
+                return BadRequest(new RequestError("InvalidResident", "Nhân khẩu không được phép là chủ hộ cũ."));
+            }
 
             ChangingHouseholdForm f = new ChangingHouseholdForm()
             {
@@ -265,6 +269,9 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             if (model.Accept)
             {
                 msg = $"{FormHelper.GetFormTitle(form)} đã được phê duyệt.";
+
+                form.Resident.Household = form.NewHousehold;
+                _context.Resident.Update(form.Resident);
             }
             else
             {

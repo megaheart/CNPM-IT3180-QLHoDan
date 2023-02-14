@@ -177,7 +177,10 @@ namespace QLHoDan.Controllers.Reward
             {
                 return BadRequest(new RequestError("ResidentNotFound", "Nhân khẩu không tồn tại trong CSDL."));
             }
-
+            if (resident.IsDead)
+            {
+                return BadRequest(new RequestError("ResidentDead", "Nhân khẩu dã được cán bộ quản lý xác định là đã mất trước đó."));
+            }
             DeadForm f = new DeadForm()
             {
                 Resident = resident,
@@ -260,6 +263,27 @@ namespace QLHoDan.Controllers.Reward
             if (model.Accept)
             {
                 msg = $"{FormHelper.GetFormTitle(form)} đã được phê duyệt.";
+
+                var resident = form.Resident;
+                resident.IsDead = true;
+                if(resident.RelationShip == "Chủ hộ")
+                {
+                    var household = await _context.Household.Include(h => h.Members).FirstOrDefaultAsync(h => h.HouseholdId == resident.HouseholdId);
+                    var mem = household.Members.FirstOrDefault(nk => nk.RelationShip != "Chủ hộ");
+                    if (mem == null)
+                    {
+                        household.IsManaged = false;
+                        _context.Household.Update(household);
+                    }
+                    else
+                    {
+                        mem.RelationShip = "Chủ hộ";
+                    }
+                }
+                resident.Household = null;
+                resident.HouseholdId = null;
+                _context.Resident.Update(resident);
+
             }
             else
             {

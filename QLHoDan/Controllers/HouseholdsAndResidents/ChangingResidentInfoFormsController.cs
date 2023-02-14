@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client.Extensions.Msal;
 using QLHoDan.Data;
@@ -271,6 +272,22 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             if (model.Accept)
             {
                 msg = $"{FormHelper.GetFormTitle(form)} đã được phê duyệt.";
+
+                var resident = form.Resident;
+                resident.FullName = form.FullName ?? resident.FullName;
+                resident.Alias = form.Alias ?? resident.Alias;
+                resident.DateOfBirth = form.DateOfBirth ?? resident.DateOfBirth;
+                resident.IsMale = form.IsMale ?? resident.IsMale;
+                resident.BirthPlace = form.BirthPlace ?? resident.BirthPlace;
+                resident.NativeLand = form.NativeLand ?? resident.NativeLand;
+                resident.Ethnic = form.Ethnic ?? resident.Ethnic;
+                resident.Nation = form.Nation ?? resident.Nation;
+                resident.Job = form.Job ?? resident.Job;
+                resident.Workplace = form.Workplace ?? resident.Workplace;
+                resident.AcademicLevel = form.AcademicLevel ?? resident.AcademicLevel;
+                resident.CriminalRecord = form.CriminalRecord ?? resident.CriminalRecord;
+
+                _context.Resident.Update(resident);
             }
             else
             {

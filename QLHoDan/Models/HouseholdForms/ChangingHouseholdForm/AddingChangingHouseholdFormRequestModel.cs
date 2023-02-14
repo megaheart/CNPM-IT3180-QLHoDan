@@ -6,6 +6,6 @@ namespace QLHoDan.Models.HouseholdForms.ChangingHouseholdForm
     public class AddingChangingHouseholdFormRequestModel
     {
         public string ResidentIdCode { set; get; }
-        public string HouseholdIdCode { set; get; } // Số hộ khẩu
+        public string NewHouseholdId { set; get; } // Số hộ khẩu
     }
 }

@@ -13,6 +13,7 @@ using QLHoDan.Models.HouseholdForms.ChangingHouseholdInfoForm;
 using QLHoDan.Services;
 using QLHoDan.Utilities;
 using System.Security.Claims;
+using static IdentityServer4.Models.IdentityResources;
 
 namespace QLHoDan.Controllers.HouseholdsAndResidents
 {
@@ -138,15 +139,8 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             ChangingHouseholdInfoFormDetail changinghouseholdinfoformdetail = new ChangingHouseholdInfoFormDetail()
             {
                 Id = form.Id,
-                Household = new HouseholdBriefInfo()
-                {
-                    HouseholdId = form.Household.HouseholdId,
-                    Scope = form.Household.Scope,
-                    OwnerFullName = form.Owner.FullName,
-                    OwnerIDCode = form.Owner.IdentityCode,
-                    CreatedTime = form.Household.CreatedTime
-                },
-                Owner = new ResidentBriefInfo()
+                HouseholdId = form.Household.HouseholdId,
+                Owner = form.Owner != null ? new ResidentBriefInfo()
                 {
                     IdentityCode = form.Owner.IdentityCode,
                     FullName = form.Owner.FullName,
@@ -155,7 +149,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
                     HouseholdId = form.Owner.HouseholdId,
                     RelationShip = form.Owner.RelationShip,
                     Scope = form.Owner.Scope,
-                },
+                } : null,
                 Address = form.Address,
                 Scope = form.Scope,
                 Reason = form.Reason,
@@ -182,21 +176,25 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
                 return Unauthorized(new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else."));
             }
 
-            var household = await _context.Household.FindAsync(model.HouseholdIdCode);
+            var household = await _context.Household.Include(h => h.Members).FirstOrDefaultAsync(h => h.HouseholdId == model.HouseholdIdCode);
             if (household == null)
             {
-                return BadRequest(new RequestError("ResidentNotFound", "Hộ khẩu không tồn tại trong CSDL."));
+                return BadRequest(new RequestError("HouseholdNotFound", "Hộ khẩu không tồn tại trong CSDL."));
             }
-
-            var owner = await _context.Resident.FindAsync(model.OwnerIdCode);
-            if (owner == null)
+            Resident? owner = null;
+            if (string.IsNullOrEmpty(model.OwnerIdCode))
             {
-                return BadRequest(new RequestError("OwnerNotFound", "Chủ hộ không tồn tại trong CSDL."));
+                owner = await _context.Resident.FindAsync(model.OwnerIdCode);
+                if (owner == null)
+                {
+                    return BadRequest(new RequestError("OwnerNotFound", "Chủ hộ không tồn tại trong CSDL."));
+                }
+                if (!household.Members.Contains(owner))
+                {
+                    return BadRequest(new RequestError("InvalidOwner", "Chủ hộ không nằm trong sổ hộ khẩu."));
+                }
             }
-            if (!household.Members.Contains(owner))
-            {
-                return BadRequest(new RequestError("InvalidOwner", "Chủ hộ không nằm trong sổ hộ khẩu."));
-            }
+            
 
 
             ChangingHouseholdInfoForm f = new ChangingHouseholdInfoForm()
@@ -237,7 +235,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
         ///2. Tổ trưởng: Chỉ duyệt được form minh chứng của chỉ tổ phụ trách
         /// </summary>
         /// <param name="id">
-        /// mã định danh của form minh chứng thành tích
+        /// mã định danh của form thay đổi thông tin hộ khẩu
         /// </param>
         [HttpPost("accept/{id}")]
         [Authorize(Roles = "CommitteeChairman,Accountant,ScopeLeader")]
@@ -271,6 +269,18 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             if (model.Accept)
             {
                 msg = $"{FormHelper.GetFormTitle(form)} đã được phê duyệt.";
+                var household = form.Household;
+                if(form.Owner != null)
+                {
+                    var oldOwner = await _context.Resident.FirstOrDefaultAsync(r => r.HouseholdId == household.HouseholdId && r.RelationShip == "Chủ hộ");
+                    oldOwner.RelationShip = "Chủ hộ cũ (chủ hộ mới là " + form.Owner.RelationShip + ")";
+                    form.Owner.RelationShip = "Chủ hộ";
+                    _context.Resident.Update(oldOwner);
+                    _context.Resident.Update(form.Owner);
+                }
+                household.Address = form.Address ?? household.Address;
+                household.Scope = form.Scope ?? household.Scope;
+                _context.Household.Update(household);
             }
             else
             {
