@@ -364,7 +364,7 @@ export default function AwardDetail({ open, onClose, idAward }) {
             >
                 <CircularProgress color="inherit" />
             </Backdrop>
-            <AwardListEstimate open={estimateAward} onClose={setEstimateAward} />
+            <AwardListEstimate open={estimateAward} onClose={setEstimateAward} idAward={idAward} />
             <AcceptCeremory
                 open={acceptDialog}
                 actionAgree={handleAcceptEvent}
