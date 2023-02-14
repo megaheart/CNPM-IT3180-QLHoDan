@@ -14,6 +14,8 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { styled } from '@mui/material/styles';
 import ConfirmBox from '~/page/Table/DiaLog/ConfirmBox';
 import { tableCellClasses } from '@mui/material/TableCell';
+import useAuth from '~/hooks/useAuth';
+import formHouseholdRegister from '~/services/api/registerHousehold';
 const cx = classNames.bind(styles);
 const genders = [
     { value: 'male', label: 'Nam' },
@@ -45,6 +47,8 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 export default function FormHKComponent() {
     const [rows, setRows] = useState([]);
+
+    const { auth } = useAuth();
 
     const [visible, setVisible] = useState(false);
     const [visibleDes, setVisibleDes] = useState(false);
@@ -97,43 +101,31 @@ export default function FormHKComponent() {
     }, [visibleDes])
 
 
-
-
-    function resetForm(refs) {
-        Object.values(refs).forEach((ref) => {
-            if (ref.current) {
-                ref.current.value = ref.current.defaultValue;
-            }
-        });
-    }
-
     const resetInput = () => {
-        resetForm({
-            fullNameRef,
-            aliasRef,
-            dateOfBirthRef,
-            isMaleRef,
-            birthPlaceRef,
-            nativeLandRef,
-            ethnicRef,
-            nationRef,
-            jobRef,
-            workplaceRef,
-            identityCodeRef,
-            relationShipRef,
-            academicLevelRef,
-            criminalRecordRef,
-            moveInDateRef,
-            moveInReasonRef,
-        });
-
+        fullNameRef.current.value = '';
+        aliasRef.current.value = '';
+        isMaleRef.current.value = 'male';
+        birthPlaceRef.current.value = '';
+        nativeLandRef.current.value = '';
+        ethnicRef.current.value = '';
+        nationRef.current.value = '';
+        jobRef.current.value = '';
+        workplaceRef.current.value = '';
+        identityCodeRef.current.value = '';
+        relationShipRef.current.value = '';
+        academicLevelRef.current.value = '';
+        criminalRecordRef.current.value = '';
+        moveInReasonRef.current.value = '';
+        setMoveInDate(null);
+        setBirthday(null);
     }
 
     const handleBtnDes = () => {
         if (visible === true) {
             setVisible(false);
             resetInput();
-            setVisibleDes(false)
+            setVisibleDes(false);
+            setIdViewing(null);
         }
     };
 
@@ -163,20 +155,19 @@ export default function FormHKComponent() {
         }
         if (
             currentData.dateOfBirth === null ||
-            currentData.identityCode.length !== 9 ||
-            currentData.identityCode.length !== 12 ||
+            (currentData.identityCode.length !== 9 &&
+                currentData.identityCode.length !== 12) ||
             currentData.moveInDate === null
         ) {
             alert('Vui lòng nhập đầy đủ thông tin')
         }
         else {
             setRows(prev => [...prev, currentData]);
-            resetForm();
-        }
-        if (visible === true) {
+            resetInput();
             setVisible(false);
             setVisibleDes(false)
         }
+
     };
 
     const [deletedId, setDeletedId] = useState(null);
@@ -192,13 +183,15 @@ export default function FormHKComponent() {
 
     const handleDeleteRow = () => {
         setRows(prev => prev.filter((_, i) => i !== deletedId));
+        setVisible(false);
     }
 
     const handleChangeDetailResident = (index) => {
+        setIdViewing(index);
         const viewData = rows[index];
         fullNameRef.current.value = viewData.fullName;
         aliasRef.current.value = viewData.alias;
-        dateOfBirthRef.current.value = viewData.dateOfBirth;
+        setBirthday(viewData.dateOfBirth);
         isMaleRef.current.value = viewData.isMale;
         birthPlaceRef.current.value = viewData.birthPlace
         nativeLandRef.current.value = viewData.nativeLand
@@ -210,7 +203,7 @@ export default function FormHKComponent() {
         relationShipRef.current.value = viewData.relationShip
         academicLevelRef.current.value = viewData.academicLevel
         criminalRecordRef.current.value = viewData.criminalRecord
-        moveInDateRef.current.value = viewData.moveInDate
+        setMoveInDate(viewData.moveInDate)
         moveInReasonRef.current.value = viewData.moveInReason
         setVisible(true);
     }
@@ -234,14 +227,14 @@ export default function FormHKComponent() {
             moveInDate: moveInDate,
             moveInReason: moveInReasonRef.current.value || ''
         }
-        console.log(currentData)
+        console.log(currentData);
         if (
             currentData.dateOfBirth === null ||
             (currentData.identityCode.length !== 9 &&
                 currentData.identityCode.length !== 12) ||
             currentData.moveInDate === null
         ) {
-            alert('Vui lòng nhập đúng và đầy đủ thông tin')
+            console.log('Vui lòng nhập đúng và đầy đủ thông tin')
         }
         else {
             setRows(prev =>
@@ -251,10 +244,32 @@ export default function FormHKComponent() {
                     }
                     return item;
                 }));
-            resetForm();
+            resetInput();
             setVisible(false);
             setIdViewing(null);
         }
+    }
+
+    const handleSendForm = async () => {
+
+        const formData = new FormData();
+        formData.append('HouseholdId', householdIdRef.current.value);
+        formData.append('Address', addressRef.current.value);
+        formData.append('Scope', scopeRef.current.value);
+        // for (let i = 0; i < rows.length; i++) {
+        //     formData.append('Members', rows[i]);
+        // }
+        formData.append('Members', JSON.stringify(rows));
+        setOpen(true);
+        await formHouseholdRegister.sendFormHouseholdRegister(
+            auth.token,
+            formData
+        ).catch(err => {
+            console.log(err);
+        }).finally(() => {
+            setOpen(false);
+        });
+
     }
 
     return (
@@ -262,7 +277,6 @@ export default function FormHKComponent() {
             <Backdrop
                 sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                 open={open}
-                onClick={() => { setOpen(false) }}
             >
                 <CircularProgress color="inherit" />
             </Backdrop>
@@ -388,51 +402,51 @@ export default function FormHKComponent() {
                                     defaultValue="male"
                                 >
                                     {genders.map((option) => (
-                                        <MenuItem key={option.value} value={option.label}>
+                                        <MenuItem key={option.value} value={option.value}>
                                             {option.label}
                                         </MenuItem>
                                     ))}
                                 </TextField>
                             </div>
-                            {visibleDes &&
-                                <div style={{ display: 'flex', flexFlow: 'row wrap', justifyContent: 'center' }}>
-                                    {idViewing ?
-                                        <Fab
-                                            sx={{ marginLeft: 1, maxWidth: 300 }}
-                                            color="success"
-                                            size="small"
-                                            component="span"
-                                            aria-label="add"
-                                            variant="extended"
-                                            onClick={handleChangeDetail}
-                                        >
-                                            <DoneSharp /> Lưu thay đổi
-                                        </Fab> :
-                                        <Fab
-                                            sx={{ marginLeft: 1, maxWidth: 120 }}
-                                            color="success"
-                                            size="small"
-                                            component="span"
-                                            aria-label="add"
-                                            variant="extended"
-                                            onClick={handleAddNK}
-                                        >
-                                            <DoneSharp /> Đồng ý
-                                        </Fab>
-                                    }
+
+                            <div style={{ display: 'flex', flexFlow: 'row wrap', justifyContent: 'center' }}>
+                                {idViewing ?
                                     <Fab
-                                        sx={{ marginLeft: 1, width: 100 }}
-                                        color="error"
+                                        sx={{ marginLeft: 1, maxWidth: 300 }}
+                                        color="success"
                                         size="small"
                                         component="span"
                                         aria-label="add"
                                         variant="extended"
-                                        onClick={handleBtnDes}
+                                        onClick={handleChangeDetail}
                                     >
-                                        <CloseOutlined /> Hủy
+                                        <DoneSharp /> Lưu thay đổi
+                                    </Fab> :
+                                    <Fab
+                                        sx={{ marginLeft: 1, maxWidth: 120 }}
+                                        color="success"
+                                        size="small"
+                                        component="span"
+                                        aria-label="add"
+                                        variant="extended"
+                                        onClick={handleAddNK}
+                                    >
+                                        <DoneSharp /> Đồng ý
                                     </Fab>
-                                </div>
-                            }
+                                }
+                                <Fab
+                                    sx={{ marginLeft: 1, width: 100 }}
+                                    color="error"
+                                    size="small"
+                                    component="span"
+                                    aria-label="add"
+                                    variant="extended"
+                                    onClick={handleBtnDes}
+                                >
+                                    <CloseOutlined /> Đóng
+                                </Fab>
+                            </div>
+
                         </div>
                     </Backdrop>
 
@@ -476,7 +490,7 @@ export default function FormHKComponent() {
                                                 <StyledTableCell align="center" component="th" scope="row">
                                                     <Button onClick={
                                                         () => {
-                                                            handleChangeDetailResident(row)
+                                                            handleChangeDetailResident(index)
                                                         }
                                                     }
                                                     >
@@ -507,8 +521,9 @@ export default function FormHKComponent() {
                         </TableContainer>
                     </div>
                 </div>
+                <Button onClick={handleSendForm} color="primary" variant="contained">Gửi</Button>
             </Box>
-            <Button onClick={handleToggle} color="primary" variant="contained">Gửi</Button>
+
         </div>
     );
 }

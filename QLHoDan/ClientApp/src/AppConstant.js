@@ -42,5 +42,5 @@ export const API_MANAGE_AWARD_HISTORY = `${API_URL}/RewardRecords`;
 
 export const API_BASEMENT_MODULE = `${API_URL}/static/img`;
 
-export const API_HOUSEHOLD_REGISTER_FORM = `${API_URL}/api/forms/Household`;
+export const API_HOUSEHOLD_REGISTER_FORM = `${API_URL}/forms/Household`;
 

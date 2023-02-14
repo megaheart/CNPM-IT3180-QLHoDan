@@ -44,7 +44,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             _storage = storage;
             _notification = notification;
             _jwtService = jwtService;
-            _roleManager= roleManager;
+            _roleManager = roleManager;
         }
         // GET: api/forms/Household
         /// <summary>
@@ -141,7 +141,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             {
                 if (user.Scope != form.Scope)
                 {
-                    return BadRequest(new RequestError("IdS_ScopeOutOfManagement", "Tổ trưởng tổ " + user.Scope + " không thể chỉnh sửa form của tổ " + form.AccountScope + "."));
+                    return BadRequest(new RequestError("IdS_ScopeOutOfManagement", "Tổ trưởng tổ " + user.Scope + " không thể chỉnh sửa form của tổ " + form.Scope + "."));
                 }
             }
             return Ok(form);
@@ -154,7 +154,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
         [HttpPost()]
         public async Task<IActionResult> PostHouseholdForm([FromForm] AddingHouseholdFormRequestModel model)
         {
-            if(await _context.Household.AnyAsync(h => h.HouseholdId == model.HouseholdId))
+            if (await _context.Household.AnyAsync(h => h.HouseholdId == model.HouseholdId))
             {
                 return BadRequest(new RequestError("HouseholdExist", "Hộ khẩu đã được quản lý bởi hệ thống, không thể thêm mới."));
             }
@@ -355,7 +355,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             _context.HouseholdForm.Update(form);
             await _context.SaveChangesAsync();
 
-            await _notification.ForceNotify(user.UserName,  "guest_" + form.HouseholdId, msg);
+            await _notification.ForceNotify(user.UserName, "guest_" + form.HouseholdId, msg);
 
             return Ok();
         }
