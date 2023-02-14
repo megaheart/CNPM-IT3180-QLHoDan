@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Data\Migrations\ApplicationDb\" />
+    <Folder Include="Models\HouseholdForms\AddingResidentForm\" />
     <Folder Include="static\img\" />
   </ItemGroup>
 

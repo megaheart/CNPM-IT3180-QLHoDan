@@ -141,7 +141,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             {
                 if (user.Scope != form.Scope)
                 {
-                    return BadRequest(new RequestError("IdS_ScopeOutOfManagement", "Tổ trưởng tổ " + user.Scope + " không thể chỉnh sửa form của tổ " + form.AccountScope + "."));
+                    return BadRequest(new RequestError("IdS_ScopeOutOfManagement", "Tổ trưởng tổ " + user.Scope + " không thể chỉnh sửa form của tổ " + form.Scope + "."));
                 }
             }
             return Ok(form);
