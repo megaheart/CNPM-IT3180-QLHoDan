@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useRef } from 'react';
 import { Fab, MenuItem, Box, TextField, Button, Backdrop, CircularProgress, checkboxClasses } from '@mui/material';
 
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -6,19 +6,54 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers';
 import styles from './RequireRemove.module.scss'
 import classNames from 'classnames/bind';
+
+import formMovement from '~/services/api/moveForm';
+
+import useAuth from '~/hooks/useAuth';
 const cx = classNames.bind(styles);
 
 export default function RequireRemoving() {
-
+    const { auth } = useAuth();
     const [open, setOpen] = useState(false);
+
+    const moveOutPlaceRef = useRef(null);
+    const moveOutDateRef = useRef(null);
+    const [value, setValue] = useState(null);
+    const moveOutReasonRef = useRef(null);
+    const ResidentIdCodeRef = useRef(null);
+
+
     const handleClose = () => {
         setOpen(false);
     };
-    const handleToggle = () => {
-        setOpen(!open);
+
+    const handleSendForm = async () => {
+        const data = new FormData();
+        data.append('moveOutPlace', moveOutPlaceRef.current.value);
+        data.append('moveOutDate', value);
+        data.append('moveOutReason', moveOutReasonRef.current.value);
+        data.append('ResidentIdCode', ResidentIdCodeRef.current.value);
+        if (moveOutPlaceRef.current.value === '' || value === null || moveOutReasonRef.current.value === '' || ResidentIdCodeRef.current.value === '') {
+            alert('Vui lòng nhập đầy đủ thông tin')
+        } else {
+            setOpen(true);
+            await formMovement.sendFormMovement(auth.token, data).then(res => {
+                if (res.status === 200) {
+                    alert('Gửi đơn thành công')
+                }
+            }).catch(
+                err => {
+                    console.log(err)
+                    alert(err?.response?.data?.description || 'Gửi đơn thất bại')
+                }
+            ).finally(() => {
+                setOpen(false);
+            });
+        }
+
     };
 
-    const [value, setValue] = useState(null);
+
     return (
         <div className={cx('container-require')}>
             <Box
@@ -38,14 +73,13 @@ export default function RequireRemoving() {
                 <Backdrop
                     sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                     open={open}
-                    onClick={handleClose}
                 >
                     <CircularProgress color="inherit" />
                 </Backdrop>
                 <h1>Đơn xin chuyển đi</h1>
                 <div className={cx('line-form')}>
-                    <TextField required label="CMND/CCCD" variant="outlined" />
-                    <TextField required label="Nơi chuyển đi" variant="outlined" />
+                    <TextField inputRef={ResidentIdCodeRef} required label="CMND/CCCD" variant="outlined" />
+                    <TextField inputRef={moveOutPlaceRef} required label="Nơi chuyển đi" variant="outlined" />
                 </div>
                 <div className={cx('line-form')}>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -60,10 +94,10 @@ export default function RequireRemoving() {
                             renderInput={(params) => <TextField {...params} />}
                         />
                     </LocalizationProvider>
-                    <TextField required label="Lý do chuyển đi" variant="outlined" />
+                    <TextField inputRef={moveOutReasonRef} required label="Lý do chuyển đi" variant="outlined" />
                 </div>
+                <Button onClick={handleSendForm} style={{ margin: '0 auto', display: 'block' }} variant="contained">Gửi</Button>
             </Box>
-            <Button onClick={handleToggle} style={{ margin: '0 auto', display: 'block' }} variant="contained">Gửi</Button>
         </div>
     );
 }

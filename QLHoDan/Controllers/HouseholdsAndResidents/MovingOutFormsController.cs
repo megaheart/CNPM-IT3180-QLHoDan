@@ -52,7 +52,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             var user = await _userManager.FindByIdAsync(id);
             if (user == null)
             {
-                return Unauthorized(new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") );
+                return Unauthorized(new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else."));
             }
             if (user.Role > 3)
             {
@@ -123,16 +123,17 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                return Unauthorized(new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") );
+                return Unauthorized(new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else."));
             }
             if (user.Role > 3)
             {
-                if(user.UserName != form.Account) { return NotFound(); }
+                if (user.UserName != form.Account) { return NotFound(); }
             }
             else if (user.Role == 3)
             {
-                if (user.Scope != form.AccountScope) {
-                    return BadRequest(new RequestError("IdS_ScopeOutOfManagement", "Tổ trưởng tổ " + user.Scope + " không thể chỉnh sửa form của tổ " + form.AccountScope + ".") );
+                if (user.Scope != form.AccountScope)
+                {
+                    return BadRequest(new RequestError("IdS_ScopeOutOfManagement", "Tổ trưởng tổ " + user.Scope + " không thể chỉnh sửa form của tổ " + form.AccountScope + "."));
                 }
             }
             MovingOutFormDetail movingoutformdetail = new MovingOutFormDetail()
@@ -171,7 +172,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                return Unauthorized(new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") );
+                return Unauthorized(new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else."));
             }
 
             var resident = await _context.Resident.FindAsync(model.ResidentIdCode);
@@ -179,7 +180,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             {
                 return BadRequest(new RequestError("ResidentNotFound", "Nhân khẩu không tồn tại trong CSDL."));
             }
-            if (!resident.MoveOutDate.HasValue)
+            if (resident.MoveOutDate.HasValue)
             {
                 return BadRequest(new RequestError("ResidentMovedOut", "Nhân khẩu đã chuyển đi rồi không chuyển đi nữa."));
             }
@@ -230,7 +231,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             {
                 return NotFound();
             }
-            if(form.IsAccepted || !string.IsNullOrEmpty(form.NotAcceptedReason))
+            if (form.IsAccepted || !string.IsNullOrEmpty(form.NotAcceptedReason))
             {
                 return BadRequest(new RequestError("CheckedForm", "Form đã được kiểm tra (phê duyệt hoặc bị từ chối) nên không thể kiểm tra lại nữa."));
             }
@@ -238,12 +239,13 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                return Unauthorized(new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else.") );
+                return Unauthorized(new RequestError("IdS_InvalidToken", "Jwt token is invalid or something else."));
             }
             if (user.Role == 3)
             {
-                if (user.Scope != form.AccountScope) {
-                    return BadRequest(new RequestError("IdS_ScopeOutOfManagement", "Tổ trưởng tổ " + user.Scope + " không thể xét duyệt form của tổ " + form.AccountScope + ".") );
+                if (user.Scope != form.AccountScope)
+                {
+                    return BadRequest(new RequestError("IdS_ScopeOutOfManagement", "Tổ trưởng tổ " + user.Scope + " không thể xét duyệt form của tổ " + form.AccountScope + "."));
                 }
             }
 
@@ -261,7 +263,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             else
             {
                 if (string.IsNullOrEmpty(model.NotAcceptReason))
-                    return BadRequest(new RequestError("InvalidNotAcceptedReason", "`NotAcceptedReason` bắt buộc phải có nếu như từ chối.") );
+                    return BadRequest(new RequestError("InvalidNotAcceptedReason", "`NotAcceptedReason` bắt buộc phải có nếu như từ chối."));
                 form.NotAcceptedReason = model.NotAcceptReason;
                 msg = $"{FormHelper.GetFormTitle(form)} đã bị từ chối do {model.NotAcceptReason}.";
             }
@@ -269,7 +271,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             _context.MovingOutForm.Update(form);
             await _context.SaveChangesAsync();
 
-            await _notification.Notify(user.UserName, new []{form.Account }, null, msg);
+            await _notification.Notify(user.UserName, new[] { form.Account }, null, msg);
 
             return Ok();
         }
@@ -293,9 +295,9 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
                 return NotFound();
             }
 
-            if(form.IsAccepted || !string.IsNullOrEmpty(form.NotAcceptedReason))
+            if (form.IsAccepted || !string.IsNullOrEmpty(form.NotAcceptedReason))
             {
-                return BadRequest(new RequestError("CheckedForm", "Form đã được phê duyệt hoặc bị từ chối nên không thể rút lại.") );
+                return BadRequest(new RequestError("CheckedForm", "Form đã được phê duyệt hoặc bị từ chối nên không thể rút lại."));
             }
 
 
