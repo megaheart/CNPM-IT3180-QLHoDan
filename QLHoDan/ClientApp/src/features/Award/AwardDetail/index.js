@@ -24,6 +24,7 @@ import Grid from '@mui/material/Grid';
 
 import TableSkeleton from '~/page/Skeleton';
 import AwardListEstimate from '../AwardListEstimate';
+import AwardComplete from '../AwardComplete';
 
 import awardApi from '~/services/api/awardApi';
 import {
@@ -107,6 +108,10 @@ export default function AwardDetail({ open, onClose, idAward }) {
     const [openBackdrop, setOpenBackdrop] = useState(false);
 
     const [messageToSpecialAccount, setMessageToSpecialAccount] = useState('');
+
+
+    const [awardComplete, setAwardComplete] = useState(false);
+
     const queryClient = useQueryClient();
 
     const { data, isLoading, error } = useQuery(
@@ -227,6 +232,9 @@ export default function AwardDetail({ open, onClose, idAward }) {
         setAcceptDialog(false);
     }
 
+    const viewComplete = () => {
+        setAwardComplete(true);
+    }
 
     useEffect(
         () => {
@@ -370,6 +378,7 @@ export default function AwardDetail({ open, onClose, idAward }) {
                 actionAgree={handleAcceptEvent}
                 actionCancel={handeNotAgreeDialog}
             />
+            {awardComplete && <AwardComplete open={awardComplete} onClose={setAwardComplete} idAward={idAward} />}
             <Dialog
                 fullWidth={true}
                 maxWidth='600'
@@ -405,6 +414,9 @@ export default function AwardDetail({ open, onClose, idAward }) {
                                     <Button variant="contained" color="primary" onClick={() => setEstimateAward(true)}
                                         disabled={auth.role !== 'CommitteeChairman' && auth.role !== 'Accountant' && !data.isAccepted}
                                         sx={{ fontSize: 15, margin: '2px 4px', maxWidth: 300 }} >Danh sách thưởng dự kiến </Button>
+                                    <Button variant="contained" color="primary" onClick={viewComplete}
+                                        disabled={auth.role !== 'CommitteeChairman' && auth.role !== 'Accountant' && !data.isAccepted}
+                                        sx={{ fontSize: 15, margin: '2px 4px', maxWidth: 400 }} >Danh sách thưởng chính thức </Button>
                                 </div>
                                 :
                                 <div >

@@ -35,50 +35,14 @@ const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function AwardListEstimate({ open, onClose, idAward }) {
-
-    console.log(idAward)
+export default function AwardComplete({ open, onClose, idAward }) {
 
     const { auth } = useAuth();
 
-    const [openCom, setOpenCom] = useState(false);
-    const [success, setSuccess] = useState(false);
-    const [openBackdrop, setOpenBackdrop] = useState(false);
-
-    const handleSuccess = () => {
-        setSuccess(false);
-    }
-
-    const queryClient = useQueryClient();
-
     const { data, isLoading, error } = useQuery(
-        ['AwardEstimateHistory', idAward],
-        async () => await formManageAwardHistory.getFormManageAwardHistoryById(auth.token, idAward)
+        ['AwardCoompleteHistory', idAward],
+        async () => await formManageAwardHistory.getAllAwardHistory(auth.token, idAward)
     );
-
-    console.log(data, error)
-
-    const mutateSaveHistory = useMutation(
-        (id) => formManageAwardHistory.saveFormManageAwardHistory(auth.token, id),
-        {
-            onMutate: () => {
-                setOpenBackdrop(true);
-            },
-            onError: () => {
-                alert('Lưu thất bại, thử lại hoặc không thể lưu')
-            },
-            onSuccess: () => {
-                setSuccess(true);
-                queryClient.invalidateQueries(['AwardCoompleteHistory', idAward]);
-            },
-            onSettled: () => {
-                setOpenBackdrop(false);
-            }
-
-        }
-    );
-
-
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -96,17 +60,6 @@ export default function AwardListEstimate({ open, onClose, idAward }) {
         onClose(!open);
     };
 
-    const handleStartSaveHistory = () => {
-        setOpenCom(true);
-    }
-    const handleCloseConfirmBox = () => {
-        setOpenCom(false);
-    }
-    const handleAgreeSave = () => {
-        mutateSaveHistory.mutate(idAward);
-        setOpenCom(false);
-    }
-
     return (
         <Dialog
             fullWidth={true}
@@ -115,24 +68,11 @@ export default function AwardListEstimate({ open, onClose, idAward }) {
             onClose={handleClose}
             TransitionComponent={Transition}
         >
-            <ConfirmBox title='Đóng cửa sổ ?' open={openCom} onClose={handleCloseConfirmBox} onAgree={handleAgreeSave} />
-            <Snackbar open={success} autoHideDuration={3000} onClose={handleSuccess} >
-                <Alert onClose={handleSuccess} severity="success" sx={{ width: '100%', fontSize: 15 }}>
-                    Thành công !
-                </Alert>
-            </Snackbar>
-            <Backdrop
-                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1000 }}
-                open={openBackdrop}
-            >
-                <CircularProgress color="inherit" />
-            </Backdrop>
             {!error ? <ErrorData /> :
                 (isLoading || !data) ? <TableSkeleton /> :
                     (data.length > 0 && <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <Button variant="contained" color="success" onClick={handleStartSaveHistory}
-                                sx={{ fontSize: 15, margin: '2px 4px', minWidth: 130 }} >Lưu vào lịch sử trao thưởng</Button>
+                        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+
                             <Button variant="contained" color="error" onClick={handleClose}
                                 sx={{ fontSize: 15, margin: '2px 4px', maxWidth: 300 }} >Đóng</Button>
                         </div>

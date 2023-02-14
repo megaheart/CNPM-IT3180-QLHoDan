@@ -29,7 +29,7 @@ class FormManageAwardHistory {
         }
     }
 
-    async saveFormManageAwardHistory(token) {
+    async saveFormManageAwardHistory(token, id) {
         const response = await axios.post(
             `${API_MANAGE_AWARD_HISTORY}/savePreview?rewardCeremonyId=${id}`,
             config(token)

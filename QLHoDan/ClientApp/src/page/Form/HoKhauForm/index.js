@@ -1,5 +1,9 @@
-import { Fab, Box, TextField, MenuItem, Collapse, Button, Backdrop, CircularProgress } from '@mui/material';
-import { useState, useCallback, useRef, useEffect } from 'react';
+import {
+    Button, Dialog, Slide,
+    TextField, TableRow, TableHead, TableContainer, TableCell, TableBody, Table, Paper,
+    FormControl, Box, Fab, MenuItem, Backdrop, CircularProgress
+} from '@mui/material';
+import { useState, useCallback, useRef, useEffect, forwardRef } from 'react';
 import { Add, CloseOutlined, DoneSharp } from '@mui/icons-material';
 import styles from './HK.module.scss'
 import classNames from 'classnames/bind';
@@ -7,75 +11,82 @@ import { DataGrid } from '@mui/x-data-grid';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-
-
-
+import { styled } from '@mui/material/styles';
+import ConfirmBox from '~/page/Table/DiaLog/ConfirmBox';
+import { tableCellClasses } from '@mui/material/TableCell';
 const cx = classNames.bind(styles);
 const genders = [
     { value: 'male', label: 'Nam' },
     { value: 'female', label: 'Nữ' }
 ]
 
-const columns = [
-    // { field: 'id', headerName: 'ID' }, //1
-    { field: 'name', headerName: 'Họ và tên', width: 150, editable: true },//2
-    { field: 'alias', headerName: 'Bí danh', width: 80, editable: true },//3
-    { field: 'birthday', headerName: 'Ngày sinh', type: 'date', width: 100, editable: true },//4
-    { field: 'birthPlace', headerName: 'Nơi sinh', width: 90, editable: true },//5
-    { field: 'domicile', headerName: 'Nguyên quán', width: 120, editable: true },//6
-    { field: 'dantoc', headerName: 'Dân tộc', width: 80, editable: true },//7
-    { field: 'citizenship', headerName: 'Quốc tịch', editable: true },//8
-    { field: 'career', headerName: 'Nghề nghiệp', width: 100, editable: true },//9
-    { field: 'workplace', headerName: 'Nơi làm việc', width: 120, editable: true },//10
-    { field: 'identification', headerName: 'CCCD/CMND', width: 100, editable: true },//11
-    { field: 'relationship', headerName: 'Quan hệ với chủ hộ', width: 140, editable: true },//12,
-    { field: 'gender', headerName: 'Giới tính', editable: true }//13,
-]
-//data in each row
-const rows = [
-    //     { id: 1, name: 'Nguyễn Văn A', alias: 'A', birthday: '01/01/2000', birthPlace: 'Hà Nội', domicile: 'Hà Nội', dantoc: 'Kinhh', citizenship: 'Việt Nam', career: 'Sinh viên', workplace: 'Hà Nội', identification: '123456789', relationship: 'Chủ hộ', gender: 'Nam' },
-    //     { id: 2, name: 'Nguyễn Văn B', alias: 'B', birthday: '01/01/2000', birthPlace: 'Hà Nội', domicile: 'Hà Nội', dantoc: 'Kignh', citizenship: 'Việt Nam', career: 'Sinh viên', workplace: 'Hà Nội', identification: '123456789', relationship: 'Con', gender: 'Nam' },
-]
+const Transition = forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    [`&.${tableCellClasses.head}`]: {
+        backgroundColor: theme.palette.common.black,
+        color: theme.palette.common.white,
+    },
+    [`&.${tableCellClasses.body}`]: {
+        fontSize: 14,
+    },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    '&:nth-of-type(odd)': {
+        backgroundColor: theme.palette.action.hover,
+    },
+    // hide last border
+    '&:last-child td, &:last-child th': {
+        border: 0,
+    },
+}));
 
 export default function FormHKComponent() {
-    const [rowstable, setRows] = useState(rows);
+    const [rows, setRows] = useState([]);
 
     const [visible, setVisible] = useState(false);
     const [visibleDes, setVisibleDes] = useState(false);
     // const [NK, setNK] = useState([]);
     const [open, setOpen] = useState(false);
+
+    const [idViewing, setIdViewing] = useState(null);
+
     const handleClose = () => {
         setOpen(false);
     };
+
     const handleToggle = () => {
         setOpen(!open);
     };
 
-    const [openImg, setOpenImg] = useState(false);
+    const [openConfirm, setOpenConfirm] = useState(false);
+
+    const householdIdRef = useRef(null);
+    const addressRef = useRef(null);
+    const scopeRef = useRef(null);
+
     const [birthday, setBirthday] = useState(null);
-    // const [name, setName] = useState('');
-    // const [alias, setAlias] = useState('');
-    // const [birthPlace, setBirthPlace] = useState('');
-    // const [domicile, setDomicile] = useState('');
-    // const [dantoc, setDantoc] = useState('');
-    // const [citizenship, setCitizenship] = useState('');
-    // const [career, setCareer] = useState('');
-    // const [workplace, setWorkplace] = useState('');
-    // const [identification, setIdentification] = useState('');
-    // const [relationship, setRelationship] = useState('');
-    // const [gender, setGender] = useState('');
-    const nameRef = useRef();
-    const aliasRef = useRef();
-    const birthdayRef = useRef();
-    const birthPlaceRef = useRef();
-    const domicileRef = useRef();
-    const dantocRef = useRef();
-    const citizenshipRef = useRef();
-    const careerRef = useRef();
-    const workplaceRef = useRef();
-    const identificationRef = useRef();
-    const relationshipRef = useRef();
-    const genderRef = useRef();
+    const [moveInDate, setMoveInDate] = useState(null);
+
+
+    const fullNameRef = useRef(null);
+    const aliasRef = useRef(null);
+    const dateOfBirthRef = useRef(null);
+    const isMaleRef = useRef(null);
+    const birthPlaceRef = useRef(null);
+    const nativeLandRef = useRef(null);
+    const ethnicRef = useRef(null);
+    const nationRef = useRef(null);
+    const jobRef = useRef(null);
+    const workplaceRef = useRef(null);
+    const identityCodeRef = useRef(null);
+    const relationShipRef = useRef(null);
+    const academicLevelRef = useRef(null);
+    const criminalRecordRef = useRef(null);
+    const moveInDateRef = useRef(null);
+    const moveInReasonRef = useRef(null);
 
 
     const handleNKFrom = useCallback(() => {
@@ -85,68 +96,167 @@ export default function FormHKComponent() {
         }
     }, [visibleDes])
 
-    const removeImageByClick = (index) => {
-        setArrImg(prev => prev.filter((item, i) => i !== index) || [])
+
+
+
+    function resetForm(refs) {
+        Object.values(refs).forEach((ref) => {
+            if (ref.current) {
+                ref.current.value = ref.current.defaultValue;
+            }
+        });
     }
 
-    const handleBtnDes = useCallback(() => {
+    const resetInput = () => {
+        resetForm({
+            fullNameRef,
+            aliasRef,
+            dateOfBirthRef,
+            isMaleRef,
+            birthPlaceRef,
+            nativeLandRef,
+            ethnicRef,
+            nationRef,
+            jobRef,
+            workplaceRef,
+            identityCodeRef,
+            relationShipRef,
+            academicLevelRef,
+            criminalRecordRef,
+            moveInDateRef,
+            moveInReasonRef,
+        });
+
+    }
+
+    const handleBtnDes = () => {
         if (visible === true) {
             setVisible(false);
+            resetInput();
             setVisibleDes(false)
         }
-    }, [visible])
+    };
+
+    const handleAddButton = () => {
+
+    }
+
+
     const handleAddNK = () => {
-        setRows(prev => [...prev, {
-            id: prev.length + 1,
-            name: nameRef.current.value,
-            alias: aliasRef.current.value,
-            birthday: birthdayRef.current.value.toString(),
-            birthPlace: birthPlaceRef.current.value,
-            domicile: domicileRef.current.value,
-            dantoc: dantocRef.current.value,
-            citizenship: citizenshipRef.current.value,
-            career: careerRef.current.value,
-            workplace: workplaceRef.current.value,
-            identification: identificationRef.current.value,
-            relationship: relationshipRef.current.value,
-            gender: genderRef.current.value,
-        }]);
-        nameRef.current.value = '';
-        aliasRef.current.value = '';
-        birthPlaceRef.current.value = '';
-        domicileRef.current.value = '';
-        dantocRef.current.value = '';
-        citizenshipRef.current.value = '';
-        careerRef.current.value = '';
-        workplaceRef.current.value = '';
-        identificationRef.current.value = '';
-        relationshipRef.current.value = '';
-        genderRef.current.value = '';
+        const currentData = {
+            fullName: fullNameRef.current.value || '',
+            alias: aliasRef.current.value || '',
+            dateOfBirth: birthday,
+            isMale: isMaleRef.current.value === 'male' ? true : false,
+            birthPlace: birthPlaceRef.current.value || '',
+            nativeLand: nativeLandRef.current.value || '',
+            ethnic: ethnicRef.current.value || '',
+            nation: nationRef.current.value || '',
+            job: jobRef.current.value || '',
+            workplace: workplaceRef.current.value || '',
+            identityCode: identityCodeRef.current.value || '',
+            relationShip: relationShipRef.current.value || '',
+            academicLevel: academicLevelRef.current.value || '',
+            criminalRecord: criminalRecordRef.current.value || '',
+            moveInDate: moveInDate,
+            moveInReason: moveInReasonRef.current.value || ''
+        }
+        if (
+            currentData.dateOfBirth === null ||
+            currentData.identityCode.length !== 9 ||
+            currentData.identityCode.length !== 12 ||
+            currentData.moveInDate === null
+        ) {
+            alert('Vui lòng nhập đầy đủ thông tin')
+        }
+        else {
+            setRows(prev => [...prev, currentData]);
+            resetForm();
+        }
         if (visible === true) {
             setVisible(false);
             setVisibleDes(false)
         }
     };
-    const handleRequestFullScreen = useCallback((e) => {
-        e.target.requestFullscreen();
-    }, []);
 
-    const [arrImg, setArrImg] = useState([]);
+    const [deletedId, setDeletedId] = useState(null);
+    const startDelete = (id) => {
+        setDeletedId(id);
+        setOpenConfirm(true);
+    }
 
-    const handleFileImage = useCallback((e) => {
-        let files = [...e.target.files].map((file) => {
-            file.preview = URL.createObjectURL(file);
-            return file;
-        })
-        setArrImg([...arrImg, ...files]);
-        e.target.value = null;
+    const handleCloseConfirmBox = () => {
+        setOpenConfirm(false);
+        setDeletedId(null);
+    }
 
-        return () => {
-            arrImg && arrImg.forEach((file) => URL.revokeObjectURL(file.preview))
-            //remvove the temporary url if avatar exists
+    const handleDeleteRow = () => {
+        setRows(prev => prev.filter((_, i) => i !== deletedId));
+    }
+
+    const handleChangeDetailResident = (index) => {
+        const viewData = rows[index];
+        fullNameRef.current.value = viewData.fullName;
+        aliasRef.current.value = viewData.alias;
+        dateOfBirthRef.current.value = viewData.dateOfBirth;
+        isMaleRef.current.value = viewData.isMale;
+        birthPlaceRef.current.value = viewData.birthPlace
+        nativeLandRef.current.value = viewData.nativeLand
+        ethnicRef.current.value = viewData.ethnic
+        nationRef.current.value = viewData.nation
+        jobRef.current.value = viewData.job
+        workplaceRef.current.value = viewData.workplace
+        identityCodeRef.current.value = viewData.identityCode
+        relationShipRef.current.value = viewData.relationShip
+        academicLevelRef.current.value = viewData.academicLevel
+        criminalRecordRef.current.value = viewData.criminalRecord
+        moveInDateRef.current.value = viewData.moveInDate
+        moveInReasonRef.current.value = viewData.moveInReason
+        setVisible(true);
+    }
+
+    const handleChangeDetail = () => {
+        const currentData = {
+            fullName: fullNameRef.current.value || '',
+            alias: aliasRef.current.value || '',
+            dateOfBirth: birthday,
+            isMale: isMaleRef.current.value === 'male' ? true : false,
+            birthPlace: birthPlaceRef.current.value || '',
+            nativeLand: nativeLandRef.current.value || '',
+            ethnic: ethnicRef.current.value || '',
+            nation: nationRef.current.value || '',
+            job: jobRef.current.value || '',
+            workplace: workplaceRef.current.value || '',
+            identityCode: identityCodeRef.current.value || '',
+            relationShip: relationShipRef.current.value || '',
+            academicLevel: academicLevelRef.current.value || '',
+            criminalRecord: criminalRecordRef.current.value || '',
+            moveInDate: moveInDate,
+            moveInReason: moveInReasonRef.current.value || ''
         }
+        console.log(currentData)
+        if (
+            currentData.dateOfBirth === null ||
+            (currentData.identityCode.length !== 9 &&
+                currentData.identityCode.length !== 12) ||
+            currentData.moveInDate === null
+        ) {
+            alert('Vui lòng nhập đúng và đầy đủ thông tin')
+        }
+        else {
+            setRows(prev =>
+                prev.map((item, index) => {
+                    if (index === idViewing) {
+                        return currentData;
+                    }
+                    return item;
+                }));
+            resetForm();
+            setVisible(false);
+            setIdViewing(null);
+        }
+    }
 
-    }, [arrImg]);
     return (
         <div className={cx('container')}>
             <Backdrop
@@ -156,7 +266,7 @@ export default function FormHKComponent() {
             >
                 <CircularProgress color="inherit" />
             </Backdrop>
-
+            <ConfirmBox key='delete' open={openConfirm} onClose={handleCloseConfirmBox} onAgree={handleDeleteRow} title='Bạn có chắc muốn xóa' />
             <Box
                 component="form"
                 sx={{
@@ -180,73 +290,26 @@ export default function FormHKComponent() {
                         InputLabelProps={{
                             style: { fontSize: 20 }
                         }}
+                        inputRef={householdIdRef}
                         variant="standard" />
-                    <TextField helperText='' required label="Nơi thường trú" inputProps={{
+                    <TextField helperText='' label="Nơi thường trú" inputProps={{
                         style: { fontSize: 20 }
                     }}
                         InputLabelProps={{
                             style: { fontSize: 20 }
                         }}
+                        inputRef={addressRef}
                         variant="standard" />
-                    <TextField helperText='' required label="Tổ phụ trách" inputProps={{
+                    <TextField helperText='' label="Tổ phụ trách" inputProps={{
                         style: { fontSize: 20 }
                     }}
                         InputLabelProps={{
                             style: { fontSize: 20 }
                         }}
-                        variant="standard" />
-                    <TextField helperText='' required label="Họ và tên chủ hộ" inputProps={{
-                        style: { fontSize: 20 }
-                    }}
-                        InputLabelProps={{
-                            style: { fontSize: 20 }
-                        }}
+                        inputRef={scopeRef}
                         variant="standard" />
                 </div>
-                <div className={cx('input-image-area')}>
-                    <label htmlFor="upload-photo" style={{ marginLeft: 10 }}>
-                        <input
-                            style={{ display: 'none' }}
-                            id="upload-photo"
-                            name="upload-photo"
-                            type="file"
-                            multiple="multiple"
-                            onChange={handleFileImage}
-                        />
-                        <Fab
-                            color="secondary"
-                            size="small"
-                            component="span"
-                            aria-label="add"
-                            variant="extended"
-                        >
-                            <Add /> Ảnh minh chứng
-                        </Fab>
-                        {openImg && <CircularProgress size={10} sx={{
-                            marginLeft: '10px',
-                        }} color="inherit" />}
-                    </label>
-                    {(arrImg.length > 0) && <div className={cx('img-render')}>{arrImg.map((item, index) => (
-                        <div key={"image" + index} style={{ position: 'relative', display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center', width: 'auto' }}>
-                            <img src={item.preview}
-                                style={{ width: 'auto', height: '150px', marginRight: 5, marginBottom: 5, cursor: 'pointer' }}
-                                alt="evidence"
-                                onClick={handleRequestFullScreen} />
-                            <Fab
-                                sx={{ position: 'absolute', right: -5, top: -7, backgroundColor: 'transparent' }}
-                                color="error"
-                                size="small"
-                                component="span"
-                                aria-label="add"
-                                variant="extended"
-                                onClick={() => removeImageByClick(index)}
-                            >
-                                <CloseOutlined />
-                            </Fab>
-                        </div>
-                    ))}
-                    </div>}
-                </div>
+
                 <div className={cx('add-nk-area')}>
                     <Fab
                         color="primary"
@@ -264,45 +327,65 @@ export default function FormHKComponent() {
                     >
                         <div className={cx('backdrop-add')}>
                             <div style={{ display: 'flex', flexFlow: 'row wrap', justifyContent: 'center' }}>
-                                <TextField helperText='' required inputRef={nameRef} label="Họ và tên"
+                                <TextField helperText='' required inputRef={fullNameRef} label="Họ và tên" defaultValue=''
                                     variant="standard" />
-                                <TextField helperText='' required inputRef={aliasRef} label="Bí danh"
+                                <TextField helperText='' required inputRef={aliasRef} label="Bí danh" defaultValue=''
                                     variant="standard" />
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DatePicker
                                         required
                                         label="Ngày sinh"
                                         value={birthday}
-                                        inputRef={birthdayRef}
+                                        inputRef={dateOfBirthRef}
                                         onChange={(newValue) => {
                                             setBirthday(newValue);
                                         }}
+                                        defaultValue={null}
                                         renderInput={(params) => <TextField {...params} />}
                                     />
                                 </LocalizationProvider>
-                                <TextField helperText='' required inputRef={birthPlaceRef} label="Nơi sinh"
+                                <TextField helperText='' required inputRef={birthPlaceRef} label="Nơi sinh" defaultValue=''
                                     variant="standard" />
-                                <TextField helperText='' required inputRef={domicileRef} label="Nguyên quán"
+                                <TextField helperText='' required inputRef={nativeLandRef} label="Nguyên quán" defaultValue=''
                                     variant="standard" />
-                                <TextField helperText='' required inputRef={dantocRef} label="Dân tộc"
+                                <TextField helperText='' required inputRef={ethnicRef} label="Dân tộc" defaultValue=''
                                     variant="standard" />
-                                <TextField helperText='' required inputRef={citizenshipRef} label="Quốc tịch"
+                                <TextField helperText='' required inputRef={nationRef} label="Quốc tịch" defaultValue=''
                                     variant="standard" />
-                                <TextField helperText='' required inputRef={careerRef} label="Nghề nghiệp"
+                                <TextField helperText='' required inputRef={jobRef} label="Nghề nghiệp" defaultValue=''
                                     variant="standard" />
-                                <TextField helperText='' required inputRef={workplaceRef} label="Nơi làm việc"
+                                <TextField helperText='' required inputRef={workplaceRef} label="Nơi làm việc" defaultValue=''
                                     variant="standard" />
-                                <TextField helperText='' required inputRef={identificationRef} label="CMND/CCCD"
+                                <TextField helperText='' required inputRef={identityCodeRef} label="CMND/CCCD" defaultValue=''
                                     variant="standard" />
-                                <TextField helperText='' required inputRef={relationshipRef} label="Quan hệ với chủ hộ"
+                                <TextField helperText='' required inputRef={relationShipRef} label="Quan hệ với chủ hộ" defaultValue=''
+                                    variant="standard" />
+                                <TextField helperText='' required inputRef={academicLevelRef} label="Trình độ học vấn" defaultValue=''
+                                    variant="standard" />
+                                <TextField helperText='' required inputRef={criminalRecordRef} label="Tiền án" defaultValue=''
+                                    variant="standard" />
+                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <DatePicker
+                                        required
+                                        label="Ngày chuyển đến"
+                                        value={moveInDate}
+                                        inputRef={moveInDateRef}
+                                        onChange={(newValue) => {
+                                            setMoveInDate(newValue);
+                                        }}
+                                        defaultValue={null}
+                                        renderInput={(params) => <TextField {...params} />}
+                                    />
+                                </LocalizationProvider>
+                                <TextField helperText='' required inputRef={moveInReasonRef} label="Lý do chuyển đến" defaultValue=''
                                     variant="standard" />
                                 <TextField helperText='' required
                                     id="standard-select-gender"
                                     select
                                     label="Giới tính"
                                     variant="standard"
-                                    inputRef={genderRef}
-                                    defaultValue=""
+                                    inputRef={isMaleRef}
+                                    defaultValue="male"
                                 >
                                     {genders.map((option) => (
                                         <MenuItem key={option.value} value={option.label}>
@@ -313,17 +396,30 @@ export default function FormHKComponent() {
                             </div>
                             {visibleDes &&
                                 <div style={{ display: 'flex', flexFlow: 'row wrap', justifyContent: 'center' }}>
-                                    <Fab
-                                        sx={{ marginLeft: 1, width: 100 }}
-                                        color="success"
-                                        size="small"
-                                        component="span"
-                                        aria-label="add"
-                                        variant="extended"
-                                        onClick={handleAddNK}
-                                    >
-                                        <DoneSharp /> Đồng ý
-                                    </Fab>
+                                    {idViewing ?
+                                        <Fab
+                                            sx={{ marginLeft: 1, maxWidth: 300 }}
+                                            color="success"
+                                            size="small"
+                                            component="span"
+                                            aria-label="add"
+                                            variant="extended"
+                                            onClick={handleChangeDetail}
+                                        >
+                                            <DoneSharp /> Lưu thay đổi
+                                        </Fab> :
+                                        <Fab
+                                            sx={{ marginLeft: 1, maxWidth: 120 }}
+                                            color="success"
+                                            size="small"
+                                            component="span"
+                                            aria-label="add"
+                                            variant="extended"
+                                            onClick={handleAddNK}
+                                        >
+                                            <DoneSharp /> Đồng ý
+                                        </Fab>
+                                    }
                                     <Fab
                                         sx={{ marginLeft: 1, width: 100 }}
                                         color="error"
@@ -342,7 +438,7 @@ export default function FormHKComponent() {
 
                     <div style={{ width: '100%' }}>
                         <h3>Danh sách nhân khẩu</h3>
-                        <DataGrid
+                        {/* <DataGrid
                             sx={{ fontSize: 13, margin: '10 0' }}
                             rows={rowstable}
                             columns={columns}
@@ -352,7 +448,63 @@ export default function FormHKComponent() {
                             rowsPerPageOptions={[5]}
                             aria-label="Nhân khẩu"
                             disableSelectionOnClick
-                        />
+                        /> */}
+                        <TableContainer sx={{ padding: '0 0px', height: 240 }} component={Paper}>
+                            <Table stickyHeader sx={{ minWidth: 1000 }} aria-label="customized table">
+                                <TableHead>
+                                    <TableRow>
+                                        <StyledTableCell align="center">CCCD/CMND</StyledTableCell>
+                                        <StyledTableCell align="center">Họ và tên</StyledTableCell>
+                                        <StyledTableCell align="center">Ngày sinh</StyledTableCell>
+                                        <StyledTableCell align="center">Giới tính</StyledTableCell>
+                                        <StyledTableCell align="center">Quan hệ với chủ hộ</StyledTableCell>
+                                        <StyledTableCell align="center">Edit</StyledTableCell>
+                                    </TableRow>
+                                </TableHead>
+                                {rows.length !== 0 ?
+                                    <TableBody>
+                                        {rows.map((row, index) => (
+                                            <StyledTableRow key={index}>
+                                                <StyledTableCell align="center">{row.identityCode}</StyledTableCell>
+                                                <StyledTableCell align="center">{row.fullName}</StyledTableCell>
+                                                <StyledTableCell align="center">{row.dateOfBirth ? new Date(row.dateOfBirth).toLocaleDateString(
+                                                    'vi-VN',
+                                                    { day: '2-digit', month: '2-digit', year: 'numeric' }
+                                                ) : null}</StyledTableCell>
+                                                <StyledTableCell align="center">{row.isMale ? 'Nam' : 'Nữ'}</StyledTableCell>
+                                                <StyledTableCell align="center">{row.relationShip}</StyledTableCell>
+                                                <StyledTableCell align="center" component="th" scope="row">
+                                                    <Button onClick={
+                                                        () => {
+                                                            handleChangeDetailResident(row)
+                                                        }
+                                                    }
+                                                    >
+                                                        Chi tiết
+                                                    </Button>
+                                                    <Button
+                                                        onClick={() => startDelete(index)}
+                                                    >Xóa</Button>
+                                                </StyledTableCell>
+                                            </StyledTableRow>
+                                        ))}
+                                    </TableBody>
+                                    :
+                                    (
+                                        <TableBody>
+                                            <TableRow>
+                                                <StyledTableCell align="center"></StyledTableCell>
+                                                <StyledTableCell align="center"></StyledTableCell>
+                                                <StyledTableCell align="center">Chưa có thành viên</StyledTableCell>
+                                                <StyledTableCell align="center"></StyledTableCell>
+                                                <StyledTableCell align="center"></StyledTableCell>
+                                                <StyledTableCell align="center"></StyledTableCell>
+                                            </TableRow>
+                                        </TableBody>
+                                    )
+                                }
+                            </Table>
+                        </TableContainer>
                     </div>
                 </div>
             </Box>
