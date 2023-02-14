@@ -1,8 +1,20 @@
-import { HKForm, NKForm } from '../Form'
+import { HKForm, NKForm } from '../Form';
+import useAuth from '~/hooks/useAuth';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 function Guest() {
+    const { auth } = useAuth();
+    console.log(auth);
+    const navigate = useNavigate();
+    useEffect(
+        () => {
+            if (auth.role) {
+                navigate('/dashboard');
+            }
+        }, []
+    )
     return (
         <div>
-
         </div>
     );
 }

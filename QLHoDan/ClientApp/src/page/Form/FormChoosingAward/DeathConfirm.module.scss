@@ -1,0 +1,17 @@
+.container {
+    width: 70%;
+    margin: 0 auto;
+    padding: 5px;
+}
+
+.choosing-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+h1 {
+    text-align: center;
+}

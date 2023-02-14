@@ -1,19 +1,21 @@
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import useAuth from "~/hooks/useAuth";
 //router
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
 //material-ui
-import { Button, FormControl, CircularProgress, InputLabel, InputAdornment, Input, FormHelperText } from '@mui/material'
+import { Button, FormControl, IconButton, CircularProgress, InputLabel, InputAdornment, Input, FormHelperText } from '@mui/material';
 //icons
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
-//api
-import accountApi from '../../../services/api/accountApi'
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import validation from '~/services/validate';
 //style
-import styles from './Register.module.scss'
-import classNames from 'classnames/bind'
+import styles from './Register.module.scss';
+import classNames from 'classnames/bind';
+//call api
+import householdAccountManager from '~/services/api/householdApi';
 
 const cx = classNames.bind(styles)
 
@@ -26,7 +28,7 @@ export default function Signup() {
     const [loading, setLoading] = useState(false);
 
     //auth context
-    const { setAuth } = useAuth();
+    const { auth } = useAuth();
 
     //user state to register
     const [username, setUserName] = useState('');
@@ -34,53 +36,59 @@ export default function Signup() {
     const [confPassword, setConfPassword] = useState('');
 
     //use to validate input
-    const [userError, setUserError] = useState();
-    const [passError, setPassError] = useState();
-    const [confPassError, setConfPassError] = useState();
+    const [userError, setUserError] = useState('');
+    const [passError, setPassError] = useState('');
+    const [confPassError, setConfPassError] = useState('');
 
     //status of register
     const [status, setStatus] = useState(false);
     const [msg, setMsg] = useState('');
 
+    useEffect(() => {
+        if (auth.role) {
+            navigate('/dashboard');
+        }
+    }, [])
+
     //handle register
     const handleRegister = async () => {
         setLoading(true);
-        setStatus(false);
         try {
             const userValidation = validation.checkUsername(username);
             const passValidation = validation.checkPassword(password);
-            console.log(userValidation, passValidation)
-            if (!userValidation.isValid) {
+            if (!userValidation.isValid || !passValidation.isValid) {
                 setUserError(userValidation.message);
-                setStatus(true);
-            }
-            else if (!passValidation.isValid) {
-                setUserError('');
                 setPassError(passValidation.message);
-                setStatus(true);
             }
             else if (password !== confPassword) {
-                setPassError('');
+                setUserError('');
                 setConfPassError('Password and confirm password must be the same');
-                setStatus(true);
+                setPassError('Password and confirm password must be the same');
             }
             else {
+                setUserError('');
+                setPassError('');
                 setConfPassError('');
-                const account = await accountApi.checkLogin({ username: username });
-                console.log(account)
-                if (account.length > 0) {
-                    setMsg('Username already exists');
-                    setStatus(true);
+                const data = {
+                    userName: username,
+                    password: password,
+                    role: 4,
+                    fullName: 'Người dùng mới',
+                    scope: 0,
+                    note: 'Chưa có'
+
+                }
+                const res = await householdAccountManager.registerAccountResident(data);
+                if (res.status === 200) {
+                    setMsg('Đăng ký thành công');
+                    const a = setTimeout(() => {
+                        setMsg('');
+                    }, 3000);
                 }
                 else {
-                    const data = {
-                        username: username,
-                        password: password
-                    }
-                    setAuth(data);
-                    await accountApi.addAccount(data);
-                    setTimeout(() => navigate('/dashboard'), 100);
+                    console.log(res);
                 }
+
             }
 
         }
@@ -95,12 +103,25 @@ export default function Signup() {
         setLoading(false);
     }
 
+    //handle password visibility
+    const [showPassword, setShowPassword] = useState(false);
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+    const handleMouseDownPassword = (event) => {
+        event.preventDefault();
+    };
+    //handle password visibility
+    const [showComfPassword, setShowComfPassword] = useState(false);
+    const handleClickShowComfPassword = () => setShowComfPassword((show) => !show);
+    const handleMouseDownComfPassword = (event) => {
+        event.preventDefault();
+    };
+
     //render
     return (
         <div className={cx('login')}>
             <div className={cx('login-form')}>
                 <div className={cx('login-form__input')}>
-                    <FormControl sx={{ margin: '10px 0' }} className={cx('input-login')} variant="standard">
+                    <FormControl error={userError.length > 0} sx={{ margin: '10px 0' }} className={cx('input-login')} variant="standard">
                         <InputLabel sx={{ fontSize: 20 }} htmlFor="input_regis_account">
                             Tên đăng nhập
                         </InputLabel>
@@ -116,9 +137,9 @@ export default function Signup() {
                             onChange={(e) => setUserName(e.target.value)}
                             autoComplete="off"
                         />
-                        {status && <FormHelperText sx={{ fontSize: 10, color: 'red' }}>{userError}</FormHelperText>}
+                        {(userError.length > 0) && <FormHelperText sx={{ fontSize: 10, color: 'red' }}>{userError}</FormHelperText>}
                     </FormControl>
-                    <FormControl sx={{ margin: '10px 0' }} variant="standard">
+                    <FormControl error={passError.length > 0} sx={{ margin: '10px 0' }} variant="standard">
                         <InputLabel sx={{ fontSize: 20 }} htmlFor="input_regis_password">
                             Mật khẩu
                         </InputLabel>
@@ -130,14 +151,26 @@ export default function Signup() {
                                     <VpnKeyIcon />
                                 </InputAdornment>
                             }
-                            type="password"
+                            endAdornment={
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="toggle password visibility"
+                                        onClick={handleClickShowPassword}
+                                        onMouseDown={handleMouseDownPassword}
+                                        edge="end"
+                                    >
+                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            }
+                            type={showPassword ? 'text' : 'password'}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             autoComplete="off"
                         />
-                        {status && <FormHelperText sx={{ fontSize: 10, color: 'red' }}>{passError}</FormHelperText>}
+                        {(passError.length > 0) && <FormHelperText sx={{ fontSize: 10, color: 'red' }}>{passError}</FormHelperText>}
                     </FormControl>
-                    <FormControl sx={{ margin: '10px 0' }} variant="standard">
+                    <FormControl error={confPassError.length > 0} sx={{ margin: '10px 0' }} variant="standard">
                         <InputLabel sx={{ fontSize: 20 }} htmlFor="input_regis_conf_password">
                             Xác nhận mật khẩu
                         </InputLabel>
@@ -149,12 +182,24 @@ export default function Signup() {
                                     <VpnKeyIcon />
                                 </InputAdornment>
                             }
-                            type="password"
+                            endAdornment={
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="toggle password visibility"
+                                        onClick={handleClickShowComfPassword}
+                                        onMouseDown={handleMouseDownComfPassword}
+                                        edge="end"
+                                    >
+                                        {showComfPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            }
+                            type={showComfPassword ? 'text' : 'password'}
                             value={confPassword}
                             onChange={(e) => setConfPassword(e.target.value)}
                             autoComplete="off"
                         />
-                        {status && <FormHelperText sx={{ fontSize: 10, color: 'red' }}>{confPassError}</FormHelperText>}
+                        {(confPassError.length > 0) && <FormHelperText sx={{ fontSize: 10, color: 'red' }}>{confPassError}</FormHelperText>}
                     </FormControl>
                 </div>
 
@@ -167,7 +212,7 @@ export default function Signup() {
                 }}
                     size={20}
                     thickness={4} />}
-                {status && <p style={{ marginTop: 10, color: 'red' }}>{msg}</p>}
+                {(msg.length > 0) && <p style={{ marginTop: 10, color: 'red' }}>{msg}</p>}
                 <hr className={cx('hr-login')} />
                 <p style={{ fontSize: 18 }}>Đã có tài khoản? <Link to='/login'> <span className={cx('signin-btn')}>Đăng nhập</span></Link> </p>
             </div>

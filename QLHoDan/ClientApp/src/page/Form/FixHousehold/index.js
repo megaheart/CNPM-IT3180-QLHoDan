@@ -50,6 +50,7 @@ export default function FixHouseholdNumber() {
                     borderRadius: '5px',
                     marginBottom: '5px',
                     padding: 2
+                    , backgroundColor: '#fff',
                 }}
                 noValidate
                 autoComplete="off"

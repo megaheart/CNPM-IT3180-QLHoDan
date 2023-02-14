@@ -15,6 +15,13 @@ const theme = createTheme({
         },
       },
     },
+    '& MuiFormControl-root MuiFormControl-filled Mui-required': {
+      styleOverrides: {
+        root: {
+          width: '300px'
+        },
+      },
+    },
     MuiDatePicker: {
       styleOverrides: {
         root: {

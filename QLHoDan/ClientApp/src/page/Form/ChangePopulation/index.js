@@ -52,7 +52,7 @@ export default function ChangePopulation() {
                     alignItems: 'stretch',
                     borderRadius: 5,
                     padding: 2,
-                    marginBottom: 1
+                    marginBottom: 1, backgroundColor: '#fff',
                 }}
                 noValidate
                 autoComplete="off"

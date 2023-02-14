@@ -167,7 +167,7 @@ export default function FormHKComponent() {
                     border: '1px solid #ccc',
                     borderRadius: 5,
                     padding: 2,
-                    marginBottom: 1
+                    marginBottom: 1, backgroundColor: '#fff',
                 }}
                 noValidate
                 autoComplete="off"

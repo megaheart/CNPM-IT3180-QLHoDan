@@ -7,8 +7,6 @@ const AuthProvider = ({ children }) => {
     const [auth, setAuth] = useState(
         () => {
             let a = authenticationService.isAuthenticated();
-            console.log(a);
-            console.log(authenticationService)
             if (a) {
                 return authenticationService.user
             }
@@ -16,7 +14,6 @@ const AuthProvider = ({ children }) => {
                 return {}
             }
         });
-    console.log(auth);
     return (
         <AuthContext.Provider value={{ auth, setAuth }}>
             {children}
