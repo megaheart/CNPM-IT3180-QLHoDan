@@ -42,9 +42,15 @@ namespace QLHoDan.Controllers.Reward
         /// <param name="rewardCeremonyId">
         /// mã của đợt trao thưởng
         /// </param>
+        /// <param name="ageFrom">
+        /// (chỉ dùng với đợt trao thưởng dịp đặc biệt) từ mấy tuổi (mặc định là 0)
+        /// </param>
+        /// <param name="ageTo">
+        /// (chỉ dùng với đợt trao thưởng dịp đặc biệt) đến mấy tuổi (mặc định là 18)
+        /// </param>
         [HttpGet("preview")]
         [Authorize(Roles = "CommitteeChairman,Accountant")]
-        public async Task<IActionResult> GetPreviewRecords([FromQuery] int rewardCeremonyId = 0)
+        public async Task<IActionResult> GetPreviewRecords([FromQuery] int rewardCeremonyId = 0, [FromQuery] int ageFrom = 0, [FromQuery] int ageTo = 18)
         {
             var ceremony = await _context.RewardCeremony.Include(r => r.AchievementRewardPairs).FirstOrDefaultAsync(r => r.Id == rewardCeremonyId);
             if (ceremony == null)
@@ -57,8 +63,9 @@ namespace QLHoDan.Controllers.Reward
             }
             if (ceremony.Type == "TT")
             {
-                DateTime childLimit = new DateTime(DateTime.Now.Year - 18, 1, 1);
-                var query = from child in _context.Resident.Where(r => r.DateOfBirth >= childLimit)
+                DateTime childLimit = new DateTime(DateTime.Now.Year - ageTo, 1, 1);
+                DateTime childLimit2 = new DateTime(DateTime.Now.Year - ageFrom + 1, 1, 1);
+                var query = from child in _context.Resident.Where(r => r.DateOfBirth >= childLimit && r.DateOfBirth < childLimit2)
                             from form in _context.ChoosingPresentsForm
                                             .Where(f => f.RewardCeremonyId == rewardCeremonyId && f.ResidentIdentityCode == child.IdentityCode).DefaultIfEmpty()
                             
@@ -150,9 +157,15 @@ namespace QLHoDan.Controllers.Reward
         /// <param name="rewardCeremonyId">
         /// mã của đợt trao thưởng
         /// </param>
+        /// <param name="ageFrom">
+        /// (chỉ dùng với đợt trao thưởng dịp đặc biệt) từ mấy tuổi (mặc định là 0)
+        /// </param>
+        /// <param name="ageTo">
+        /// (chỉ dùng với đợt trao thưởng dịp đặc biệt) đến mấy tuổi (mặc định là 18)
+        /// </param>
         [HttpPost("savePreview")]
         [Authorize(Roles = "CommitteeChairman,Accountant")]
-        public async Task<IActionResult> SavePreviewRecords([FromQuery] int rewardCeremonyId = 0)
+        public async Task<IActionResult> SavePreviewRecords([FromQuery] int rewardCeremonyId = 0, [FromQuery] int ageFrom = 0, [FromQuery] int ageTo = 18)
         {
             var ceremony = await _context.RewardCeremony.Include(r => r.AchievementRewardPairs).FirstOrDefaultAsync(r => r.Id == rewardCeremonyId);
             if (ceremony == null)
@@ -168,8 +181,9 @@ namespace QLHoDan.Controllers.Reward
 
             if (ceremony.Type == "TT")
             {
-                DateTime childLimit = new DateTime(DateTime.Now.Year - 18, 1, 1);
-                var query = from child in _context.Resident.Where(r => r.DateOfBirth >= childLimit)
+                DateTime childLimit = new DateTime(DateTime.Now.Year - ageTo, 1, 1);
+                DateTime childLimit2 = new DateTime(DateTime.Now.Year - ageFrom + 1, 1, 1);
+                var query = from child in _context.Resident.Where(r => r.DateOfBirth >= childLimit && r.DateOfBirth < childLimit2)
                             from form in _context.ChoosingPresentsForm
                                             .Where(f => f.RewardCeremonyId == rewardCeremonyId && f.ResidentIdentityCode == child.IdentityCode).DefaultIfEmpty()
 

@@ -11,7 +11,7 @@ namespace QLHoDan.Models
         public DateTime CreatedTime{ set; get; } // Giờ phút ngày tháng năm form được gửi lên
 
         public bool IsAccepted { set; get; } // Đã duyệt chưa
-        public bool NotAcceptedReason { set; get; } // Đã duyệt chưa
+        public string? NotAcceptedReason { set; get; } // Đã duyệt chưa
         public string Account { set; get; } // Username tài khoản người gửi (Phải là Tài Khoản được chủ hộ sử dụng)
         public int AccountScope { set; get; } // scope của tài khoản người gửi
     }

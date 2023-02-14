@@ -351,6 +351,12 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
         [HttpDelete("{householdId}")]
         public async Task<IActionResult> DeleteHousehold(string householdId)
         {
+            if((await _userManager.FindByNameAsync(householdId)) != null)
+                return BadRequest(new RequestError()
+                {
+                    Code = "ForeignKeyConstraintFailed",
+                    Description = "Một số hàng trong các bảng khác có khoá ngoài trỏ đến phần tử này. Phần tử này hiện tại không thể bị xoá.",
+                });
             var household = await _context.Household.FindAsync(householdId);
             if (household == null)
             {

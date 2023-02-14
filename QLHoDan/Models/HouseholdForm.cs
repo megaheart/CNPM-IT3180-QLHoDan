@@ -13,7 +13,7 @@ namespace QLHoDan.Models
 		public DateTime CreatedTime{ set; get; }
 		public List<string> ImageLinks { set; get; } = new List<string>(); // Ảnh minh chứng (mảng danh sách các địa chỉ dẫn đến hình ảnh đó)
 		public bool IsAccepted{ set; get; } // Đã duyệt chưa
-        public bool NotAcceptedReason{ set; get; } // Đã duyệt chưa
+        public string? NotAcceptedReason{ set; get; } // Đã duyệt chưa
         //public string CMND{ set; get; } // Username tài khoản người gửi (Phải là Tài Khoản được chủ hộ sử dụng)
 
     }
