@@ -27,6 +27,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<ChangingHouseholdForm> ChangingHouseholdForm { set; get; }
     public DbSet<NotificationMessage> NotificationMessage { set; get; }
     public DbSet<AchievementEvidenceForm> AchievementEvidenceForm { set; get; }
+    public DbSet<ChoosingPresentsForm> ChoosingPresentsForm { set; get; }
     public DbSet<AchievementRewardPair> AchievementRewardPair { set; get; }
     public DbSet<RewardCeremony> RewardCeremony { set; get; }
     public DbSet<RewardRecord> RewardRecord { set; get; }
@@ -64,13 +65,16 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<NotificationMessage>().Property(hk => hk.Id).ValueGeneratedOnAdd();
         modelBuilder.Entity<AchievementEvidenceForm>().HasKey(hk => hk.Id);
         modelBuilder.Entity<AchievementEvidenceForm>().Property(hk => hk.Id).ValueGeneratedOnAdd();
+        modelBuilder.Entity<ChoosingPresentsForm>().HasKey(hk => hk.Id);
+        modelBuilder.Entity<ChoosingPresentsForm>().Property(hk => hk.Id).ValueGeneratedOnAdd();
         modelBuilder.Entity<AchievementRewardPair>().HasKey(g => g.Id);
         modelBuilder.Entity<AchievementRewardPair>().Property(hk => hk.Id).ValueGeneratedOnAdd();
-        modelBuilder.Entity<AchievementRewardPair>().Property<int?>("RewardCeremonyId").IsRequired(false);
-        modelBuilder.Entity<AchievementRewardPair>().HasIndex("RewardCeremonyId", "AchievementType").IsUnique();
+        //modelBuilder.Entity<AchievementRewardPair>().Property<int?>("RewardCeremonyId").IsRequired(true);
+        modelBuilder.Entity<AchievementRewardPair>().HasIndex(a => new {a.RewardCeremonyId, a.AchievementType}).IsUnique();
 
         modelBuilder.Entity<RewardCeremony>().HasKey(hk => hk.Id);
         modelBuilder.Entity<RewardCeremony>().Property(hk => hk.Id).ValueGeneratedOnAdd();
+        modelBuilder.Entity<RewardCeremony>().HasIndex(r => new { r.Title, r.Time});
         modelBuilder.Entity<RewardRecord>().HasKey(hk => hk.Id);
         modelBuilder.Entity<RewardRecord>().Property(hk => hk.Id).ValueGeneratedOnAdd();
         //modelBuilder.Entity<GTPTQDTTT>().HasIndex("DotPhatThuong", "PhanLoai").IsUnique(true);
@@ -167,9 +171,24 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         //modelBuilder.Entity<AchievementEvidenceForm>().Property<string>("IdCode").IsRequired(false);
         modelBuilder.Entity<AchievementEvidenceForm>()
             .HasOne<Resident>(nk => nk.Resident).WithMany()
+            .HasForeignKey(f => f.ResidentIdentityCode)
             .OnDelete(DeleteBehavior.NoAction);
-            //.HasForeignKey<AchievementEvidenceForm>("IdCode");
+        //.HasForeignKey<AchievementEvidenceForm>("IdCode");
 
+        modelBuilder.Entity<AchievementEvidenceForm>()
+            .HasOne<RewardCeremony>(a => a.RewardCeremony).WithMany()
+            .HasForeignKey(a => a.RewardCeremonyId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<ChoosingPresentsForm>()
+            .HasOne<Resident>(nk => nk.Resident).WithMany()
+            .HasForeignKey(f => f.ResidentIdentityCode)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<ChoosingPresentsForm>()
+            .HasOne<RewardCeremony>(a => a.RewardCeremony).WithMany()
+            .HasForeignKey(a => a.RewardCeremonyId)
+            .OnDelete(DeleteBehavior.NoAction);
 
         modelBuilder.Entity<AchievementRewardPair>()
             .HasOne<RewardCeremony>(nk => nk.RewardCeremony)
@@ -186,7 +205,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<RewardRecord>()
             .HasOne<Resident>(ls => ls.Resident).WithMany()
             .OnDelete(DeleteBehavior.NoAction);
-            //.HasForeignKey<RewardRecord>("IdCode");
+        //.HasForeignKey<RewardRecord>("IdCode");
     }
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {

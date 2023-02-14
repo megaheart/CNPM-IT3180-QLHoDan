@@ -16,7 +16,7 @@ function PopulationField() {
                     InputLabelProps={{ style: { fontSize: 20 } }}
                     required
                     label="Số hộ khẩu"
-                    defaultValue="123"
+                    defaultValue="7134223"
                     variant="standard"
                 />
                 <TextField
@@ -25,7 +25,7 @@ function PopulationField() {
                     InputLabelProps={{ style: { fontSize: 20 } }}
                     required
                     label="Nơi thường trú"
-                    defaultValue="123"
+                    defaultValue="Hà Nội"
                     variant="standard"
                 />
                 <TextField

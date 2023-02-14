@@ -1,9 +1,11 @@
 .add-type-award {
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: flex-end;
+    justify-content: flex-start;
 }
 
 .input-type-award {
-    width: 500px;
+    width: 200px;
+    margin: 0 10px;
 }

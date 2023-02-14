@@ -56,7 +56,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             if (await _userManager.IsInRoleAsync(user, "ScopeLeader"))
             {
                 return Ok(_context.Resident
-                    .Where(nk => nk.IsManaged && nk.IsDead == isDead && nk.MoveOutDate.HasValue == movedOut) 
+                    .Where(nk => nk.IsManaged && nk.IsDead == isDead && nk.MoveOutDate.HasValue == movedOut && nk.Scope == user.Scope) 
                     .Select(nk => new ResidentBriefInfo()
                     {
                         IdentityCode = nk.IdentityCode,
@@ -180,12 +180,20 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             }
             else if(model.Scope.HasValue)
             {
+                if(model.Scope.Value <= 0)
+                {
+                    return BadRequest(new RequestError()
+                    {
+                        Code = "InvalidScope",
+                        Description = "Scope bị nhập sai định dạng (scope là 1 số nguyên dương)."
+                    });
+                }
                 scope = model.Scope.Value;
             }
             else return BadRequest(new RequestError()
             {
                 Code = "InvalidScope",
-                Description = "Scope chưa được nhập và không tìm thấy hộ khẩu để lấy ra scope. " + model.HouseholdId + "."
+                Description = "Scope chưa được nhập và không tìm thấy hộ khẩu để lấy ra scope (householdId = " + model.HouseholdId + ")."
             });
             var isScopeLeader = await _userManager.IsInRoleAsync(manager, "ScopeLeader");
             if (isScopeLeader && manager.Scope != scope)
@@ -314,9 +322,20 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             if (model.MoveInDate != null) resident.MoveInDate = model.MoveInDate.Value;
             if (model.MoveInReason != null) resident.MoveInReason = model.MoveInReason;
             //if (model.FullName != null) IsDead = false;
-            if (model.MoveOutDate != null) resident.MoveOutDate = model.MoveOutDate;
-            if (model.MoveOutPlace != null) resident.MoveOutPlace = model.MoveOutPlace;
-            if (model.MoveOutReason != null) resident.MoveOutReason = model.MoveOutReason;
+            if (model.MoveOutPlace != null && model.MoveOutDate != null && model.MoveOutReason != null)
+            {
+                resident.MoveOutDate = model.MoveOutDate;
+                resident.MoveOutPlace = model.MoveOutPlace;
+                resident.MoveOutReason = model.MoveOutReason;
+            }
+            else if (!(model.MoveOutPlace == null && model.MoveOutDate == null && model.MoveOutReason == null))
+            {
+                return BadRequest(new RequestError()
+                {
+                    Code = "InvalidMoveOut",
+                    Description = "Phải thay đổi đồng thời cả nơi chuyển đi, ngày chuyển đi và lý do chuyển đi.",
+                });
+            }
 
             _context.Resident.Update(resident);
             try

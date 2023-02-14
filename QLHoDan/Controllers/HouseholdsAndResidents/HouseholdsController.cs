@@ -60,6 +60,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
                         Scope = u.Scope,
                         OwnerFullName = u.Members.First(m => m.RelationShip == ownerRelationShip).FullName,
                         OwnerIDCode = u.Members.First(m => m.RelationShip == ownerRelationShip).IdentityCode,
+                        CreatedTime= u.CreatedTime,
                     }));
             }
             else
@@ -72,6 +73,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
                         Scope = u.Scope,
                         OwnerFullName = u.Members.First(m => m.RelationShip == ownerRelationShip).FullName,
                         OwnerIDCode = u.Members.First(m => m.RelationShip == ownerRelationShip).IdentityCode,
+                        CreatedTime = u.CreatedTime,
                     }));
             }
         }
@@ -124,7 +126,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             });
         }
 
-        // PUT: api/Households
+        // POST: api/Households
         /// <summary>
         /// Thêm hộ khẩu mới, chỉ người dùng cấp độ đặc biệt (Tổ trưởng, thư kí, chủ tịch phường) mới dùng được.
         /// Tổ trưởng chỉ thêm được hộ khẩu mới thuộc tổ quản lý.
@@ -271,20 +273,32 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
                     member.Scope = model.Scope.Value;
                 });
             }
-            if (model.MoveOutPlace != null)
+            bool moveOut = model.MoveOutPlace != null && model.MoveOutDate != null && model.MoveOutReason != null;
+            if (moveOut)
             {
                 household.MoveOutPlace = model.MoveOutPlace;
-            }
-            if (model.MoveOutDate != null)
-            {
                 household.MoveOutDate = model.MoveOutDate;
-            }
-            if (household.MoveOutReason != null)
-            {
                 household.MoveOutReason = model.MoveOutReason;
+                household.Members.ForEach(resident =>
+                {
+                    resident.MoveOutDate = model.MoveOutDate;
+                    resident.MoveOutPlace = model.MoveOutPlace;
+                    resident.MoveOutReason = model.MoveOutReason;
+                    _context.Resident.Update(resident);
+                });
+            }
+            else if (!(model.MoveOutPlace == null && model.MoveOutDate == null && model.MoveOutReason == null))
+            {
+                return BadRequest(new RequestError()
+                {
+                    Code = "InvalidMoveOut",
+                    Description = "Phải thay đổi đồng thời cả nơi chuyển đi, ngày chuyển đi và lý do chuyển đi.",
+                });
             }
 
-            if(model.NonExistMembers != null)
+            
+
+            if (model.NonExistMembers != null)
             {
                 foreach (var mem in model.NonExistMembers)
                 {
@@ -313,6 +327,12 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
                         Scope = household.Scope,
                     };
                     resident.Household = household;
+                    if (moveOut)
+                    {
+                        resident.MoveOutDate = model.MoveOutDate;
+                        resident.MoveOutPlace = model.MoveOutPlace;
+                        resident.MoveOutReason = model.MoveOutReason;
+                    }
                     _context.Resident.Add(resident);
                 }
             }
@@ -337,7 +357,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
                 return NotFound();
             }
             //household.IsManaged = false;
-            _context.Resident.Where(x => x.HouseholdId == householdId).ExecuteDelete();
+            await _context.Resident.Where(x => x.HouseholdId == householdId).ExecuteDeleteAsync();
             _context.Household.Remove(household);
             try
             {

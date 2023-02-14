@@ -100,6 +100,8 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    Sender = table.Column<string>(type: "TEXT", nullable: false),
+                    Receiver = table.Column<string>(type: "TEXT", nullable: false),
                     Time = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Content = table.Column<string>(type: "TEXT", nullable: false),
                     IsRead = table.Column<bool>(type: "INTEGER", nullable: false)
@@ -115,12 +117,15 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    Title = table.Column<string>(type: "TEXT", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: false),
                     Time = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Type = table.Column<string>(type: "TEXT", nullable: false),
                     TotalValue = table.Column<double>(type: "REAL", nullable: false),
                     IsAccepted = table.Column<bool>(type: "INTEGER", nullable: false),
                     IsDone = table.Column<bool>(type: "INTEGER", nullable: false),
-                    ClosingFormDate = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    ClosingFormDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    RewardDate = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -313,7 +318,7 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    RewardCeremonyId = table.Column<int>(type: "INTEGER", nullable: true),
+                    RewardCeremonyId = table.Column<int>(type: "INTEGER", nullable: false),
                     AchievementType = table.Column<int>(type: "INTEGER", nullable: false),
                     AchievementName = table.Column<string>(type: "TEXT", nullable: false),
                     RewardName = table.Column<string>(type: "TEXT", nullable: false),
@@ -336,12 +341,13 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     ResidentIdentityCode = table.Column<string>(type: "TEXT", nullable: false),
+                    RewardCeremonyId = table.Column<int>(type: "INTEGER", nullable: false),
                     AchievementName = table.Column<string>(type: "TEXT", nullable: false),
                     AchievementType = table.Column<int>(type: "INTEGER", nullable: true),
                     ImageLinks = table.Column<string>(type: "TEXT", nullable: false),
                     CreatedTime = table.Column<DateTime>(type: "TEXT", nullable: false),
                     IsAccepted = table.Column<bool>(type: "INTEGER", nullable: false),
-                    NotAcceptedReason = table.Column<bool>(type: "INTEGER", nullable: false),
+                    NotAcceptedReason = table.Column<string>(type: "TEXT", nullable: true),
                     Account = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
@@ -352,6 +358,12 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                         column: x => x.ResidentIdentityCode,
                         principalTable: "Resident",
                         principalColumn: "IdentityCode");
+                    table.ForeignKey(
+                        name: "FK_AchievementEvidenceForm_RewardCeremony_RewardCeremonyId",
+                        column: x => x.RewardCeremonyId,
+                        principalTable: "RewardCeremony",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -626,6 +638,11 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                 column: "ResidentIdentityCode");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AchievementEvidenceForm_RewardCeremonyId",
+                table: "AchievementEvidenceForm",
+                column: "RewardCeremonyId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AchievementRewardPair_RewardCeremonyId_AchievementType",
                 table: "AchievementRewardPair",
                 columns: new[] { "RewardCeremonyId", "AchievementType" },
@@ -722,6 +739,11 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                 name: "IX_ResidentForm_HouseholdFormId",
                 table: "ResidentForm",
                 column: "HouseholdFormId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RewardCeremony_Title_Time",
+                table: "RewardCeremony",
+                columns: new[] { "Title", "Time" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_RewardRecord_ResidentIdentityCode",

@@ -3,11 +3,17 @@
     flex-direction: column;
     justify-content: flex-start;
 }
-
+.btn-group-addEvent {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
 .header-award {
+    height: 60px;
     padding: 5px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    margin-left: 5px;
 }

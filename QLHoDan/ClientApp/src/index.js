@@ -5,16 +5,19 @@ import reportWebVitals from './reportWebVitals';
 import GlobalStyles from './components/GlobalStyles';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './components/AuthenProvider';
-import authenticationService from './services/account/authentication';
+import QueryProvider from './components/QueryProvider';
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
 root.render(
   <React.StrictMode>
     <BrowserRouter>
       <GlobalStyles>
         <AuthProvider>
-          <Routes>
-            <Route path="/*" element={<App />} />
-          </Routes>
+          <QueryProvider>
+            <Routes>
+              <Route path="/*" element={<App />} />
+            </Routes>
+          </QueryProvider>
         </AuthProvider>
       </GlobalStyles>
     </BrowserRouter>

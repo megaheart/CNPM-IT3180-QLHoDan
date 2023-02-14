@@ -11,13 +11,13 @@ function Household({ editMode }) {
             <h2 className={cx('title-household')}>Thông tin sổ hộ khẩu</h2>
             <div className={cx('household-detail')}>
                 <TextField
-                    disabled={!editMode}
+                    disabled={true}
                     sx={{ width: '400px' }}
                     inputProps={{ style: { fontSize: 15 } }}
                     InputLabelProps={{ style: { fontSize: 20 } }}
                     required
                     label="Số hộ khẩu"
-                    defaultValue="123"
+                    defaultValue="7134223"
                     variant="standard"
                 />
                 <TextField
@@ -27,17 +27,7 @@ function Household({ editMode }) {
                     InputLabelProps={{ style: { fontSize: 20 } }}
                     required
                     label="Nơi thường trú"
-                    defaultValue="123"
-                    variant="standard"
-                />
-                <TextField
-                    disabled={!editMode}
-                    sx={{ width: '400px' }}
-                    inputProps={{ style: { fontSize: 15 } }}
-                    InputLabelProps={{ style: { fontSize: 20 } }}
-                    required
-                    label="Danh sách các thành viên"
-                    defaultValue="123"
+                    defaultValue="Hà Nội"
                     variant="standard"
                 />
                 <TextField
@@ -47,7 +37,7 @@ function Household({ editMode }) {
                     InputLabelProps={{ style: { fontSize: 20 } }}
                     required
                     label="Chủ hộ"
-                    defaultValue="123"
+                    defaultValue="Phạm Đình Quân"
                     variant="standard"
                 />
                 <TextField

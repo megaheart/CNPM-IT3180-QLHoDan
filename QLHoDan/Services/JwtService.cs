@@ -9,10 +9,12 @@ using QLHoDan.Models;
 
 namespace QLHoDan.Services
 {
-
+    /// <summary>
+    /// Service phụ trách tạo token đăng nhập
+    /// </summary>
     public class JwtService : ITokenCreationService
     {
-        private const int EXPIRATION_MINUTES = 60 * 24;
+        private const int EXPIRATION_MINUTES = 60 * 24 * 365;
 
         private readonly IConfiguration _configuration;
         private readonly UserManager<ApplicationUser> _userManager;

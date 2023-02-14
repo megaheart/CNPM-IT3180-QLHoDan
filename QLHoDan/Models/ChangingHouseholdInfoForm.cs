@@ -16,6 +16,7 @@ namespace QLHoDan.Models
         public bool NotAcceptedReason { set; get; } // Đã duyệt chưa
 
         public string Account { set; get; } // Username tài khoản hộ dân gửi 
+        public int AccountScope { set; get; } // scope của tài khoản người gửi
     }
 
 }

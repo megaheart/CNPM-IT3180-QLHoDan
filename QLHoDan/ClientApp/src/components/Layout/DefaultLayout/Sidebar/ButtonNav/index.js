@@ -44,7 +44,7 @@ const buttons = [
     },
     { icon: <AccountBoxIcon />, title: 'Tài khoản', link: '/profile', id: 'profile' },
     { icon: <NotificationsNoneIcon />, title: 'Thông báo', link: '/notification', id: 'notification' },
-    { icon: <LogoutIcon />, title: 'Đăng xuất', link: '/', id: 'logout', isLogout: true, action: loggout },
+    { icon: <LogoutIcon />, title: 'Đăng xuất', link: '/login', id: 'logout', isLogout: true, action: loggout },
 ]
 const navForResident = [
     { icon: <DashboardIcon />, title: 'Hệ thống', link: '/dashboard', id: 'dashboard' },
@@ -65,7 +65,7 @@ const navForResident = [
     },
     { icon: <AccountBoxIcon />, title: 'Tài khoản', link: '/profile', id: 'profile' },
     { icon: <NotificationsNoneIcon />, title: 'Thông báo', link: '/notification', id: 'notification' },
-    { icon: <LogoutIcon />, title: 'Đăng xuất', link: '/', id: 'logout', isLogout: true, action: loggout },
+    { icon: <LogoutIcon />, title: 'Đăng xuất', link: '/login', id: 'logout', isLogout: true, action: loggout },
 ];
 const navForAdmin = [
     { icon: <DashboardIcon />, title: 'Hệ thống', link: '/dashboard', id: 'dashboard' },
@@ -75,20 +75,31 @@ const navForAdmin = [
             { icon: <TableViewIcon />, title: 'Danh sách hộ khẩu', id: 'table1', linkCol: '/table/ho_khau' },
             { icon: <TableViewIcon />, title: 'Hồ sơ nhân khẩu', id: 'table2', linkCol: '/table/nhan_khau' },
             { icon: <TableViewIcon />, title: 'Lịch sử biến đổi nhân khẩu', id: 'table3', linkCol: '/table/lich_su_nhan_khau' },
-            { icon: <TableViewIcon />, title: 'Tài khoản hộ dân', id: 'table4', linkCol: '/table/danh_sach_tai_khoan_ho_dan' }
+            { icon: <TableViewIcon />, title: 'Tài khoản hộ dân', id: 'table4', linkCol: '/table/danh_sach_tai_khoan_ho_dan' },
+            { icon: <TableViewIcon />, title: 'Tài khoản cán bộ', id: 'table5', linkCol: '/table/danh_sach_tai_khoan_can_bo' },
         ]
     },
     {
-        icon: <EmojiEventsIcon />, title: 'Trao thưởng', link: '/award', id: 'award'
+        icon: <EmojiEventsIcon />, title: 'Trao thưởng', link: '/awa', id: 'award',
+        collapse: [
+            { icon: <TableViewIcon />, title: 'Danh sách dịp', id: 'award1', linkCol: '/award' },
+            { icon: <TableViewIcon />, title: 'Lịch sử', id: 'award2', linkCol: '/historyAward' },
+        ]
     },
     { icon: <AccountBoxIcon />, title: 'Tài khoản', link: '/profile', id: 'profile' },
     { icon: <NotificationsNoneIcon />, title: 'Thông báo', link: '/notification', id: 'notification' },
-    { icon: <LogoutIcon />, title: 'Đăng xuất', link: '/', id: 'logout', isLogout: true, action: loggout },
+    { icon: <LogoutIcon />, title: 'Đăng xuất', link: '/login', id: 'logout', isLogout: true, action: loggout },
 ];
 
 const navForEmplyee = [
     { icon: <DashboardIcon />, title: 'Hệ thống', link: '/dashboard', id: 'dashboard' },
-    { icon: <AccountBoxIcon />, title: 'Tài khoản', link: '/profile', id: 'profile' },
+    {
+        icon: <EmojiEventsIcon />, title: 'Trao thưởng', link: '/awa', id: 'award',
+        collapse: [
+            { icon: <TableViewIcon />, title: 'Danh sách dịp', id: 'award1', linkCol: '/award' },
+            { icon: <TableViewIcon />, title: 'Lịch sử', id: 'award2', linkCol: '/historyAward' },
+        ]
+    },
     {
         icon: <FindInPage />, title: 'Quản lý', link: '/table/ho_khau', id: 'table',
         collapse: [
@@ -97,8 +108,9 @@ const navForEmplyee = [
             { icon: <TableViewIcon />, title: 'Lịch sử biến đổi nhân khẩu', id: 'table3', linkCol: '/table/lich_su_nhan_khau' },
         ]
     },
+    { icon: <AccountBoxIcon />, title: 'Tài khoản', link: '/profile', id: 'profile' },
     { icon: <NotificationsNoneIcon />, title: 'Thông báo', link: '/notification', id: 'notification' },
-    { icon: <LogoutIcon />, title: 'Đăng xuất', link: '/', id: 'logout', isLogout: true, action: loggout },
+    { icon: <LogoutIcon />, title: 'Đăng xuất', link: '/login', id: 'logout', isLogout: true, action: loggout },
 ];
 
 export default buttons;
