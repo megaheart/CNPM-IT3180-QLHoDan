@@ -55,7 +55,6 @@ export default function AddHouseholAcccount({ mutation, open, onClose }) {
         const passwordTest = validation.checkPassword(passwordRef.current.value);
         const fullnameTest = validation.checkName(fullnameRef.current.value);
         const scopeTest = validation.checkScope(scopeRef.current.value);
-        console.log(usernameTest, passwordTest, fullnameTest, scopeTest)
         if (
             usernameTest.isValid !== true ||
             passwordTest.isValid !== true ||

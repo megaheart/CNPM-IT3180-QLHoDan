@@ -60,7 +60,7 @@ function Sidebar() {
                     if (button.isLogout) {
                         return (
                             <NavLink key={button.id} onClick={handleAuth} className={cx('btn-side')} to={button.link} >
-                                <span key={button.id + 'span1'} >{button.icon}</span>
+                                <span className={cx('icon-text')} key={button.id + 'span1'} >{button.icon}</span>
                                 <span key={button.id + 'span2'} className={open ? cx('normal-btn') : cx('hide-btn')}>{open && button.title}</span>
                             </NavLink>
                         )
@@ -75,7 +75,7 @@ function Sidebar() {
                                 return cx('btn-side');
                             }
                         }} to={button.link}  >
-                            <span key={button.id + 'span1'} >{button.icon}</span>
+                            <span className={cx('icon-text')} key={button.id + 'span1'} >{button.icon}</span>
                             <span key={button.id + 'span2'} className={open ? cx('normal-btn') : cx('hide-btn')}>{open && button.title}</span>
                         </NavLink>
                     )

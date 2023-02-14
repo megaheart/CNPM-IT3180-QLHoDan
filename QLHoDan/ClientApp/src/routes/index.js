@@ -2,14 +2,19 @@
 import { NKTable, HKTable, ResidentHistory, ManagerAccountResident, ManagerSpecialAccount } from '~/page/Table';
 import { HKForm, NKForm, RequireRemoving, DeathConfirm, SeparateHousehold, ChangePopulation, ChangeHousehold, FixHouseholdNumber, ConfirmAchievement } from '~/page/Form';
 import ForgetPassword from '~/page/Authentication/ForgetPassword';
+import DashboardForUser from '~/page/DashboardForUser';
 import { Login, Register, Authentication } from '~/page/Authentication';
 import Profile from '~/page/Account';
 import Notification from '~/page/Notification';
 import Guest, { Guest_Add_Household, Guest_Add_Resident } from '~/page/GuestUI';
 import DashboardComponent from '~/page/Dashboard';
 import PersistentDrawerRight from '~/features/Award';
-import HistoryAward from '~/features/Award/HistoryAward'
+import HistoryAward from '~/features/Award/HistoryAward';
+import EnvidenceAward from '~/features/Award/EnvidenceAward';
+import ListFormAward from '~/features/FormList/ListFormChoosingAward';
+import FormChoosingAward from '~/page/Form/FormChoosingAward';
 // import ErrorLogin from '~/page/Error'
+import ErrorLogin from '~/page/ErrorLogin';
 //layout
 import DefaultLayout from '~/components/Layout/DefaultLayout'
 import AuthenticationLayout from '~/components/Layout/AuthenticationLayout'
@@ -23,7 +28,10 @@ const ROLES = {
 }
 
 const routes = [
-    { path: '/dashboard', element: DashboardComponent, layout: DefaultLayout, id: 'db', role: [ROLES.ADMIN, ROLES.MANAGER, ROLES.ACCOUNTANT, ROLES.USER] },
+    { path: '/dashboard', element: DashboardComponent, layout: DefaultLayout, id: 'db', role: [ROLES.ADMIN, ROLES.MANAGER, ROLES.ACCOUNTANT] },
+    { path: '/dashboard_residentOrGuest', element: DashboardForUser, layout: DefaultLayout, id: 'dbu', role: [ROLES.USER] },
+    { path: '/envidence/award', element: EnvidenceAward, layout: DefaultLayout, id: 'e-a', role: [ROLES.ACCOUNTANT, ROLES.ADMIN, ROLES.USER, ROLES.MANAGER] },
+    { path: '/household/choosing', element: ListFormAward, layout: DefaultLayout, id: 'e-a-c', role: [ROLES.USER] },
     {
         path: '/addnew',
         subRoutes: [
@@ -36,11 +44,13 @@ const routes = [
             { subpath: '/addnew/don_thay_doi_ho_khau', element: ChangeHousehold, id: 'ch' },
             { subpath: '/addnew/don_sua_so_ho_khau', element: FixHouseholdNumber, id: 'fh' },
             { subpath: '/addnew/don_xac_nhan_thanh_tich', element: ConfirmAchievement, id: 'ca' },
+            { subpath: '/addnew/don_chonn_qua', element: FormChoosingAward, id: 'ca' },
         ],
         id: 'tb',
         layout: DefaultLayout,
         role: [ROLES.USER]
     },
+    { path: '/choosing_award', element: ListFormAward, layout: DefaultLayout, id: 'choose1', role: [ROLES.ACCOUNTANT, ROLES.ADMIN, ROLES.USER, ROLES.MANAGER] },
     {
         path: '/table', subRoutes: [
             { subpath: '/table/ho_khau', element: HKTable, id: 'tb1' },
@@ -60,7 +70,7 @@ const routes = [
     },
     { path: '/notification', element: Notification, layout: DefaultLayout, id: 'noti', role: [ROLES.ADMIN, ROLES.ACCOUNTANT, ROLES.MANAGER, ROLES.USER] },
     { path: '/profile', element: Profile, layout: DefaultLayout, id: 'pro', role: [ROLES.ADMIN, ROLES.ACCOUNTANT, ROLES.MANAGER, ROLES.USER] },
-    { path: '/error', element: Error, layout: DefaultLayout, id: 'log', role: [ROLES.ADMIN, ROLES.ACCOUNTANT, ROLES.MANAGER, ROLES.USER] },
+    { path: '/error', element: ErrorLogin, layout: DefaultLayout, id: 'log', role: [ROLES.ADMIN, ROLES.ACCOUNTANT, ROLES.MANAGER, ROLES.USER] },
 
 ];
 

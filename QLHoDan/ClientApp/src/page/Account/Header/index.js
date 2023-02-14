@@ -4,10 +4,26 @@ import { deepOrange } from '@mui/material/colors';
 import { Avatar } from '@mui/material';
 import useAuth from '~/hooks/useAuth';
 import { useMemo } from 'react';
+import accountApi from '~/services/api/accountApi';
+import { useQuery } from '@tanstack/react-query';
 const cx = classNames.bind(styles);
+
+function getLastName(string) {
+    if (typeof string === 'string') {
+        const arr = string.split(' ');
+        return arr[arr.length - 1];
+    }
+    return '';
+};
 
 export default function Header() {
     const { auth } = useAuth();
+
+    const { data, isLoading } = useQuery(
+        ['user'],
+        async () => accountApi.getProfile(auth.token),
+    );
+
     const role = useMemo(() => {
         if (auth.role === 'CommitteeChairman') {
             return 'Chủ tịch xã';
@@ -19,7 +35,8 @@ export default function Header() {
             return 'Tổ trưởng';
         }
         else return 'Hộ dân';
-    }, [auth.role])
+    }, [auth.role]);
+
     return (
         <div className={cx('account-view')}>
             <div style={{ position: 'relative' }}>
@@ -27,12 +44,12 @@ export default function Header() {
                     width: '20vw',
                     margin: '0 auto',
                     height: '20vw',
-                    fontSize: '9vw',
+                    fontSize: '5vw',
                     bgcolor: deepOrange[500]
                 }}
-                >Đức</Avatar>
+                >{isLoading ? 'Loading...' : getLastName(data.fullName)}</Avatar>
             </div>
-            <h3>Bùi Trọng Đức</h3>
+            <h3>{isLoading ? 'Loading...' : data.fullName}</h3>
             <div className={cx('info-container')}>
                 <span><b>Tên đăng nhập</b>: {auth.username}</span>
                 <span><b>Quyền hạn</b>: {

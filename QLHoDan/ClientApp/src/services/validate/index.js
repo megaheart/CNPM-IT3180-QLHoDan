@@ -38,13 +38,13 @@ function checkPasswordValidation(value) {
         };
     }
 
-    // const isContainsLowercase = /^(?=.*[a-z])/;
-    // if (!isContainsLowercase.test(value)) {
-    //     return {
-    //         isValid: false,
-    //         message: "Password must have at least one Lowercase Character.",
-    //     };
-    // }
+    const isContainsLowercase = /^(?=.*[a-z])/;
+    if (!isContainsLowercase.test(value)) {
+        return {
+            isValid: false,
+            message: "Mật khẩu phải có ít nhất 1 chữ cái in thường .",
+        };
+    }
 
     const isContainsNumber = /^(?=.*[0-9])/;
     if (!isContainsNumber.test(value)) {
@@ -54,11 +54,11 @@ function checkPasswordValidation(value) {
         };
     }
 
-    const isValidLength = /^.{8,16}$/;
+    const isValidLength = /^.{8,50}$/;
     if (!isValidLength.test(value)) {
         return {
             isValid: false,
-            message: "Mật khẩu phải có ít nhất 8 ký tự và tối đa 16 ký tự.",
+            message: "Mật khẩu phải có ít nhất 8 ký tự và tối đa 50 ký tự.",
         };
     }
     return {
@@ -80,6 +80,18 @@ const checkIdentification = (s) => {
         message: "",
     };
 };
+
+// function validateIdCard(idCard) {
+//     if (nid.length !== 12 && nid.length !== 9) return false;
+//     if (nid.length === 9) {
+//         const idCardPattern = /^\d{9}$/;
+//         return idCardPattern.test(idCard);
+//     }
+//     if (nid.length === 12) {
+//         const idCardPattern = /^\d{12}$/;
+//         return idCardPattern.test(idCard);
+//     }
+// }
 
 const checkName = (s) => {
     const isFullName = /^([a-z]{1,10})(\s[a-z]{1,10})*$/;

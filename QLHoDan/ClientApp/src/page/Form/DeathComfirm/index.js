@@ -53,7 +53,7 @@ export default function DeathConfirm() {
                     border: '1px solid #ccc',
                     borderRadius: '5px',
                     marginBottom: '5px',
-                    padding: 2
+                    padding: 2, backgroundColor: '#fff',
                 }}
                 noValidate
                 autoComplete="off"

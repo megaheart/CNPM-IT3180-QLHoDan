@@ -38,7 +38,6 @@ h3 {
 }
 .iden {
     border-radius: 5px;
-    border: 1px solid #ccc;
     padding: 2px;
     margin: 1px 4px;
 }
@@ -64,4 +63,19 @@ h3 {
     flex-direction: row;
     justify-content: space-between;
     gap: 10px;
+}
+.state-dialog {
+    display: flex;
+    gap: 3px;
+    margin: 5px;
+}
+.form-add-resident {
+    margin: 5px;
+}
+.no-one {
+    height: 100px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
