@@ -1369,7 +1369,7 @@
     | Address | string | địa chỉ thường trú | XX, yy, zz |
     | Members | string (json format) | Danh sách [AddingResidentFormRequestModel](#addingresidentformrequestmodel) của tất cả các thành viên | |
     | Scope | int | Tổ Phụ Trách | 3 |
-
+    | Images | binary | Danh sách ảnh minh chứng | binary |
 
 - **Response Body khi thành công (Json)**
 

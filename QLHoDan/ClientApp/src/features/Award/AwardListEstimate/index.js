@@ -7,7 +7,7 @@ import {
     TableHead,
     TablePagination,
     TableRow,
-    Button, Slide, Snackbar, Backdrop, CircularProgress
+    Button, Slide, Snackbar, Backdrop, CircularProgress, Alert
 } from '@mui/material';
 import ErrorData from '~/page/ErrorData';
 import { InputBase } from '../components';
@@ -19,7 +19,7 @@ import {
 } from '@tanstack/react-query';
 import Grid from '@mui/material/Grid';
 import useAuth from '~/hooks/useAuth';
-import formManageAwardHistory from '~/services/api/formManageAwardHistory';
+import formManageAwardHistory from '~/services/api/awardHistory';
 import ConfirmBox from '~/components/component/Dialog/ConfirmBox';
 const columns = [
     { id: 'identityCode', label: 'Số định danh' },
@@ -30,17 +30,6 @@ const columns = [
     { id: 'rewardValue', label: 'Trị giá', width: 100 }
 ];
 
-const rows = [
-    {
-        id: '1',
-        resident: '1',
-        rewardCeremony: '1',
-        achievementName: '1',
-        achievementType: '1',
-        rewardName: '1',
-        rewardValue: '1'
-    },
-]
 
 const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -48,9 +37,11 @@ const Transition = forwardRef(function Transition(props, ref) {
 
 export default function AwardListEstimate({ open, onClose, idAward }) {
 
+    console.log(idAward)
+
     const { auth } = useAuth();
 
-    const [open, setOpen] = useState(false);
+    const [openCom, setOpenCom] = useState(false);
     const [success, setSuccess] = useState(false);
     const [openBackdrop, setOpenBackdrop] = useState(false);
 
@@ -62,8 +53,10 @@ export default function AwardListEstimate({ open, onClose, idAward }) {
 
     const { data, isLoading, error } = useQuery(
         ['AwardEstimateHistory', idAward],
-        () => formManageAwardHistory.getFormManageAwardHistoryById(auth.token, idAward)
+        async () => await formManageAwardHistory.getFormManageAwardHistoryById(auth.token, idAward)
     );
+
+    console.log(data, error)
 
     const mutateSaveHistory = useMutation(
         (id) => formManageAwardHistory.saveFormManageAwardHistory(auth.token, id),
@@ -74,12 +67,9 @@ export default function AwardListEstimate({ open, onClose, idAward }) {
             onError: () => {
                 alert('Lưu thất bại, thử lại hoặc không thể lưu')
             },
-            onSuccess: (data) => {
+            onSuccess: () => {
                 setSuccess(true);
-                queryClient.invalidateQueries('formRewardForChance');
-            },
-            onError: (error) => {
-                //console.log(error);
+                queryClient.invalidateQueries(['AwardCoompleteHistory', idAward]);
             },
             onSettled: () => {
                 setOpenBackdrop(false);
@@ -107,14 +97,14 @@ export default function AwardListEstimate({ open, onClose, idAward }) {
     };
 
     const handleStartSaveHistory = () => {
-        setOpen(true);
+        setOpenCom(true);
     }
     const handleCloseConfirmBox = () => {
-        setOpen(false);
+        setOpenCom(false);
     }
     const handleAgreeSave = () => {
         mutateSaveHistory.mutate(idAward);
-        setOpen(false);
+        setOpenCom(false);
     }
 
     return (
@@ -125,7 +115,7 @@ export default function AwardListEstimate({ open, onClose, idAward }) {
             onClose={handleClose}
             TransitionComponent={Transition}
         >
-            <ConfirmBox title='Đóng cửa sổ ?' open={open} onClose={handleCloseConfirmBox} onAgree={handleAgreeSave} />
+            <ConfirmBox title='Đóng cửa sổ ?' open={openCom} onClose={handleCloseConfirmBox} onAgree={handleAgreeSave} />
             <Snackbar open={success} autoHideDuration={3000} onClose={handleSuccess} >
                 <Alert onClose={handleSuccess} severity="success" sx={{ width: '100%', fontSize: 15 }}>
                     Thành công !
@@ -137,9 +127,9 @@ export default function AwardListEstimate({ open, onClose, idAward }) {
             >
                 <CircularProgress color="inherit" />
             </Backdrop>
-            {error ? <ErrorData /> :
-                isLoading ? <TableSkeleton /> :
-                    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+            {!error ? <ErrorData /> :
+                (isLoading || !data) ? <TableSkeleton /> :
+                    (data.length > 0 && <Paper sx={{ width: '100%', overflow: 'hidden' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <Button variant="contained" color="success" onClick={handleStartSaveHistory}
                                 sx={{ fontSize: 15, margin: '2px 4px', minWidth: 130 }} >Lưu vào lịch sử trao thưởng</Button>
@@ -181,7 +171,7 @@ export default function AwardListEstimate({ open, onClose, idAward }) {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {rows
+                                    {data
                                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                         .map((row) => {
                                             return (
@@ -213,13 +203,14 @@ export default function AwardListEstimate({ open, onClose, idAward }) {
                         <TablePagination
                             rowsPerPageOptions={[10, 20, 100]}
                             component="div"
-                            count={rows.length}
+                            count={data.length}
                             rowsPerPage={rowsPerPage}
                             page={page}
                             onPageChange={handleChangePage}
                             onRowsPerPageChange={handleChangeRowsPerPage}
                         />
-                    </Paper>}
+                    </Paper>)
+            }
         </Dialog>
     );
 }
