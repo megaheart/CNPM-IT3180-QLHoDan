@@ -30,6 +30,7 @@ export default function ConfirmAchievement() {
     const achivementNameRef = useRef(null);
 
     const [binaryDataArray, setBinaryDataArray] = useState([]);
+    const [selectedFiles, setSelectedFiles] = useState([]);
 
     const handleFileInput = (event) => {
         const files = event.target.files;
@@ -45,8 +46,13 @@ export default function ConfirmAchievement() {
             });
 
             reader.readAsDataURL(file);
+            setSelectedFiles(prev => {
+                return [...prev, file]
+            });
         }
     };
+
+
 
     const handleClose = () => {
         setOpen(false);
@@ -58,7 +64,7 @@ export default function ConfirmAchievement() {
 
     function convertBinaryToIFormFile(binaryDataArray) {
         const formFiles = [];
-        binaryDataArray.forEach(binaryData => {
+        binaryDataArray.forEach((binaryData, index) => {
             const blob = new Blob([binaryData], { type: 'image/jpeg' });
             const file = new File([blob], 'image.jpg', { type: 'image/jpeg' });
             formFiles.push(file);
@@ -96,19 +102,21 @@ export default function ConfirmAchievement() {
 
     const handleSendForm = (e) => {
         e.preventDefault();
-        //const reader = new FileReader();
+        // const formFiles = convertBinaryToIFormFile(binaryDataArray);
         const ResidentIdCode = idRef.current.value;
         const RewardCeremonyId = awardEventIdRef.current.value;
         const AchievementName = achivementNameRef.current.value;
-        const data = {
-            ResidentIdCode,
-            RewardCeremonyId,
-            AchievementName,
-            Images: binaryDataArray
-            //Images: convertBinaryToIFormFile(binaryDataArray)
+        const formData = new FormData();
+        formData.append('ResidentIdCode', ResidentIdCode);
+        formData.append('RewardCeremonyId', +RewardCeremonyId);
+        formData.append('AchievementName', AchievementName);
+
+        for (let i = 0; i < selectedFiles.length; i++) {
+            formData.append('Images', selectedFiles[i], selectedFiles[i].name);
         }
-        console.log(data)
-        mutateSend.mutate(data);
+
+        console.log(Object.fromEntries(formData.entries()));
+        mutateSend.mutate(formData);
     }
 
 
@@ -116,6 +124,7 @@ export default function ConfirmAchievement() {
 
     const removeImageByClick = (index) => {
         setBinaryDataArray(prev => prev.filter((item, i) => i !== index) || [])
+        setSelectedFiles(prev => prev.filter((item, i) => i !== index) || [])
     }
     return (
         <div className={cx('container')}>

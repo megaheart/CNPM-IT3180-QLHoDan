@@ -37,6 +37,7 @@ export default function AddResidentDialog({ open, onClose, type }) {
     const [success, setSuccess] = useState(false);
 
     const [identityCodeError, setIdentityCodeError] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const [dateOfBirth, setBirthday] = useState(null);
     const [idCardDate, setIdCardDate] = useState(null);
@@ -161,12 +162,18 @@ export default function AddResidentDialog({ open, onClose, type }) {
         console.log(currentData)
         const identityCodeCheck = validation.checkIdentifi(currentData.identityCode);
         if (identityCodeCheck.isValid) {
-            setIdentityCodeError(identityCodeCheck.message);
+            setErrorMessage(identityCodeCheck.message);
             setLoading(false);
             return;
         }
         else {
-            setIdentityCodeError('');
+            setErrorMessage('');
+            if (currentData.moveInDate === null) {
+                setErrorMessage('Ngày chuyển đến không được để trống');
+            }
+            else if (currentData.moveInDate > currentData.moveOutDate || currentData.moveInDate > new Date()) {
+                setErrorMessage('Ngày chuyển đến không hợp lệ');
+            }
             if (type.type !== 'UPDATE') {
                 await type.mutation.mutate(currentData);
                 onClose(false);
@@ -202,14 +209,17 @@ export default function AddResidentDialog({ open, onClose, type }) {
         console.log(currentData)
         const identityCodeCheck = validation.checkIdentifi(currentData.identityCode);
         if (!identityCodeCheck.isValid) {
-            setIdentityCodeError(identityCodeCheck.message);
+            setErrorMessage(identityCodeCheck.message);
             setLoading(false);
             return;
         }
         else {
             console.log('ADDING CONTINUE....')
-            setIdentityCodeError('');
+            setErrorMessage('');
             if (type.type === 'ADD') {
+                if (currentData.moveInDate === null) {
+
+                }
                 await type.mutation.mutate(currentData);
                 onClose(false);
                 setSuccess(true);
@@ -265,7 +275,7 @@ export default function AddResidentDialog({ open, onClose, type }) {
                 <div className={cx('header-paper-resident')}>
 
                     <Button variant="contained" color="success"
-                        sx={{ fontSize: 15, margin: '2 0', width: 120 }} onClick={actionForm}>{type.type === 'ADD' ? 'Thêm' : 'Cập nhật'}</Button>
+                        sx={{ fontSize: 15, margin: '2 0', width: 150 }} onClick={actionForm}>{type.type === 'ADD' ? 'Thêm' : 'Cập nhật'}</Button>
 
                     <Button variant="contained" color="error"
                         sx={{ fontSize: 15, margin: '2 0', width: 60 }} onClick={handlStartClose}>Đóng</Button>
@@ -275,6 +285,7 @@ export default function AddResidentDialog({ open, onClose, type }) {
                 <div className={cx('resident-paper')}>
                     {loading && <LinearProgress color="success" />}
                     <h2 className={cx('title-resident')}>{type.type === 'ADD' ? 'Thêm nhân khẩu mới' : 'Chi tiết nhân khẩu'}</h2>
+                    <h4>{errorMessage !== '' && errorMessage}</h4>
                     <div className={cx('resident-detail')}>
                         <div>
                             <TextField sx={{ m: 1, width: 270 }} label="Họ và tên"
@@ -369,7 +380,6 @@ export default function AddResidentDialog({ open, onClose, type }) {
                                 disabled={type.type === 'VIEW_AND_UPDATE'}
                                 inputRef={identityCodeRef}
                                 variant="standard"
-                                helperText={identityCodeError}
                             />
                             <LocalizationProvider dateAdapter={AdapterDayjs} >
                                 <DatePicker

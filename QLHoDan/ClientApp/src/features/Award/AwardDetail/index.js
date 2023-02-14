@@ -1,5 +1,4 @@
 import { forwardRef, useState, useRef, useEffect, Fragment, useCallback } from 'react';
-import useAuth from '~/hooks/useAuth';
 //validate
 import validation from '~/services/validate/index.js';
 //material components
@@ -32,7 +31,7 @@ import {
     useMutation,
     useQueryClient
 } from '@tanstack/react-query';
-
+import useAuth from '~/hooks/useAuth';
 import AcceptCeremory from '~/components/component/FormDialog';
 
 import ChangeAwardPair from '../ChangeAwardPair';

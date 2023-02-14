@@ -27,11 +27,10 @@ function AcceptForm({ open, action, actionCancel }) {
             notAcceptReason: null,
             achievementType: 1
         });
-
-
     }
 
     const handleNotAccept = () => {
+        console.log(notAcceptReason)
         if (notAcceptReason === '') {
             setWarningMessage('Vui lòng nhập lý do từ chối');
         }

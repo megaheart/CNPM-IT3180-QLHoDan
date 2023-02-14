@@ -102,7 +102,6 @@ export default function UpdateResidentDialog({ open, onClose, dataId, setSuccess
     )
 
     const handleUpdate = async () => {
-
         const currentData = {
             fullName: fullNameRef.current.value,
             alias: aliasRef.current.value,
@@ -127,6 +126,14 @@ export default function UpdateResidentDialog({ open, onClose, dataId, setSuccess
             moveOutReason: moveOutReasonRef.current.value,
             scope: scopeRef.current.value ? +scopeRef.current.value : null,
             householdId: householdIdRef.current.value || null,
+        }
+        if (currentData.moveInDate === null || currentData.dateOfBirth === null) {
+            alert('Vui lòng nhập ngày sinh hoặc chuyển đến');
+            return;
+        }
+        if (currentData.identityCode === '') {
+            alert('Vui lòng nhập số CMND');
+            return;
         }
         setIdentityCodeError('');
         mutation.mutate(

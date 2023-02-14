@@ -30,7 +30,7 @@ export default function RequireRemoving() {
                     border: '1px solid #ccc',
                     borderRadius: '5px',
                     marginBottom: '5px',
-                    paddingBottom: '20px'
+                    paddingBottom: '20px', backgroundColor: '#fff',
                 }}
                 noValidate
                 autoComplete="off"

@@ -9,6 +9,16 @@ import TabUnstyled, { tabUnstyledClasses } from '@mui/base/TabUnstyled';
 
 import ListFormAward from '~/features/FormList/ListFormEnvidenceAward';
 
+import formEnvidenceAward from '~/services/api/formEnvidenceAward';
+
+import {
+  useQuery,
+  useQueryClient,
+  useMutation,
+}
+  from '@tanstack/react-query';
+import useAuth from '~/hooks/useAuth';
+
 const blue = {
   50: '#F0F7FF',
   100: '#C2E0FF',
@@ -99,13 +109,13 @@ export default function EnvidenceAward() {
         <Tab>Đã duyệt</Tab>
       </TabsList>
       <TabPanel value={0}>
-        <ListFormAward />
+        <ListFormAward key='all' type='all' />
       </TabPanel>
       <TabPanel value={1}>
-        <ListFormAward />
+        <ListFormAward key='uncheck' type='uncheck' />
       </TabPanel>
       <TabPanel value={2}>
-        <ListFormAward />
+        <ListFormAward key='check' type='check' />
       </TabPanel>
     </TabsUnstyled>
   );

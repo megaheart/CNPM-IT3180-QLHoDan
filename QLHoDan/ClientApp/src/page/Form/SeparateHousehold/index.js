@@ -150,7 +150,7 @@ export default function SeparateHousehold() {
                     justifyContent: 'flex-start',
                     border: '1px solid #ccc',
                     borderRadius: '5px',
-                    marginBottom: '5px'
+                    marginBottom: '5px', backgroundColor: '#fff',
                 }}
                 noValidate
                 autoComplete="off"

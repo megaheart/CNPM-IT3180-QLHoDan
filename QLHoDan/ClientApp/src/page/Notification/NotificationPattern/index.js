@@ -5,7 +5,13 @@ import {
 import styles from './Noti.module.scss';
 import classNames from 'classnames/bind';
 
-import { useState } from 'react';
+import { useState } from 'react'; import {
+    useQuery,
+    useMutation,
+    useQueryClient
+} from '@tanstack/react-query';
+import notificationManager from '~/services/api/notificationManager';
+import useAuth from '~/hooks/useAuth';
 
 const cx = classNames.bind(styles);
 
@@ -76,7 +82,6 @@ function timeSince(date) {
 
 
 function Notification({ markRead, content, sender, senderName, time, iden }) {
-
     const [open, setOpen] = useState(false);
 
     const handleClickOpen = () => {
@@ -87,10 +92,8 @@ function Notification({ markRead, content, sender, senderName, time, iden }) {
         setOpen(false);
     };
 
-    console.log(iden)
-
     const markThisNoti = () => {
-        markRead([iden]);
+        markRead(iden);
     }
 
     const timeAgo = timeSince(new Date(time));

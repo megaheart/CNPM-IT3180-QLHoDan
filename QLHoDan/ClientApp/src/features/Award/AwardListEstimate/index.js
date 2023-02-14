@@ -9,7 +9,14 @@ import {
     TableRow,
     Button, Slide
 } from '@mui/material';
-
+import ErrorData from '~/page/ErrorData';
+import formRewardForChance from '~/services/api/formRewardForChance';
+import {
+    useQuery,
+    useMutation,
+    useQueryClient
+} from '@tanstack/react-query';
+import useAuth from '~/hooks/useAuth';
 const columns = [
     { id: 'id', label: 'Mã đợt phát thưởng' },
     { id: 'resident', label: 'Tổ quản lý', width: 50 },
@@ -37,6 +44,47 @@ const Transition = forwardRef(function Transition(props, ref) {
 });
 
 export default function AwardListEstimate({ open, onClose, idAward }) {
+
+    const { auth } = useAuth();
+
+    const queryClient = useQueryClient();
+
+    const { data, isLoading, error } = useQuery(
+        ['formRewardForChance', idAward],
+        () => formRewardForChance.getFormRewardForChanceByrewardCeremonyId(auth.token, idAward),
+        {
+            enabled: !!idAward,
+            refetchOnWindowFocus: false,
+            retry: 1,
+            refetchOnMount: false,
+            refetchOnReconnect: false,
+            refetchInterval: false,
+            refetchIntervalInBackground: false,
+            refetchOnFocus: false,
+            onSuccess: (data) => {
+                console.log(data);
+            },
+            onError: (error) => {
+                console.log(error);
+            }
+        }
+    );
+
+    const mutateSaveHistory = useMutation(
+        (data) => formRewardForChance.sendFormRewardForChance(auth.token, data),
+        {
+            onSuccess: (data) => {
+                console.log(data);
+                queryClient.invalidateQueries(['formRewardForChance', idAward]);
+            },
+            onError: (error) => {
+                console.log(error);
+            }
+        }
+    );
+
+
+
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -65,7 +113,7 @@ export default function AwardListEstimate({ open, onClose, idAward }) {
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Button variant="contained" color="success"
                         sx={{ fontSize: 15, margin: '2px 4px', minWidth: 130 }} >Lưu vào lịch sử trao thưởng</Button>
-                    <Button variant="contained" color="error"
+                    <Button variant="contained" color="error" onClick={handleClose}
                         sx={{ fontSize: 15, margin: '2px 4px', maxWidth: 300 }} >Đóng</Button>
                 </div>
                 <h1>Danh sách phát thưởng dự kiến</h1>

@@ -38,3 +38,6 @@ export const API_ENVIDENCE_AWARD = `${API_URL}/forms/AchievementEvidence`;
 
 export const API_CHOOSE_AWARD = `${API_URL}/forms/ChoosingPresents`;
 
+export const API_MANAGE_AWARD_HISTORY = `${API_URL}/RewardRecords`;
+
+export const API_BASEMENT_MODULE = `${API_URL}/static/img`;

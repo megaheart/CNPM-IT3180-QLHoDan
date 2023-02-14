@@ -51,9 +51,22 @@ const data = [
 export default function ListFormAward({ type }) {
     const { auth } = useAuth();
 
-    // const { data, isLoading, error } = useQuery(['formsEnvidenceAward', auth.username], () => formEnvidenceAward.getAllFormEnvidenceAward(auth.token));
+    const { data, isLoading, error } =
+        useQuery(['formsEnvidenceAward', type, auth.username],
+            () => {
+                if (type === 'all') {
+                    return formEnvidenceAward.getAllFormEnvidenceAward(auth.token);
+                }
+                else if (type === 'check') {
+                    return formEnvidenceAward.getAllCheckFormAward(auth.token, true);
+                }
+                else if (type === 'uncheck') {
+                    return formEnvidenceAward.getAllCheckFormAward(auth.token, false);
+                }
+            })
+        ;
 
-    // console.log(data)
+    //console.log(data)
 
     //backdrop
     const [openBackdrop, setOpenBackdrop] = useState(false);
@@ -66,7 +79,7 @@ export default function ListFormAward({ type }) {
 
     //const queryClient = useQueryClient();
 
-    // const mutationDelete = useMutation((id) => rewardApi.deleteRewardEvent(auth.token, id), {
+    // const mutationDelete = useMutation((id) => formEnvidenceAward.deleteAward(auth.token, id), {
     //     onMutate: () => {
     //         setOpenBackdrop(true);
     //     },
@@ -86,7 +99,6 @@ export default function ListFormAward({ type }) {
 
     };
 
-    const [isLoading, setIsLoading] = useState(false);
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -131,7 +143,7 @@ export default function ListFormAward({ type }) {
     };
 
     return <Paper sx={{ overflow: 'hidden' }}>
-        {
+        {error ? <ErrorData /> :
             isLoading ? <TableSkeleton /> :
                 <Fragment >
                     <ConfirmBox
@@ -141,7 +153,7 @@ export default function ListFormAward({ type }) {
                         content='Bạn có chắc chắn muốn xoá đợt thưởng này không?'
                         title='Xóa đợt thưởng này'
                     />
-                    {idForm && <FormAwardDetail open={openDetail} onClose={setOpenDetail} idAwardForm={idForm} />}
+                    {idForm && <FormAwardDetail type={type} open={openDetail} onClose={setOpenDetail} idAwardForm={idForm} />}
                     <Snackbar open={success} autoHideDuration={3000} onClose={handleCloseSnackbar}>
                         <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%', fontSize: 15 }}>
                             Xoá đợt thưởng thành công!
@@ -178,7 +190,8 @@ export default function ListFormAward({ type }) {
                                                 {columns.map((column, index) => {
                                                     let value = row[column.id];
                                                     if (column.id === 'isAccepted') {
-                                                        value = value ? 'Đã phê duyệt' : 'Chưa phê duyệt';
+                                                        value = (row.notAcceptedReason === null && !row.isAccepted) ? 'Chưa được kiểm tra'
+                                                            : (row.notAcceptedReason !== null) ? 'Từ chối' : 'Chấp nhận';
                                                     }
                                                     return (
                                                         <TableCell key={column.id + 'TableCell' + row.id + index} align={column.align} style={{ fontSize: 15 }}>

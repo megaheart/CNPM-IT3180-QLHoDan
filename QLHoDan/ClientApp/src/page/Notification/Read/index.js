@@ -18,7 +18,7 @@ export default function ReadNotification() {
     return (
         <Fragment>
             {(isLoading || !data) ? <NotificationSkeleton /> :
-                <Stack sx={{ width: '60%', fontSize: 15, margin: '0 auto', backgroundColor: '#fff' }} spacing={0}>
+                <Stack sx={{ width: '60%', height: 500, fontSize: 15, margin: '0 auto', backgroundColor: '#fff' }} spacing={0}>
                     {
                         data.length > 0 ? data.sort((a, b) => {
                             return (new Date(b.time)) - (new Date(a.time));

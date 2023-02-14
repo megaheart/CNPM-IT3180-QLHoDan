@@ -7,11 +7,12 @@ import {
     useMutation,
     useQueryClient
 } from '@tanstack/react-query';
+import axios from 'axios';
 import notificationManager from '~/services/api/notificationManager';
 import { NotificationSkeleton } from '~/components/Skeleton';
 export default function UnReadNotification() {
     const { auth } = useAuth();
-
+    console.log(auth)
     const [openBackdrop, setOpenBackdrop] = useState(false);
     const [success, setSuccess] = useState(false);
 
@@ -22,33 +23,36 @@ export default function UnReadNotification() {
 
     const queryClient = useQueryClient();
 
-    const mutateMarkNotification = useMutation(
-        (ids) => notificationManager.markNotification(auth.token, ids),
-        {
-            onMutate: async (ids) => {
-                setOpenBackdrop(true);
-                // await queryClient.cancelQueries(['getUnReadNotification', auth.username]);
-                // await queryClient.cancelQueries(['getReadNotification', auth.username]);
-                // const previousData = queryClient.getQueryData(['getUnReadNotification', auth.username]);
-                // queryClient.setQueryData(['getUnReadNotification', auth.username], (old) => {
-                //     return old.filter((item) => !ids.includes(item.id));
-                // });
-                // return { previousData };
-            },
-            onError: (err, variables, context) => {
-                // queryClient.setQueryData(['getUnReadNotification', auth.username], context.previousData);
-                alert(err)
-            },
-            onSuccess: () => {
+    const deleteThisNotification = async (id) => {
+        setOpenBackdrop(true);
+        // await notificationManager.markNotification(auth.token, id)
+        //     .catch((e) => {
+        //         console.log('why')
+        //         alert(e);
+        //         setOpenBackdrop(false)
+        //     }
+        //     );
+        var myHeaders = new Headers();
+        myHeaders.append("Authorization", `Bearer ${auth.token}`);
+
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            redirect: 'follow'
+        };
+
+        fetch(`https://localhost:44436/api/Notification/read?msgIds=${id}`, requestOptions)
+            .then(response => response.text())
+            .then(result => {
+                console.log(result);
                 queryClient.invalidateQueries(['getUnReadNotification', auth.username]);
                 queryClient.invalidateQueries(['getReadNotification', auth.username]);
-                setSuccess(true);
-            },
-            onSettled: () => {
                 setOpenBackdrop(false);
-            }
-        }
-    );
+                setSuccess(true);
+            })
+            .catch(error => console.log('error', error));
+
+    }
 
     const handleCloseSnackbar = (event, reason) => {
         if (reason === 'clickaway') {
@@ -72,7 +76,7 @@ export default function UnReadNotification() {
                 <CircularProgress color="inherit" />
             </Backdrop>
             {(isLoading || !data) ? <NotificationSkeleton /> :
-                <Stack sx={{ width: '60%', fontSize: 15, margin: '0 auto', backgroundColor: '#fff' }} spacing={0}>
+                <Stack sx={{ width: '60%', height: 500, fontSize: 15, margin: '0 auto', backgroundColor: '#fff' }} spacing={0}>
                     {
                         data.length > 0 ? data.sort((a, b) => {
                             return new Date(b.time) - new Date(a.time);
@@ -86,7 +90,7 @@ export default function UnReadNotification() {
                                     senderName={item.senderFullname}
                                     content={item.content}
                                     time={item.time}
-                                    markRead={mutateMarkNotification.mutate}
+                                    markRead={deleteThisNotification}
                                 />
                             )
                         }

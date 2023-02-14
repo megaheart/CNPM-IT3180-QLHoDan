@@ -41,18 +41,19 @@ class NotificationManager {
         }
     }
 
-    async markNotification(token, ids) {
-        let idParams = ids.join(',');
+    async markNotification(token, id) {
         const response = await axios.post(
-            `${API_NOTIFICATION}/read?msgIds=${idParams}`,
-            config(token)
+            `${API_NOTIFICATION}/read?msgIds=${id}`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                redirect: 'follow'
+            }
         );
-        if (response && response.data) {
-            return response.data;
-        }
-        else {
-            console.log('ERROR IN MARKING NOTIFICATIONS')
-        }
+        return response;
     }
 }
 
