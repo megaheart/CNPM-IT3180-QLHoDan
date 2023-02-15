@@ -64,7 +64,7 @@ namespace QLHoDan.Controllers.Reward
             if (user.Role > 3)
             {
                 return Ok(_context.AchievementEvidenceForm.Include(f => f.Resident).Include(f => f.RewardCeremony)
-                                .Where(f => (!rewardCeremonyId.HasValue || rewardCeremonyId.Value == f.Id) && f.Account == user.UserName)
+                                .Where(f => (!rewardCeremonyId.HasValue || rewardCeremonyId.Value == f.RewardCeremonyId) && f.Account == user.UserName)
                                 .Where(f => isChecked == null || (f.IsAccepted == true || !string.IsNullOrEmpty(f.NotAcceptedReason)) == isChecked)
                                 .Select(f => new FormBriefInfo()
                                 {
@@ -81,7 +81,7 @@ namespace QLHoDan.Controllers.Reward
             else if (user.Role == 3)
             {
                 return Ok(_context.AchievementEvidenceForm.Include(f => f.Resident).Include(f => f.RewardCeremony)
-                                .Where(f => (!rewardCeremonyId.HasValue || rewardCeremonyId.Value == f.Id) && f.AccountScope == user.Scope)
+                                .Where(f => (!rewardCeremonyId.HasValue || rewardCeremonyId.Value == f.RewardCeremonyId) && f.AccountScope == user.Scope)
                                 .Where(f => isChecked == null || (f.IsAccepted == true || !string.IsNullOrEmpty(f.NotAcceptedReason)) == isChecked)
                                 .Select(f => new FormBriefInfo()
                                 {
@@ -96,7 +96,7 @@ namespace QLHoDan.Controllers.Reward
             }
             //CHủ tịch xã + kế toán
             else return Ok(_context.AchievementEvidenceForm.Include(f => f.Resident).Include(f => f.RewardCeremony)
-                                .Where(f => !rewardCeremonyId.HasValue || rewardCeremonyId.Value == f.Id)
+                                .Where(f => !rewardCeremonyId.HasValue || rewardCeremonyId.Value == f.RewardCeremonyId)
                                 .Where(f => isChecked == null || (f.IsAccepted == true || !string.IsNullOrEmpty(f.NotAcceptedReason)) == isChecked)
                                 .Select(f => new FormBriefInfo()
                                 {

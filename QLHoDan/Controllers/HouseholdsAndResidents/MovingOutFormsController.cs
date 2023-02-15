@@ -179,7 +179,7 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             {
                 return BadRequest(new RequestError("ResidentNotFound", "Nhân khẩu không tồn tại trong CSDL."));
             }
-            if (!resident.MoveOutDate.HasValue)
+            if (resident.MoveOutDate.HasValue)
             {
                 return BadRequest(new RequestError("ResidentMovedOut", "Nhân khẩu đã chuyển đi rồi không chuyển đi nữa."));
             }
