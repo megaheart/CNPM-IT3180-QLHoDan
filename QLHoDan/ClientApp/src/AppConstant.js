@@ -44,3 +44,8 @@ export const API_BASEMENT_MODULE = `${API_URL}/static/img`;
 
 export const API_HOUSEHOLD_REGISTER_FORM = `${API_URL}/forms/Household`;
 
+export const API_MOVEMENT_FORM = `${API_URL}/forms/MovingOut`;
+
+export const API_EVIDENCE_DEATH = `${API_URL}/forms/Dead`;
+
+export const API_RESIDENT_CHANGE = `${API_URL}/forms/ChangingResidentInfo`;
