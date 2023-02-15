@@ -108,12 +108,14 @@ function Header({ text }) {
                     <h3>{text}</h3>
                 </div>
             </div>
+
             <Tippy
                 interactive
                 visible={filterByTitle(FormsAction, search).length > 0 && search.length > 0}
                 render={attrs => (
                     <div ref={tippySearch} className={cx('search-result')} tabIndex="-1" {...attrs}>
-                        <PopperWrapper>
+                        {auth.role === 'Household' && <PopperWrapper>
+
                             <h4 className={cx('search-title')}>Kết quả tìm kiếm</h4>
                             {
                                 filterByTitle(FormsAction, search).map(
@@ -123,6 +125,7 @@ function Header({ text }) {
                                 )
                             }
                         </PopperWrapper>
+                        }
                     </div>
                 )}
             >
@@ -140,6 +143,7 @@ function Header({ text }) {
                     </button>
                 </div>
             </Tippy>
+
 
             <div className={cx('actions')} >
                 <Tippy
@@ -203,7 +207,7 @@ function Header({ text }) {
                     {/* <Avatar sx={{ cursor: 'pointer', border: '2px solid transparent', '&:hover': { borderColor: 'green' } }} src={fuhua} onClick={turnOnTippy} /> */}
                 </Tippy>
             </div>
-        </ header>
+        </ header >
     )
 }
 

@@ -57,13 +57,38 @@ export default function FormHKComponent() {
 
     const [idViewing, setIdViewing] = useState(null);
 
-    const handleClose = () => {
-        setOpen(false);
+    const [binaryDataArray, setBinaryDataArray] = useState([]);
+    const [selectedFiles, setSelectedFiles] = useState([]);
+
+    const handleFileInput = (event) => {
+        const files = event.target.files;
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const reader = new FileReader();
+
+            reader.addEventListener('load', function () {
+                setBinaryDataArray(prev => {
+                    return [...prev, reader.result]
+                });
+            });
+
+            reader.readAsDataURL(file);
+            setSelectedFiles(prev => {
+                return [...prev, file]
+            });
+        }
     };
 
-    const handleToggle = () => {
-        setOpen(!open);
-    };
+    const removeImageByClick = (index) => {
+        setBinaryDataArray(prev => prev.filter((item, i) => i !== index) || [])
+        setSelectedFiles(prev => prev.filter((item, i) => i !== index) || [])
+    }
+
+    const handleRequestFullScreen = useCallback((e) => {
+        e.target.requestFullscreen();
+    }, []);
+
 
     const [openConfirm, setOpenConfirm] = useState(false);
 
@@ -260,6 +285,13 @@ export default function FormHKComponent() {
         //     formData.append('Members', rows[i]);
         // }
         formData.append('Members', JSON.stringify(rows));
+        if (selectedFiles.length === 0) {
+            alert('Cần minh chứng');
+            return;
+        }
+        for (let i = 0; i < selectedFiles.length; i++) {
+            formData.append('Images', selectedFiles[i], selectedFiles[i].name)
+        }
         setOpen(true);
         await formHouseholdRegister.sendFormHouseholdRegister(
             auth.token,
@@ -521,6 +553,46 @@ export default function FormHKComponent() {
                         </TableContainer>
                     </div>
                 </div>
+                <label htmlFor="upload-photo" style={{ marginLeft: 10 }}>
+                    <input
+                        style={{ display: 'none' }}
+                        id="upload-photo"
+                        name="upload-photo"
+                        type="file"
+                        multiple="multiple"
+                        onChange={handleFileInput}
+                    />
+                    <Fab
+                        color="secondary"
+                        size="small"
+                        component="span"
+                        aria-label="add"
+                        variant="extended"
+                    >
+                        <Add /> Ảnh minh chứng
+                    </Fab>
+
+                </label>
+                {(binaryDataArray.length > 0) && <div className={cx('img-render')}>{binaryDataArray.map((item, index) => (
+                    <div key={"image" + index} style={{ position: 'relative', display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center', width: 'auto' }}>
+                        <img src={binaryDataArray}
+                            style={{ width: 'auto', height: '150px', marginRight: 5, marginBottom: 5, cursor: 'pointer' }}
+                            alt="evidence"
+                            onClick={handleRequestFullScreen} />
+                        <Fab
+                            sx={{ position: 'absolute', right: -5, top: -7, backgroundColor: 'transparent' }}
+                            color="error"
+                            size="small"
+                            component="span"
+                            aria-label="add"
+                            variant="extended"
+                            onClick={() => removeImageByClick(index)}
+                        >
+                            <CloseOutlined />
+                        </Fab>
+                    </div>
+                ))}
+                </div>}
                 <Button onClick={handleSendForm} color="primary" variant="contained">Gửi</Button>
             </Box>
 

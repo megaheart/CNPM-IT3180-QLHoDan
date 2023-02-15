@@ -9,12 +9,17 @@ function Guest() {
     useEffect(
         () => {
             if (auth.role) {
-                navigate('/dashboard');
+                navigate('/profile');
             }
-        }, []
+        }, [auth.role, navigate]
     )
     return (
         <div>
+            <h1>Giao diện website cho khách</h1>
+            <ul>
+                Các chức năng:
+                <li>Gửi đơn xin đăng ký hộ khẩu</li>
+            </ul>
         </div>
     );
 }
