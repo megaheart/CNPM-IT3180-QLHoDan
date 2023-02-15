@@ -29,9 +29,9 @@ class FormManageAwardHistory {
         }
     }
 
-    async saveFormManageAwardHistory(token, id) {
+    async saveFormManageAwardHistory(token, idx) {
         const response = await axios.post(
-            `${API_MANAGE_AWARD_HISTORY}/savePreview?rewardCeremonyId=${id}`,
+            `${API_MANAGE_AWARD_HISTORY}/savePreview?rewardCeremonyId=${idx}`,
             config(token)
         )
 
@@ -43,9 +43,9 @@ class FormManageAwardHistory {
         }
     }
 
-    async getAwardHistoryByRewardCeremonyId(token, id) {
+    async getAwardHistoryByRewardCeremonyId(token, idy) {
         const response = await axios.get(
-            `${API_MANAGE_AWARD_HISTORY}?rewardCeremonyId=${id}`,
+            `${API_MANAGE_AWARD_HISTORY}?rewardCeremonyId=${idy}`,
             config(token)
         );
         if (response && response.data) {
@@ -56,9 +56,9 @@ class FormManageAwardHistory {
         }
     }
 
-    async getAwardHistoryByResidentId(token, id) {
+    async getAwardHistoryByResidentId(token, idz) {
         const response = await axios.get(
-            `${API_MANAGE_AWARD_HISTORY}?residentId=${id}`,
+            `${API_MANAGE_AWARD_HISTORY}?residentId=${idz}`,
             config(token)
         );
         if (response && response.data) {

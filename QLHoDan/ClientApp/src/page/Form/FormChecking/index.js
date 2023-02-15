@@ -1,4 +1,4 @@
-import { useState, forwardRef } from 'react';
+import { useState, forwardRef, useRef } from 'react';
 import {
     Paper, Dialog, Table,
     TableBody,
@@ -24,12 +24,18 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
-import AchievementEvidenceFormView from '~/page/Form/FormChecking/AchievementEvidenceFormView';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
+import AchievementEvidenceFormView from '~/page/Form/FormChecking/AchievementEvidenceFormView';
+import ChangingHouseholdFormView from '~/page/Form/FormChecking/ChangingHouseholdFormView';
+import ChangingHouseholdInfoFormView from '~/page/Form/FormChecking/ChangingHouseholdInfoFormView';
+import ChangingResidentInfoFormView from '~/page/Form/FormChecking/ChangingResidentInfoFormView';
+import DeadFormView from '~/page/Form/FormChecking/DeadFormView';
+import HouseholdFormView from '~/page/Form/FormChecking/HouseholdFormView';
+import MovingOutFormView from '~/page/Form/FormChecking/MovingOutFormView';
 
 const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -39,7 +45,7 @@ const columns = [
     { id: 'createdTime', label: 'Ngày gửi', width: 100, getValue: (row) => row.createdTime },
     { id: 'account', label: 'Tài khoản gửi', width: 100, getValue: (row) => row.account },
 ];
-export default function DashboardComponent() {
+export default function FormCheckingComponent() {
     const { auth, setAuth } = useAuth();
     // const { householdForms, isLoadinghouseholdForms, error1 } = useQuery(
     //     ['gethouseholdForms'],
@@ -74,10 +80,11 @@ export default function DashboardComponent() {
     //     ['user'],
     //     async () => accountApi.getProfile(auth.token),
     // );
+    const queryClient = useQueryClient();
     const { data, isLoading, error } = useQuery(
         ['getAchievementEvidence'],
         async () => {
-            const response = await axios.get(
+            const response1 = await axios.get(
                 "api/forms/AchievementEvidence?isChecked=false",
                 {
                     headers: {
@@ -85,15 +92,155 @@ export default function DashboardComponent() {
                     }
                 }
             );
-            if (response && response.data) {
-                return response.data;
+            const response2 = await axios.get(
+                "api/forms/Household?isChecked=false",
+                {
+                    headers: {
+                        'Authorization': `Bearer ${auth.token}`
+                    }
+                }
+            );
+            const response3 = await axios.get(
+                "api/forms/MovingOut?isChecked=false",
+                {
+                    headers: {
+                        'Authorization': `Bearer ${auth.token}`
+                    }
+                }
+            );
+            const response4 = await axios.get(
+                "api/forms/Dead?isChecked=false",
+                {
+                    headers: {
+                        'Authorization': `Bearer ${auth.token}`
+                    }
+                }
+            );
+            const response5 = await axios.get(
+                "api/forms/ChangingResidentInfo?isChecked=false",
+                {
+                    headers: {
+                        'Authorization': `Bearer ${auth.token}`
+                    }
+                }
+            );
+            const response6 = await axios.get(
+                "api/forms/ChangingHouseholdInfo?isChecked=false",
+                {
+                    headers: {
+                        'Authorization': `Bearer ${auth.token}`
+                    }
+                }
+            );
+            const response7 = await axios.get(
+                "api/forms/ChangingHousehold?isChecked=false",
+                {
+                    headers: {
+                        'Authorization': `Bearer ${auth.token}`
+                    }
+                }
+            );
+            if (response1 && response1.data
+             && response2 && response2.data
+             && response3 && response3.data
+             && response4 && response4.data
+             && response5 && response5.data
+             && response6 && response6.data
+             && response7 && response7.data) {
+                let data = [...response1.data, 
+                    ...response2.data, 
+                    ...response3.data, 
+                    ...response4.data, 
+                    ...response5.data, 
+                    ...response6.data, 
+                    ...response7.data];
+                return data;
             }
             else {
                 return [];
             }
         }
     );
-
+    // const { data, isLoading, error } = useQuery(
+    //     ['getAchievementEvidence'],
+    //     async () => {
+    //         const response1 = await axios.get(
+    //             "api/forms/AchievementEvidence?isChecked=false",
+    //             {
+    //                 headers: {
+    //                     'Authorization': `Bearer ${auth.token}`
+    //                 }
+    //             }
+    //         );
+    //         const response2 = await axios.get(
+    //             "api/forms/Household?isChecked=false",
+    //             {
+    //                 headers: {
+    //                     'Authorization': `Bearer ${auth.token}`
+    //                 }
+    //             }
+    //         );
+    //         const response3 = await axios.get(
+    //             "api/forms/MovingOut?isChecked=false",
+    //             {
+    //                 headers: {
+    //                     'Authorization': `Bearer ${auth.token}`
+    //                 }
+    //             }
+    //         );
+    //         const response4 = await axios.get(
+    //             "api/forms/Dead?isChecked=false",
+    //             {
+    //                 headers: {
+    //                     'Authorization': `Bearer ${auth.token}`
+    //                 }
+    //             }
+    //         );
+    //         const response5 = await axios.get(
+    //             "api/forms/ChangingResidentInfo?isChecked=false",
+    //             {
+    //                 headers: {
+    //                     'Authorization': `Bearer ${auth.token}`
+    //                 }
+    //             }
+    //         );
+    //         const response6 = await axios.get(
+    //             "api/forms/ChangingHouseholdInfo?isChecked=false",
+    //             {
+    //                 headers: {
+    //                     'Authorization': `Bearer ${auth.token}`
+    //                 }
+    //             }
+    //         );
+    //         const response7 = await axios.get(
+    //             "api/forms/ChangingHousehold?isChecked=false",
+    //             {
+    //                 headers: {
+    //                     'Authorization': `Bearer ${auth.token}`
+    //                 }
+    //             }
+    //         );
+    //         if (response1 && response1.data
+    //          && response2 && response2.data
+    //          && response3 && response3.data
+    //          && response4 && response4.data
+    //          && response5 && response5.data
+    //          && response6 && response6.data
+    //          && response7 && response7.data) {
+    //             let data = [...response1.data, 
+    //                 ...response2.data, 
+    //                 ...response3.data, 
+    //                 ...response4.data, 
+    //                 ...response5.data, 
+    //                 ...response6.data, 
+    //                 ...response7.data];
+    //             return data;
+    //         }
+    //         else {
+    //             return [];
+    //         }
+    //     }
+    // );
     const [selection, setSelection] = useState(null);
     let formTypeTxt = "";
     let formDetailPanel = <></>;
@@ -101,21 +248,27 @@ export default function DashboardComponent() {
         switch (selection.formType) {
             case "Household":
                 formTypeTxt = "Đăng kí hộ khẩu, nhân khẩu";
+                formDetailPanel = <HouseholdFormView id={selection.id} />
                 break;
             case "MovingOut":
                 formTypeTxt = "Xin chuyển đi";
+                formDetailPanel = <MovingOutFormView id={selection.id} />
                 break;
             case "Dead":
                 formTypeTxt = "Chứng tử";
+                formDetailPanel = <DeadFormView id={selection.id} />
                 break;
             case "ChangingResidentInfo":
                 formTypeTxt = "Xin thay đổi thông tin nhân khẩu";
+                formDetailPanel = <ChangingResidentInfoFormView id={selection.id} />
                 break;
             case "ChangingHouseholdInfo":
                 formTypeTxt = "Xin thay đổi thông tin hộ khẩu";
+                formDetailPanel = <ChangingHouseholdInfoFormView id={selection.id} />
                 break;
             case "ChangingHousehold":
                 formTypeTxt = "Xin chuyển hộ khẩu";
+                formDetailPanel = <ChangingHouseholdFormView id={selection.id} />
                 break;
             case "AchievementEvidence":
                 formTypeTxt = "Minh chứng thành tích";
@@ -139,6 +292,8 @@ export default function DashboardComponent() {
 
     // const data = achievementEvidenceForms;
 
+    const notAcceptReasonInputRef = useRef(null);
+    const [accept, setAccept] = useState(null);
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -156,11 +311,39 @@ export default function DashboardComponent() {
         setOpen(false);
         setSelection(null);
     };
+    const mutation = useMutation({
+        mutationFn: ({selection, _accept, _notAcceptReason, _achievementType}) => {
+            axios.post('api/forms/' + selection.formType + "/accept/" + selection.id, {
+                "accept": _accept,
+                "notAcceptReason": _notAcceptReason,
+                "achievementType": _achievementType
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${auth.token}`
+                }
+            });
+        },
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['getAchievementEvidence'] });
+        },
+    });
+
+    const handleSummit = () => {
+        setOpen(false);
+        setSelection(null);
+        mutation.mutate({
+            selection: selection, 
+            _accept: accept == "true", 
+            _notAcceptReason: accept == "true" ? null : notAcceptReasonInputRef.current.value, 
+            _achievementType: 1
+        });
+        
+    };
     const openDetailPanel = (row) => {
         setOpen(true);
         setSelection(row);
     };
-    const [accept, setAccept] = useState(null);
     return (
         <>
             <Dialog open={open} onClose={handleClose}>
@@ -181,7 +364,7 @@ export default function DashboardComponent() {
                             <FormControlLabel value={false} control={<Radio />} label="Từ chối" />
                         </RadioGroup>
                     </FormControl>
-                    {
+                    {/* {
                         (accept == "true" && selection && selection.formType === "AchievementEvidence") && (<>
                             <TextField
                                 autoFocus
@@ -193,15 +376,26 @@ export default function DashboardComponent() {
                                 variant="standard"
                             />
                         </>)
-                    }
+                    } */}
                     {
-                        (accept == "false") && (<>"Bye"</>)
+                        (accept == "false") && (
+                            <TextField
+                                inputRef={notAcceptReasonInputRef}
+                                autoFocus
+                                margin="dense"
+                                id="notAcceptReason"
+                                label="Lý do không duyệt"
+                                type="text"
+                                fullWidth
+                                variant="standard"
+                            />
+                        )
                     }
 
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose}>Cancel</Button>
-                    <Button onClick={handleClose}>Subscribe</Button>
+                    <Button onClick={handleClose}>Thoát</Button>
+                    <Button onClick={handleSummit}>Xác nhận</Button>
                 </DialogActions>
             </Dialog>
             {error ? <ErrorData /> :
@@ -235,7 +429,7 @@ export default function DashboardComponent() {
                                         .map((row) => {
                                             const openDetailPanelRow = () => { openDetailPanel(row) };
                                             return (
-                                                <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+                                                <TableRow key={row.id} hover role="checkbox" tabIndex={-1}>
                                                     {columns.map((column) => (
                                                         <TableCell align={column.align} style={{ minWidth: column.minWidth, width: column.width, fontSize: 15 }}>
                                                             {column.getValue(row)}
