@@ -1369,7 +1369,7 @@
     | Address | string | địa chỉ thường trú | XX, yy, zz |
     | Members | string (json format) | Danh sách [AddingResidentFormRequestModel](#addingresidentformrequestmodel) của tất cả các thành viên | |
     | Scope | int | Tổ Phụ Trách | 3 |
-
+    | Images | binary | Danh sách ảnh minh chứng | binary |
 
 - **Response Body khi thành công (Json)**
 
@@ -1593,7 +1593,6 @@
     | moveOutDate | DateTime | Ngày chuyển đi | 2022-12-30 |
     | moveOutReason | string | Lý do chuyển đi | Công việc |
     | ResidentIdCode | string | Số CMND/CCCD của Người chuyển đi | 02134698722 |
-    | Images | binary | Danh sách ảnh minh chứng | binary |
 
 
 - **Response Body khi thành công (Json)**
