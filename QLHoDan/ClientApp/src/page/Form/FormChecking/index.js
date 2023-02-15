@@ -24,12 +24,18 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
-import AchievementEvidenceFormView from '~/page/Form/FormChecking/AchievementEvidenceFormView';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
+import AchievementEvidenceFormView from '~/page/Form/FormChecking/AchievementEvidenceFormView';
+import ChangingHouseholdFormView from '~/page/Form/FormChecking/ChangingHouseholdFormView';
+import ChangingHouseholdInfoFormView from '~/page/Form/FormChecking/ChangingHouseholdInfoFormView';
+import ChangingResidentInfoFormView from '~/page/Form/FormChecking/ChangingResidentInfoFormView';
+import DeadFormView from '~/page/Form/FormChecking/DeadFormView';
+import HouseholdFormView from '~/page/Form/FormChecking/HouseholdFormView';
+import MovingOutFormView from '~/page/Form/FormChecking/MovingOutFormView';
 
 const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -78,7 +84,7 @@ export default function FormCheckingComponent() {
     const { data, isLoading, error } = useQuery(
         ['getAchievementEvidence'],
         async () => {
-            const response = await axios.get(
+            const response1 = await axios.get(
                 "api/forms/AchievementEvidence?isChecked=false",
                 {
                     headers: {
@@ -86,15 +92,155 @@ export default function FormCheckingComponent() {
                     }
                 }
             );
-            if (response && response.data) {
-                return response.data;
+            const response2 = await axios.get(
+                "api/forms/Household?isChecked=false",
+                {
+                    headers: {
+                        'Authorization': `Bearer ${auth.token}`
+                    }
+                }
+            );
+            const response3 = await axios.get(
+                "api/forms/MovingOut?isChecked=false",
+                {
+                    headers: {
+                        'Authorization': `Bearer ${auth.token}`
+                    }
+                }
+            );
+            const response4 = await axios.get(
+                "api/forms/Dead?isChecked=false",
+                {
+                    headers: {
+                        'Authorization': `Bearer ${auth.token}`
+                    }
+                }
+            );
+            const response5 = await axios.get(
+                "api/forms/ChangingResidentInfo?isChecked=false",
+                {
+                    headers: {
+                        'Authorization': `Bearer ${auth.token}`
+                    }
+                }
+            );
+            const response6 = await axios.get(
+                "api/forms/ChangingHouseholdInfo?isChecked=false",
+                {
+                    headers: {
+                        'Authorization': `Bearer ${auth.token}`
+                    }
+                }
+            );
+            const response7 = await axios.get(
+                "api/forms/ChangingHousehold?isChecked=false",
+                {
+                    headers: {
+                        'Authorization': `Bearer ${auth.token}`
+                    }
+                }
+            );
+            if (response1 && response1.data
+             && response2 && response2.data
+             && response3 && response3.data
+             && response4 && response4.data
+             && response5 && response5.data
+             && response6 && response6.data
+             && response7 && response7.data) {
+                let data = [...response1.data, 
+                    ...response2.data, 
+                    ...response3.data, 
+                    ...response4.data, 
+                    ...response5.data, 
+                    ...response6.data, 
+                    ...response7.data];
+                return data;
             }
             else {
                 return [];
             }
         }
     );
-
+    // const { data, isLoading, error } = useQuery(
+    //     ['getAchievementEvidence'],
+    //     async () => {
+    //         const response1 = await axios.get(
+    //             "api/forms/AchievementEvidence?isChecked=false",
+    //             {
+    //                 headers: {
+    //                     'Authorization': `Bearer ${auth.token}`
+    //                 }
+    //             }
+    //         );
+    //         const response2 = await axios.get(
+    //             "api/forms/Household?isChecked=false",
+    //             {
+    //                 headers: {
+    //                     'Authorization': `Bearer ${auth.token}`
+    //                 }
+    //             }
+    //         );
+    //         const response3 = await axios.get(
+    //             "api/forms/MovingOut?isChecked=false",
+    //             {
+    //                 headers: {
+    //                     'Authorization': `Bearer ${auth.token}`
+    //                 }
+    //             }
+    //         );
+    //         const response4 = await axios.get(
+    //             "api/forms/Dead?isChecked=false",
+    //             {
+    //                 headers: {
+    //                     'Authorization': `Bearer ${auth.token}`
+    //                 }
+    //             }
+    //         );
+    //         const response5 = await axios.get(
+    //             "api/forms/ChangingResidentInfo?isChecked=false",
+    //             {
+    //                 headers: {
+    //                     'Authorization': `Bearer ${auth.token}`
+    //                 }
+    //             }
+    //         );
+    //         const response6 = await axios.get(
+    //             "api/forms/ChangingHouseholdInfo?isChecked=false",
+    //             {
+    //                 headers: {
+    //                     'Authorization': `Bearer ${auth.token}`
+    //                 }
+    //             }
+    //         );
+    //         const response7 = await axios.get(
+    //             "api/forms/ChangingHousehold?isChecked=false",
+    //             {
+    //                 headers: {
+    //                     'Authorization': `Bearer ${auth.token}`
+    //                 }
+    //             }
+    //         );
+    //         if (response1 && response1.data
+    //          && response2 && response2.data
+    //          && response3 && response3.data
+    //          && response4 && response4.data
+    //          && response5 && response5.data
+    //          && response6 && response6.data
+    //          && response7 && response7.data) {
+    //             let data = [...response1.data, 
+    //                 ...response2.data, 
+    //                 ...response3.data, 
+    //                 ...response4.data, 
+    //                 ...response5.data, 
+    //                 ...response6.data, 
+    //                 ...response7.data];
+    //             return data;
+    //         }
+    //         else {
+    //             return [];
+    //         }
+    //     }
+    // );
     const [selection, setSelection] = useState(null);
     let formTypeTxt = "";
     let formDetailPanel = <></>;
@@ -102,21 +248,27 @@ export default function FormCheckingComponent() {
         switch (selection.formType) {
             case "Household":
                 formTypeTxt = "Đăng kí hộ khẩu, nhân khẩu";
+                formDetailPanel = <HouseholdFormView id={selection.id} />
                 break;
             case "MovingOut":
                 formTypeTxt = "Xin chuyển đi";
+                formDetailPanel = <MovingOutFormView id={selection.id} />
                 break;
             case "Dead":
                 formTypeTxt = "Chứng tử";
+                formDetailPanel = <DeadFormView id={selection.id} />
                 break;
             case "ChangingResidentInfo":
                 formTypeTxt = "Xin thay đổi thông tin nhân khẩu";
+                formDetailPanel = <ChangingResidentInfoFormView id={selection.id} />
                 break;
             case "ChangingHouseholdInfo":
                 formTypeTxt = "Xin thay đổi thông tin hộ khẩu";
+                formDetailPanel = <ChangingHouseholdInfoFormView id={selection.id} />
                 break;
             case "ChangingHousehold":
                 formTypeTxt = "Xin chuyển hộ khẩu";
+                formDetailPanel = <ChangingHouseholdFormView id={selection.id} />
                 break;
             case "AchievementEvidence":
                 formTypeTxt = "Minh chứng thành tích";
@@ -176,6 +328,7 @@ export default function FormCheckingComponent() {
           queryClient.invalidateQueries({ queryKey: ['getAchievementEvidence'] });
         },
     });
+
     const handleSummit = () => {
         setOpen(false);
         setSelection(null);
