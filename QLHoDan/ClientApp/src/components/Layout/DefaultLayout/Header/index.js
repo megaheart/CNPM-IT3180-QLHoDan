@@ -146,36 +146,11 @@ function Header({ text }) {
 
 
             <div className={cx('actions')} >
-                <Tippy
-                    interactive
-                    visible={messageVisible}
-                    render={attrs => (
-                        <div ref={tippyMessage} className={cx('tippy')} tabIndex="-1" {...attrs}>
-                            {/* <Stack sx={{ width: '100%' }} spacing={2}>
-                                <Alert severity="error">This is an error alert — check it out!</Alert>
-                                <Alert severity="warning">This is a warning alert — check it out!</Alert>
-                                <Alert severity="info">This is an info alert — check it out!</Alert>
-                                <Alert severity="success">This is a success alert — check it out!</Alert>
-                            </Stack> */}
-                            <PopperWrapper>
-                                <Stack sx={{ width: '100%' }} spacing={2}>
-                                    <Alert sx={{ fontSize: 15 }} severity="warning">Tài khoản của bạn đã bị khóa!</Alert>
-                                    <Alert sx={{ fontSize: 15 }} severity="error">Tài khoản của bạn đã bị đăng nhập ở nơi khác!</Alert>
-                                    <Alert sx={{ fontSize: 15 }} severity="success">Đơn xin đăng ký nhân khẩu của bạn đã được duyệt!</Alert>
-                                    <Alert sx={{ fontSize: 15 }} severity="info">Bạn đã gửi đơn xin đăng ký nhân khẩu thành công!</Alert>
-                                </Stack>
-                            </PopperWrapper>
 
-                        </div>
-                    )}
-                >
-                    <Badge color="secondary" badgeContent={
-                        // queryNotificationCount.isLoading ? 0 : queryNotificationCount.data
-                        count
-                    }  >
-                        <MailIcon sx={{ fontSize: 30, cursor: 'pointer' }} onClick={turnOnTippyMessage} />
-                    </Badge>
-                </Tippy>
+                <NavLink to='/notification'>
+
+                    <MailIcon sx={{ fontSize: 30, cursor: 'pointer' }} />
+                </NavLink>
                 <Tippy
                     interactive
                     visible={tippyAvatar}

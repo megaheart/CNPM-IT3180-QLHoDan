@@ -178,6 +178,7 @@ export default function FormHKComponent() {
             moveInDate: moveInDate,
             moveInReason: moveInReasonRef.current.value || ''
         }
+        console.log(currentData)
         if (
             currentData.dateOfBirth === null ||
             (currentData.identityCode.length !== 9 &&
@@ -212,12 +213,14 @@ export default function FormHKComponent() {
     }
 
     const handleChangeDetailResident = (index) => {
+        console.log(index);
         setIdViewing(index);
         const viewData = rows[index];
+        console.log(viewData)
         fullNameRef.current.value = viewData.fullName;
         aliasRef.current.value = viewData.alias;
         setBirthday(viewData.dateOfBirth);
-        isMaleRef.current.value = viewData.isMale;
+        isMaleRef.current.value = viewData.isMale ? 'male' : 'female';
         birthPlaceRef.current.value = viewData.birthPlace
         nativeLandRef.current.value = viewData.nativeLand
         ethnicRef.current.value = viewData.ethnic
@@ -262,8 +265,10 @@ export default function FormHKComponent() {
             console.log('Vui lòng nhập đúng và đầy đủ thông tin')
         }
         else {
+            console.log(idViewing);
             setRows(prev =>
                 prev.map((item, index) => {
+                    console.log(index === idViewing)
                     if (index === idViewing) {
                         return currentData;
                     }
@@ -298,6 +303,7 @@ export default function FormHKComponent() {
             formData
         ).catch(err => {
             console.log(err);
+            alert(err?.response?.data?.desciption || 'Có lỗi xảy ra')
         }).finally(() => {
             setOpen(false);
         });
@@ -442,7 +448,7 @@ export default function FormHKComponent() {
                             </div>
 
                             <div style={{ display: 'flex', flexFlow: 'row wrap', justifyContent: 'center' }}>
-                                {idViewing ?
+                                {(idViewing || idViewing === 0) ?
                                     <Fab
                                         sx={{ marginLeft: 1, maxWidth: 300 }}
                                         color="success"

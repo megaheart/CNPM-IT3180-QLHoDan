@@ -116,7 +116,7 @@ const navForEmplyee = [
         icon: <EmojiEventsIcon />, title: 'Trao thưởng', link: '/awa', id: 'award',
         collapse: [
             { title: 'Danh sách dịp', id: 'award1', linkCol: '/award' },
-            { title: 'Lịch sử ', id: 'award2', linkCol: '/historyAward' },
+            //{ title: 'Lịch sử ', id: 'award2', linkCol: '/historyAward' },
             { title: 'Minh chứng', linkCol: '/envidence/award', id: 'award3' }, ,
             { title: 'Đơn chọn quà', linkCol: '/choosing_award', id: 'award4' },
         ]
