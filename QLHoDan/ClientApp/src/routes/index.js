@@ -19,6 +19,7 @@ import ErrorLogin from '~/page/ErrorLogin';
 import DefaultLayout from '~/components/Layout/DefaultLayout'
 import AuthenticationLayout from '~/components/Layout/AuthenticationLayout'
 import GuestLayout from '~/components/Layout/GuestLayout';
+import FormChecking from '~/page/Form/FormChecking';
 
 const ROLES = {
     ADMIN: "CommitteeChairman",
@@ -71,7 +72,7 @@ const routes = [
     { path: '/notification', element: Notification, layout: DefaultLayout, id: 'noti', role: [ROLES.ADMIN, ROLES.ACCOUNTANT, ROLES.MANAGER, ROLES.USER] },
     { path: '/profile', element: Profile, layout: DefaultLayout, id: 'pro', role: [ROLES.ADMIN, ROLES.ACCOUNTANT, ROLES.MANAGER, ROLES.USER] },
     { path: '/error', element: ErrorLogin, layout: DefaultLayout, id: 'log', role: [ROLES.ADMIN, ROLES.ACCOUNTANT, ROLES.MANAGER, ROLES.USER] },
-
+    { path: '/checkform', element: FormChecking, layout: DefaultLayout, id: 'db', role: [ROLES.ADMIN, ROLES.MANAGER, ROLES.ACCOUNTANT] },
 ];
 
 const adminRoutes = [
