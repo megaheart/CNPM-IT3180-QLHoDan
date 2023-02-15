@@ -16,11 +16,6 @@ export default function DashboardForUser() {
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink to='/addnew/them_nhan_khau'>
-                            Viết đơn đăng ký nhân khẩu
-                        </NavLink>
-                    </li>
-                    <li>
                         <NavLink to='/addnew/don_xin_chuyen_di'>
                             Viết đơn xin chuyển đi
                         </NavLink>
@@ -31,28 +26,18 @@ export default function DashboardForUser() {
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink to='/addnew/don_tach_ho_khau'>
-                            Viết đơn tách hộ khẩu
-                        </NavLink>
-                    </li>
-                    <li>
                         <NavLink to='/addnew/don_xac_nhan_thanh_tich'>
                             Viết đơn xác nhận thành tích
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink to='/addnew/don_sua_so_ho_khau'>
-                            Viết đơn sửa sổ hộ khẩu
+                        <NavLink to='/addnew/don_chonn_qua'>
+                            Viết đơn chọn quà cho dịp đặc biệt
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink to='/addnew/don_chuyen_doi_nhan_khau'>
-                            Viết đơn chuyển đổi nhân khẩu
-                        </NavLink>
-                    </li>
-                    <li>
-                        <NavLink to='/addnew/don_thay_doi_ho_khau'>
-                            Viết đơn thay đổi hộ khẩu
+                        <NavLink to='don_chuyen_doi_nhan_khau'>
+                            Viết đơn thay đổi nhân khẩu
                         </NavLink>
                     </li>
                     <li>

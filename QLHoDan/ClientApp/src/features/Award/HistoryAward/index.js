@@ -13,11 +13,12 @@ import { useQuery } from '@tanstack/react-query'
 import ErrorData from '~/page/ErrorData';
 import TableSkeleton from '~/page/Skeleton';
 const columns = [
-    { id: 'identityCode', label: 'Mã đợt phát thưởng' },
-    { id: 'fullName', label: 'Tổ quản lý', width: 50 },
+    { id: 'identityCode', label: 'Số định danh', width: 50 },
+    { id: 'fullName', label: 'Họ và tên', width: 150 },
     { id: 'dateOfBirth', label: 'Sổ hộ khẩu', width: 100 },
-    { id: 'achievementName', label: 'Số định danh', width: 100 },
-    { id: 'rewardName', label: 'Ngày bắt đầu', width: 100 }
+    { id: 'achievementName', label: 'Loại quà', width: 100 },
+    { id: 'rewardName', label: 'Tên phần quà', width: 100 },
+    { id: 'title', label: 'Tên đợt thưởng', width: 100 },
 ];
 
 export default function HistoryAward() {
@@ -45,7 +46,7 @@ export default function HistoryAward() {
 
     return (
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-            {(!data) ? <ErrorData /> :
+            {
                 isLoading ? <TableSkeleton />
                     :
                     <React.Fragment>
@@ -62,7 +63,6 @@ export default function HistoryAward() {
                                                 {column.label}
                                             </TableCell>
                                         ))}
-                                        <TableCell></TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -71,20 +71,23 @@ export default function HistoryAward() {
                                         .map((row) => {
                                             return (
                                                 <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                                                    <TableCell align='center' >
-                                                        {data.resident.identityCode}
+                                                    <TableCell align='left' >
+                                                        {row.resident.identityCode}
                                                     </TableCell>
-                                                    <TableCell align='center' >
-                                                        {data.resident.fullName}
+                                                    <TableCell align='left' >
+                                                        {row.resident.fullName}
                                                     </TableCell>
-                                                    <TableCell align='center' >
-                                                        {new Date(data.resident.dateOfBirth).toLocaleDateString('vi-VN')}
+                                                    <TableCell align='left' >
+                                                        {row.resident.householdId}
                                                     </TableCell>
-                                                    <TableCell align='center' >
-                                                        {data.rewardCenemony.achievementName}
+                                                    <TableCell align='left' >
+                                                        {new Date(row.resident.dateOfBirth).toLocaleDateString('vi-VN')}
                                                     </TableCell>
-                                                    <TableCell align='center' >
-                                                        {data.rewardCenemony.rewardName}
+                                                    <TableCell align='left' >
+                                                        {row.achievementName}
+                                                    </TableCell>
+                                                    <TableCell align='left' >
+                                                        {row.rewardCeremony.title}
                                                     </TableCell>
                                                 </TableRow>
                                             );

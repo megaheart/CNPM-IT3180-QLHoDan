@@ -60,13 +60,19 @@ export default function DeathConfirm() {
 
         console.log(Object.fromEntries(formData.entries()));
         setOpen(true);
-        await formEvidenceDeath.sendFormEvidenceDeath(auth.token, formData).catch(
-            (error) => {
-                alert(error?.response?.data?.description || 'Có lỗi xảy ra');
-            }
-        ).finally(() => {
-            setOpen(false);
-        });
+        await formEvidenceDeath.sendFormEvidenceDeath(auth.token, formData)
+            .then(() => {
+                alert('Gửi thành công');
+                ResidentIdCodeRef.current.value = '';
+                setBinaryDataArray([]);
+            })
+            .catch(
+                (error) => {
+                    alert(error?.response?.data?.description || 'Có lỗi xảy ra');
+                }
+            ).finally(() => {
+                setOpen(false);
+            });
     }
 
     const removeImageByClick = (index) => {
@@ -133,7 +139,7 @@ export default function DeathConfirm() {
                     </label>
                     {(binaryDataArray.length > 0) && <div className={cx('img-render')}>{binaryDataArray.map((item, index) => (
                         <div key={"image" + index} style={{ position: 'relative', display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center', width: 'auto' }}>
-                            <img src={binaryDataArray}
+                            <img src={item}
                                 style={{ width: 'auto', height: '150px', marginRight: 5, marginBottom: 5, cursor: 'pointer' }}
                                 alt="evidence"
                                 onClick={handleRequestFullScreen} />

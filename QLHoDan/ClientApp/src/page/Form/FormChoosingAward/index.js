@@ -11,9 +11,9 @@ export default function FormChoosingAward() {
     const { auth } = useAuth();
     const [open, setOpen] = useState(false);
 
-    const handleClose = () => {
-        setOpen(false);
-    };
+    const ResidentIdCodeRef = useRef(null);
+    const RewardCeremonyIdRef = useRef(null);
+    const PresentsTypeRef = useRef(null);
 
     const mutationSend = useMutation((formData) => formRewardForChance.sendFormRewardForChance(auth.token, formData), {
         onMutate: () => {
@@ -21,6 +21,9 @@ export default function FormChoosingAward() {
         },
         onSuccess: (data) => {
             alert('Gửi thành công');
+            ResidentIdCodeRef.current.value = '';
+            RewardCeremonyIdRef.current.value = '';
+            PresentsTypeRef.current.value = '';
         },
         onError: (error) => {
             console.log(error)
@@ -31,9 +34,7 @@ export default function FormChoosingAward() {
     });
 
 
-    const ResidentIdCodeRef = useRef(null);
-    const RewardCeremonyIdRef = useRef(null);
-    const PresentsTypeRef = useRef(null);
+
 
     const handleSendForm = async () => {
         setOpen(true);

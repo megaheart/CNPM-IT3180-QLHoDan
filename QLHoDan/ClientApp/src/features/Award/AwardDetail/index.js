@@ -98,7 +98,7 @@ export default function AwardDetail({ open, onClose, idAward }) {
     const [description, setDescription] = useState('');
 
     const typeRef = useRef();
-    const [type, setType] = useState('TTHT');
+    const [type, setType] = useState('TT');
 
     const [totalValue, setTotalValue] = useState('');
 
@@ -248,6 +248,7 @@ export default function AwardDetail({ open, onClose, idAward }) {
                 setTitle(data['title']);
                 setDescription(data['description']);
                 setTotalValue(data['totalValue']);
+                setType(data['type']);
             }
         }, [data, isLoading]
     );

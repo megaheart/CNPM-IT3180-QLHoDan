@@ -48,7 +48,7 @@ function CreateEvent({ checkChange }) {
             setSuccess(true);
             titleRef.current.value = '';
             descriptionRef.current.value = '';
-            typeRef.current.value = 'TTHT';
+            typeRef.current.value = 'TT';
             setClosingFormDate(null);
             setRewardDate(null);
             messageToSpecialAccountRef.current.value = '';
@@ -124,14 +124,14 @@ function CreateEvent({ checkChange }) {
                     Loại thưởng
                 </InputLabel>
                 <Select
-                    defaultValue='TTHT'
+                    defaultValue='TT'
                     inputRef={typeRef}
                     sx={{ fontSize: 20, width: 500 }}
                 >
-                    <MenuItem sx={{ fontSize: 20 }} value='TTHT'>
+                    <MenuItem sx={{ fontSize: 20 }} value='TT'>
                         Dịp đặc biệt
                     </MenuItem>
-                    <MenuItem sx={{ fontSize: 20 }} value='TT'>
+                    <MenuItem sx={{ fontSize: 20 }} value='TTHT'>
                         Thành tích học tập
                     </MenuItem>
                 </Select>

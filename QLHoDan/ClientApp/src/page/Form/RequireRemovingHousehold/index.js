@@ -22,6 +22,12 @@ export default function RequireRemoving() {
     const moveOutReasonRef = useRef(null);
     const ResidentIdCodeRef = useRef(null);
 
+    const resetInput = () => {
+        moveOutPlaceRef.current.value = '';
+        moveOutDateRef.current.value = '';
+        moveOutReasonRef.current.value = '';
+        ResidentIdCodeRef.current.value = '';
+    }
 
     const handleClose = () => {
         setOpen(false);
@@ -38,9 +44,9 @@ export default function RequireRemoving() {
         } else {
             setOpen(true);
             await formMovement.sendFormMovement(auth.token, data).then(res => {
-                if (res.status === 200) {
-                    alert('Gửi đơn thành công')
-                }
+                resetInput();
+                alert('Gửi đơn thành công')
+
             }).catch(
                 err => {
                     console.log(err)

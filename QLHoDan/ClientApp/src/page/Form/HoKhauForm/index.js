@@ -161,29 +161,29 @@ export default function FormHKComponent() {
 
     const handleAddNK = () => {
         const currentData = {
-            fullName: fullNameRef.current.value || '',
-            alias: aliasRef.current.value || '',
-            dateOfBirth: birthday,
-            isMale: isMaleRef.current.value === 'male' ? true : false,
-            birthPlace: birthPlaceRef.current.value || '',
-            nativeLand: nativeLandRef.current.value || '',
-            ethnic: ethnicRef.current.value || '',
-            nation: nationRef.current.value || '',
-            job: jobRef.current.value || '',
-            workplace: workplaceRef.current.value || '',
-            identityCode: identityCodeRef.current.value || '',
-            relationShip: relationShipRef.current.value || '',
-            academicLevel: academicLevelRef.current.value || '',
-            criminalRecord: criminalRecordRef.current.value || '',
-            moveInDate: moveInDate,
-            moveInReason: moveInReasonRef.current.value || ''
+            FullName: fullNameRef.current.value || '',
+            Alias: aliasRef.current.value || '',
+            DateOfBirth: birthday,
+            IsMale: isMaleRef.current.value === 'male' ? true : false,
+            BirthPlace: birthPlaceRef.current.value || '',
+            NativeLand: nativeLandRef.current.value || '',
+            Ethnic: ethnicRef.current.value || '',
+            Nation: nationRef.current.value || '',
+            Job: jobRef.current.value || '',
+            Workplace: workplaceRef.current.value || '',
+            IdentityCode: identityCodeRef.current.value || '',
+            RelationShip: relationShipRef.current.value || '',
+            AcademicLevel: academicLevelRef.current.value || '',
+            CriminalRecord: criminalRecordRef.current.value || '',
+            MoveInDate: moveInDate,
+            MoveInReason: moveInReasonRef.current.value || ''
         }
         console.log(currentData)
         if (
-            currentData.dateOfBirth === null ||
-            (currentData.identityCode.length !== 9 &&
-                currentData.identityCode.length !== 12) ||
-            currentData.moveInDate === null
+            currentData.DateOfBirth === null ||
+            (currentData.IdentityCode.length !== 9 &&
+                currentData.IdentityCode.length !== 12) ||
+            currentData.MoveInDate === null
         ) {
             alert('Vui lòng nhập đầy đủ thông tin')
         }
@@ -217,50 +217,50 @@ export default function FormHKComponent() {
         setIdViewing(index);
         const viewData = rows[index];
         console.log(viewData)
-        fullNameRef.current.value = viewData.fullName;
-        aliasRef.current.value = viewData.alias;
-        setBirthday(viewData.dateOfBirth);
-        isMaleRef.current.value = viewData.isMale ? 'male' : 'female';
-        birthPlaceRef.current.value = viewData.birthPlace
-        nativeLandRef.current.value = viewData.nativeLand
-        ethnicRef.current.value = viewData.ethnic
-        nationRef.current.value = viewData.nation
-        jobRef.current.value = viewData.job
-        workplaceRef.current.value = viewData.workplace
-        identityCodeRef.current.value = viewData.identityCode
-        relationShipRef.current.value = viewData.relationShip
-        academicLevelRef.current.value = viewData.academicLevel
-        criminalRecordRef.current.value = viewData.criminalRecord
-        setMoveInDate(viewData.moveInDate)
-        moveInReasonRef.current.value = viewData.moveInReason
+        fullNameRef.current.value = viewData.FullName;
+        aliasRef.current.value = viewData.Alias;
+        setBirthday(viewData.DateOfBirth);
+        isMaleRef.current.value = viewData.IsMale ? 'male' : 'female';
+        birthPlaceRef.current.value = viewData.BirthPlace
+        nativeLandRef.current.value = viewData.NativeLand
+        ethnicRef.current.value = viewData.Ethnic
+        nationRef.current.value = viewData.Nation
+        jobRef.current.value = viewData.Job
+        workplaceRef.current.value = viewData.Workplace
+        identityCodeRef.current.value = viewData.IdentityCode
+        relationShipRef.current.value = viewData.RelationShip
+        academicLevelRef.current.value = viewData.AcademicLevel
+        criminalRecordRef.current.value = viewData.CriminalRecord
+        setMoveInDate(viewData.MoveInDate)
+        moveInReasonRef.current.value = viewData.MoveInReason
         setVisible(true);
     }
 
     const handleChangeDetail = () => {
         const currentData = {
-            fullName: fullNameRef.current.value || '',
-            alias: aliasRef.current.value || '',
-            dateOfBirth: birthday,
-            isMale: isMaleRef.current.value === 'male' ? true : false,
-            birthPlace: birthPlaceRef.current.value || '',
-            nativeLand: nativeLandRef.current.value || '',
-            ethnic: ethnicRef.current.value || '',
-            nation: nationRef.current.value || '',
-            job: jobRef.current.value || '',
-            workplace: workplaceRef.current.value || '',
-            identityCode: identityCodeRef.current.value || '',
-            relationShip: relationShipRef.current.value || '',
-            academicLevel: academicLevelRef.current.value || '',
-            criminalRecord: criminalRecordRef.current.value || '',
-            moveInDate: moveInDate,
-            moveInReason: moveInReasonRef.current.value || ''
+            FullName: fullNameRef.current.value || '',
+            Alias: aliasRef.current.value || '',
+            DateOfBirth: birthday,
+            IsMale: isMaleRef.current.value === 'male' ? true : false,
+            BirthPlace: birthPlaceRef.current.value || '',
+            NativeLand: nativeLandRef.current.value || '',
+            Ethnic: ethnicRef.current.value || '',
+            Nation: nationRef.current.value || '',
+            Job: jobRef.current.value || '',
+            Workplace: workplaceRef.current.value || '',
+            IdentityCode: identityCodeRef.current.value || '',
+            RelationShip: relationShipRef.current.value || '',
+            AcademicLevel: academicLevelRef.current.value || '',
+            CriminalRecord: criminalRecordRef.current.value || '',
+            MoveInDate: moveInDate,
+            MoveInReason: moveInReasonRef.current.value || ''
         }
         console.log(currentData);
         if (
-            currentData.dateOfBirth === null ||
-            (currentData.identityCode.length !== 9 &&
-                currentData.identityCode.length !== 12) ||
-            currentData.moveInDate === null
+            currentData.DateOfBirth === null ||
+            (currentData.IdentityCode.length !== 9 &&
+                currentData.IdentityCode.length !== 12) ||
+            currentData.MoveInDate === null
         ) {
             console.log('Vui lòng nhập đúng và đầy đủ thông tin')
         }
@@ -303,7 +303,13 @@ export default function FormHKComponent() {
             formData
         ).catch(err => {
             console.log(err);
-            alert(err?.response?.data?.desciption || 'Có lỗi xảy ra')
+            alert(err?.response?.data?.desciption || 'Có lỗi xảy ra');
+            resetInput();
+            householdIdRef.current.value = '';
+            addressRef.current.value = '';
+            scopeRef.current.value = '';
+            setRows([]);
+            setSelectedFiles([]);
         }).finally(() => {
             setOpen(false);
         });
