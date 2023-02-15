@@ -68,11 +68,11 @@ function checkPasswordValidation(value) {
 };
 
 const checkIdentification = (s) => {
-    const isIdentification = /^[0-9]{12}$/;
+    const isIdentification = /^[0-9]{12}$|^[0-9]{9}/;
     if (!isIdentification.test(s)) {
         return {
             isValid: false,
-            message: "Số chứng minh nhân dân phải có 12 chữ số.",
+            message: "Số chứng minh nhân dân phải có 9 hoặc 12 chữ số.",
         };
     }
     return {

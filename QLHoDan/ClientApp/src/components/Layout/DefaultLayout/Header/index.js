@@ -108,12 +108,14 @@ function Header({ text }) {
                     <h3>{text}</h3>
                 </div>
             </div>
+
             <Tippy
                 interactive
                 visible={filterByTitle(FormsAction, search).length > 0 && search.length > 0}
                 render={attrs => (
                     <div ref={tippySearch} className={cx('search-result')} tabIndex="-1" {...attrs}>
-                        <PopperWrapper>
+                        {auth.role === 'Household' && <PopperWrapper>
+
                             <h4 className={cx('search-title')}>Kết quả tìm kiếm</h4>
                             {
                                 filterByTitle(FormsAction, search).map(
@@ -123,6 +125,7 @@ function Header({ text }) {
                                 )
                             }
                         </PopperWrapper>
+                        }
                     </div>
                 )}
             >
@@ -141,37 +144,13 @@ function Header({ text }) {
                 </div>
             </Tippy>
 
-            <div className={cx('actions')} >
-                <Tippy
-                    interactive
-                    visible={messageVisible}
-                    render={attrs => (
-                        <div ref={tippyMessage} className={cx('tippy')} tabIndex="-1" {...attrs}>
-                            {/* <Stack sx={{ width: '100%' }} spacing={2}>
-                                <Alert severity="error">This is an error alert — check it out!</Alert>
-                                <Alert severity="warning">This is a warning alert — check it out!</Alert>
-                                <Alert severity="info">This is an info alert — check it out!</Alert>
-                                <Alert severity="success">This is a success alert — check it out!</Alert>
-                            </Stack> */}
-                            <PopperWrapper>
-                                <Stack sx={{ width: '100%' }} spacing={2}>
-                                    <Alert sx={{ fontSize: 15 }} severity="warning">Tài khoản của bạn đã bị khóa!</Alert>
-                                    <Alert sx={{ fontSize: 15 }} severity="error">Tài khoản của bạn đã bị đăng nhập ở nơi khác!</Alert>
-                                    <Alert sx={{ fontSize: 15 }} severity="success">Đơn xin đăng ký nhân khẩu của bạn đã được duyệt!</Alert>
-                                    <Alert sx={{ fontSize: 15 }} severity="info">Bạn đã gửi đơn xin đăng ký nhân khẩu thành công!</Alert>
-                                </Stack>
-                            </PopperWrapper>
 
-                        </div>
-                    )}
-                >
-                    <Badge color="secondary" badgeContent={
-                        // queryNotificationCount.isLoading ? 0 : queryNotificationCount.data
-                        count
-                    }  >
-                        <MailIcon sx={{ fontSize: 30, cursor: 'pointer' }} onClick={turnOnTippyMessage} />
-                    </Badge>
-                </Tippy>
+            <div className={cx('actions')} >
+
+                <NavLink to='/notification'>
+
+                    <MailIcon sx={{ fontSize: 30, cursor: 'pointer' }} />
+                </NavLink>
                 <Tippy
                     interactive
                     visible={tippyAvatar}
@@ -203,7 +182,7 @@ function Header({ text }) {
                     {/* <Avatar sx={{ cursor: 'pointer', border: '2px solid transparent', '&:hover': { borderColor: 'green' } }} src={fuhua} onClick={turnOnTippy} /> */}
                 </Tippy>
             </div>
-        </ header>
+        </ header >
     )
 }
 

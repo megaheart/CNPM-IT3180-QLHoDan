@@ -49,9 +49,9 @@ class FormEnvidenceAward {
         }
     }
 
-    async getDetailFormAwardById(token, id) {
+    async getDetailFormAwardById(token, idx) {
         const response = await axios.get(
-            `${API_ENVIDENCE_AWARD}/${id}`,
+            `${API_ENVIDENCE_AWARD}/${idx}`,
             config(token)
         );
         if (response && response.data) {
@@ -81,10 +81,10 @@ class FormEnvidenceAward {
         }
     }
 
-    async acceptAwardForm(token, id, data) {
+    async acceptAwardForm(token, idx, data) {
 
         const response = await axios.post(
-            `${API_ENVIDENCE_AWARD}/accept/${id}`,
+            `${API_ENVIDENCE_AWARD}/accept/${idx}`,
             data,
             config(token)
         )
@@ -97,9 +97,9 @@ class FormEnvidenceAward {
         }
     }
 
-    async deleteAward(token, id) {
+    async deleteAward(token, idx) {
         const response = await axios.delete(
-            `${API_ENVIDENCE_AWARD}/${id}`,
+            `${API_ENVIDENCE_AWARD}/${idx}`,
             config(token)
         )
 

@@ -57,13 +57,38 @@ export default function FormHKComponent() {
 
     const [idViewing, setIdViewing] = useState(null);
 
-    const handleClose = () => {
-        setOpen(false);
+    const [binaryDataArray, setBinaryDataArray] = useState([]);
+    const [selectedFiles, setSelectedFiles] = useState([]);
+
+    const handleFileInput = (event) => {
+        const files = event.target.files;
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const reader = new FileReader();
+
+            reader.addEventListener('load', function () {
+                setBinaryDataArray(prev => {
+                    return [...prev, reader.result]
+                });
+            });
+
+            reader.readAsDataURL(file);
+            setSelectedFiles(prev => {
+                return [...prev, file]
+            });
+        }
     };
 
-    const handleToggle = () => {
-        setOpen(!open);
-    };
+    const removeImageByClick = (index) => {
+        setBinaryDataArray(prev => prev.filter((item, i) => i !== index) || [])
+        setSelectedFiles(prev => prev.filter((item, i) => i !== index) || [])
+    }
+
+    const handleRequestFullScreen = useCallback((e) => {
+        e.target.requestFullscreen();
+    }, []);
+
 
     const [openConfirm, setOpenConfirm] = useState(false);
 
@@ -153,6 +178,7 @@ export default function FormHKComponent() {
             moveInDate: moveInDate,
             moveInReason: moveInReasonRef.current.value || ''
         }
+        console.log(currentData)
         if (
             currentData.dateOfBirth === null ||
             (currentData.identityCode.length !== 9 &&
@@ -187,12 +213,14 @@ export default function FormHKComponent() {
     }
 
     const handleChangeDetailResident = (index) => {
+        console.log(index);
         setIdViewing(index);
         const viewData = rows[index];
+        console.log(viewData)
         fullNameRef.current.value = viewData.fullName;
         aliasRef.current.value = viewData.alias;
         setBirthday(viewData.dateOfBirth);
-        isMaleRef.current.value = viewData.isMale;
+        isMaleRef.current.value = viewData.isMale ? 'male' : 'female';
         birthPlaceRef.current.value = viewData.birthPlace
         nativeLandRef.current.value = viewData.nativeLand
         ethnicRef.current.value = viewData.ethnic
@@ -237,8 +265,10 @@ export default function FormHKComponent() {
             console.log('Vui lòng nhập đúng và đầy đủ thông tin')
         }
         else {
+            console.log(idViewing);
             setRows(prev =>
                 prev.map((item, index) => {
+                    console.log(index === idViewing)
                     if (index === idViewing) {
                         return currentData;
                     }
@@ -260,12 +290,20 @@ export default function FormHKComponent() {
         //     formData.append('Members', rows[i]);
         // }
         formData.append('Members', JSON.stringify(rows));
+        if (selectedFiles.length === 0) {
+            alert('Cần minh chứng');
+            return;
+        }
+        for (let i = 0; i < selectedFiles.length; i++) {
+            formData.append('Images', selectedFiles[i], selectedFiles[i].name)
+        }
         setOpen(true);
         await formHouseholdRegister.sendFormHouseholdRegister(
             auth.token,
             formData
         ).catch(err => {
             console.log(err);
+            alert(err?.response?.data?.desciption || 'Có lỗi xảy ra')
         }).finally(() => {
             setOpen(false);
         });
@@ -410,7 +448,7 @@ export default function FormHKComponent() {
                             </div>
 
                             <div style={{ display: 'flex', flexFlow: 'row wrap', justifyContent: 'center' }}>
-                                {idViewing ?
+                                {(idViewing || idViewing === 0) ?
                                     <Fab
                                         sx={{ marginLeft: 1, maxWidth: 300 }}
                                         color="success"
@@ -521,6 +559,46 @@ export default function FormHKComponent() {
                         </TableContainer>
                     </div>
                 </div>
+                <label htmlFor="upload-photo" style={{ marginLeft: 10 }}>
+                    <input
+                        style={{ display: 'none' }}
+                        id="upload-photo"
+                        name="upload-photo"
+                        type="file"
+                        multiple="multiple"
+                        onChange={handleFileInput}
+                    />
+                    <Fab
+                        color="secondary"
+                        size="small"
+                        component="span"
+                        aria-label="add"
+                        variant="extended"
+                    >
+                        <Add /> Ảnh minh chứng
+                    </Fab>
+
+                </label>
+                {(binaryDataArray.length > 0) && <div className={cx('img-render')}>{binaryDataArray.map((item, index) => (
+                    <div key={"image" + index} style={{ position: 'relative', display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center', width: 'auto' }}>
+                        <img src={binaryDataArray}
+                            style={{ width: 'auto', height: '150px', marginRight: 5, marginBottom: 5, cursor: 'pointer' }}
+                            alt="evidence"
+                            onClick={handleRequestFullScreen} />
+                        <Fab
+                            sx={{ position: 'absolute', right: -5, top: -7, backgroundColor: 'transparent' }}
+                            color="error"
+                            size="small"
+                            component="span"
+                            aria-label="add"
+                            variant="extended"
+                            onClick={() => removeImageByClick(index)}
+                        >
+                            <CloseOutlined />
+                        </Fab>
+                    </div>
+                ))}
+                </div>}
                 <Button onClick={handleSendForm} color="primary" variant="contained">Gửi</Button>
             </Box>
 

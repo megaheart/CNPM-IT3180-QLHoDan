@@ -118,7 +118,6 @@ export default function FormChoosingDetail({ open, onClose, idForm }) {
                                         sx={{ fontSize: 15, margin: '2px 0', width: 100 }} onClick={handleClose}>Đóng</Button>
 
                                 </div>
-
                                 <div className={cx('resident-paper')}>
                                     <h1 align='center' className={cx('title-resident')}>Chi tiết </h1>
                                     <Grid container spacing={2}>
@@ -163,7 +162,7 @@ export default function FormChoosingDetail({ open, onClose, idForm }) {
                                         <Grid item xs={3}>
                                             <InputBase
                                                 label='Số CCCD/CMND'
-                                                value={'1'}
+                                                value={data.resident.identityCode}
                                                 disabled={true}
                                             />
                                         </Grid>
@@ -218,7 +217,7 @@ export default function FormChoosingDetail({ open, onClose, idForm }) {
                                         <Grid item xs={3}>
                                             <InputBase
                                                 label='Tên đợt thưởng'
-                                                value={'1'}
+                                                value={data.rewardCeremony.title}
                                                 disabled={true}
                                             />
                                         </Grid>

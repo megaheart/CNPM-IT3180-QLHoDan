@@ -23,7 +23,7 @@ export default function FormChoosingAward() {
             alert('Gửi thành công');
         },
         onError: (error) => {
-            alert('Gửi thất bại');
+            console.log(error)
         },
         onSettled: () => {
             setOpen(false);

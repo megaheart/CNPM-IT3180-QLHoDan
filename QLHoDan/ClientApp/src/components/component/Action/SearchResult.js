@@ -5,11 +5,11 @@ const FormsAction = [
         value: 'don xin them ho khau',
         link: '/addnew/them_ho_khau',
     },
-    {
-        title: 'Đơn xin thêm nhân khẩu',
-        value: 'don xin them nhan khau',
-        link: '/addnew/them_nhan_khau',
-    },
+    // {
+    //     title: 'Đơn xin thêm nhân khẩu',
+    //     value: 'don xin them nhan khau',
+    //     link: '/addnew/them_nhan_khau',
+    // },
     {
         title: 'Đơn xin chuyển đi',
         value: 'don xin chuyen di',
@@ -20,21 +20,21 @@ const FormsAction = [
         value: 'don xin chung tu',
         link: '/addnew/don_chung_tu',
     },
-    {
-        title: 'Đơn xin tách hộ khẩu',
-        value: 'don xin tach ho khau',
-        link: '/addnew/don_tach_ho_khau',
-    },
+    // {
+    //     title: 'Đơn xin tách hộ khẩu',
+    //     value: 'don xin tach ho khau',
+    //     link: '/addnew/don_tach_ho_khau',
+    // },
     {
         title: 'Đơn xin chuyển đổi nhân khẩu',
         value: 'don xin chuyen doi nhan khau',
         link: '/addnew/don_chuyen_doi_nhan_khau',
     },
-    {
-        title: 'Đơn xin thay đổi hộ khẩu',
-        value: 'don xin thay doi ho khau',
-        link: '/addnew/don_thay_doi_ho_khau',
-    }
+    // {
+    //     title: 'Đơn xin thay đổi hộ khẩu',
+    //     value: 'don xin thay doi ho khau',
+    //     link: '/addnew/don_thay_doi_ho_khau',
+    // }
 ];
 
 const TableAction = [
@@ -45,6 +45,10 @@ const TableAction = [
     {
         title: 'Nhân khẩu',
         link: '/table/nhan_khau',
+    },
+    {
+        title: 'Đợt thưởng',
+        link: '/award',
     }
 ]
 

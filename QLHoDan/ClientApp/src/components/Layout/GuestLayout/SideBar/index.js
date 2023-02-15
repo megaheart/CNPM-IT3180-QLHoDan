@@ -51,7 +51,7 @@ function SideBar() {
                 <span  ><AddBoxIcon /></span>
                 <span className={open ? cx('normal-btn') : cx('hide-btn')}>{open && 'Thêm hộ khẩu'}</span>
             </NavLink>
-            <NavLink className={({ isActive }) => {
+            {/* <NavLink className={({ isActive }) => {
                 if (isActive) {
                     return cx('btn-side-active');
                 }
@@ -61,7 +61,7 @@ function SideBar() {
             }} to='/guest/them_nhan_khau'  >
                 <span  ><AddBoxIcon /></span>
                 <span className={open ? cx('normal-btn') : cx('hide-btn')}>{open && 'Thêm nhân khẩu'}</span>
-            </NavLink>
+            </NavLink> */}
         </ div>
     )
 }
