@@ -11,7 +11,7 @@ using QLHoDan.Data;
 namespace QLHoDan.Data.Migrations.ApplicationDb
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230210064547_ApplicationDbContextMigration")]
+    [Migration("20230215031647_ApplicationDbContextMigration")]
     partial class ApplicationDbContextMigration
     {
         /// <inheritdoc />
@@ -162,6 +162,9 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("AccountScope")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("AchievementName")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -239,11 +242,13 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("AccountScope")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTime>("CreatedTime")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("HouseholdId")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ImageLinks")
@@ -256,8 +261,8 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                     b.Property<int>("NewResidentId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("NotAcceptedReason")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("NotAcceptedReason")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -362,6 +367,9 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("AccountScope")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTime>("CreatedTime")
                         .HasColumnType("TEXT");
 
@@ -372,8 +380,8 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("NotAcceptedReason")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("NotAcceptedReason")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ResidentIdentityCode")
                         .IsRequired()
@@ -398,6 +406,9 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("AccountScope")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Address")
                         .HasColumnType("TEXT");
 
@@ -411,8 +422,8 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                     b.Property<bool>("IsAccepted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("NotAcceptedReason")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("NotAcceptedReason")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("OwnerIdentityCode")
                         .HasColumnType("TEXT");
@@ -445,6 +456,9 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                     b.Property<string>("Account")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("AccountScope")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Alias")
                         .HasColumnType("TEXT");
@@ -482,8 +496,8 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                     b.Property<string>("NativeLand")
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("NotAcceptedReason")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("NotAcceptedReason")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Reason")
                         .IsRequired()
@@ -503,6 +517,41 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                     b.ToTable("ChangingResidentInfoForm");
                 });
 
+            modelBuilder.Entity("QLHoDan.Models.ChoosingPresentsForm", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Account")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("AccountScope")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("PresentsType")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ResidentIdentityCode")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("RewardCeremonyId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ResidentIdentityCode");
+
+                    b.HasIndex("RewardCeremonyId");
+
+                    b.ToTable("ChoosingPresentsForm");
+                });
+
             modelBuilder.Entity("QLHoDan.Models.DeadForm", b =>
                 {
                     b.Property<int>("Id")
@@ -512,6 +561,9 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                     b.Property<string>("Account")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("AccountScope")
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("CreatedTime")
                         .HasColumnType("TEXT");
@@ -523,8 +575,8 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                     b.Property<bool>("IsAccepted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("NotAcceptedReason")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("NotAcceptedReason")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ResidentIdentityCode")
                         .IsRequired()
@@ -593,8 +645,8 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                     b.Property<bool>("IsAccepted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("NotAcceptedReason")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("NotAcceptedReason")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("Scope")
                         .HasColumnType("INTEGER");
@@ -614,6 +666,9 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("AccountScope")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTime>("CreatedTime")
                         .HasColumnType("TEXT");
 
@@ -631,8 +686,8 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("NotAcceptedReason")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("NotAcceptedReason")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ResidentIdentityCode")
                         .IsRequired()
@@ -928,7 +983,6 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("AchievementName")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("AchievementType")
@@ -996,8 +1050,8 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                     b.Property<bool>("IsAccepted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("NotAcceptedReason")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("NotAcceptedReason")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("OwnerIdentityCode")
                         .IsRequired()
@@ -1075,7 +1129,7 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                     b.HasOne("QLHoDan.Models.RewardCeremony", "RewardCeremony")
                         .WithMany()
                         .HasForeignKey("RewardCeremonyId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Resident");
@@ -1151,6 +1205,25 @@ namespace QLHoDan.Data.Migrations.ApplicationDb
                         .IsRequired();
 
                     b.Navigation("Resident");
+                });
+
+            modelBuilder.Entity("QLHoDan.Models.ChoosingPresentsForm", b =>
+                {
+                    b.HasOne("QLHoDan.Models.Resident", "Resident")
+                        .WithMany()
+                        .HasForeignKey("ResidentIdentityCode")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("QLHoDan.Models.RewardCeremony", "RewardCeremony")
+                        .WithMany()
+                        .HasForeignKey("RewardCeremonyId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Resident");
+
+                    b.Navigation("RewardCeremony");
                 });
 
             modelBuilder.Entity("QLHoDan.Models.DeadForm", b =>

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Fab, Box, TextField, Button, Backdrop, CircularProgress, checkboxClasses } from '@mui/material';
 
 import { Add, CloseOutlined } from '@mui/icons-material';
-import styles from './DeathConfirm.module.scss'
+import styles from './DeathConfirm.module.scss';
 import classNames from 'classnames/bind';
 const cx = classNames.bind(styles);
 

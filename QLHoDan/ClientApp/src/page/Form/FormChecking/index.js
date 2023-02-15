@@ -1,4 +1,4 @@
-import { useState, forwardRef } from 'react';
+import { useState, forwardRef, useRef } from 'react';
 import {
     Paper, Dialog, Table,
     TableBody,
@@ -39,7 +39,7 @@ const columns = [
     { id: 'createdTime', label: 'Ngày gửi', width: 100, getValue: (row) => row.createdTime },
     { id: 'account', label: 'Tài khoản gửi', width: 100, getValue: (row) => row.account },
 ];
-export default function DashboardComponent() {
+export default function FormCheckingComponent() {
     const { auth, setAuth } = useAuth();
     // const { householdForms, isLoadinghouseholdForms, error1 } = useQuery(
     //     ['gethouseholdForms'],
@@ -74,6 +74,7 @@ export default function DashboardComponent() {
     //     ['user'],
     //     async () => accountApi.getProfile(auth.token),
     // );
+    const queryClient = useQueryClient();
     const { data, isLoading, error } = useQuery(
         ['getAchievementEvidence'],
         async () => {
@@ -139,6 +140,8 @@ export default function DashboardComponent() {
 
     // const data = achievementEvidenceForms;
 
+    const notAcceptReasonInputRef = useRef(null);
+    const [accept, setAccept] = useState(null);
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -156,11 +159,38 @@ export default function DashboardComponent() {
         setOpen(false);
         setSelection(null);
     };
+    const mutation = useMutation({
+        mutationFn: ({selection, _accept, _notAcceptReason, _achievementType}) => {
+            axios.post('api/forms/' + selection.formType + "/accept/" + selection.id, {
+                "accept": _accept,
+                "notAcceptReason": _notAcceptReason,
+                "achievementType": _achievementType
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${auth.token}`
+                }
+            });
+        },
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['getAchievementEvidence'] });
+        },
+    });
+    const handleSummit = () => {
+        setOpen(false);
+        setSelection(null);
+        mutation.mutate({
+            selection: selection, 
+            _accept: accept == "true", 
+            _notAcceptReason: accept == "true" ? null : notAcceptReasonInputRef.current.value, 
+            _achievementType: 1
+        });
+        
+    };
     const openDetailPanel = (row) => {
         setOpen(true);
         setSelection(row);
     };
-    const [accept, setAccept] = useState(null);
     return (
         <>
             <Dialog open={open} onClose={handleClose}>
@@ -181,7 +211,7 @@ export default function DashboardComponent() {
                             <FormControlLabel value={false} control={<Radio />} label="Từ chối" />
                         </RadioGroup>
                     </FormControl>
-                    {
+                    {/* {
                         (accept == "true" && selection && selection.formType === "AchievementEvidence") && (<>
                             <TextField
                                 autoFocus
@@ -193,15 +223,26 @@ export default function DashboardComponent() {
                                 variant="standard"
                             />
                         </>)
-                    }
+                    } */}
                     {
-                        (accept == "false") && (<>"Bye"</>)
+                        (accept == "false") && (
+                            <TextField
+                                inputRef={notAcceptReasonInputRef}
+                                autoFocus
+                                margin="dense"
+                                id="notAcceptReason"
+                                label="Lý do không duyệt"
+                                type="text"
+                                fullWidth
+                                variant="standard"
+                            />
+                        )
                     }
 
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose}>Cancel</Button>
-                    <Button onClick={handleClose}>Subscribe</Button>
+                    <Button onClick={handleClose}>Thoát</Button>
+                    <Button onClick={handleSummit}>Xác nhận</Button>
                 </DialogActions>
             </Dialog>
             {error ? <ErrorData /> :
@@ -235,7 +276,7 @@ export default function DashboardComponent() {
                                         .map((row) => {
                                             const openDetailPanelRow = () => { openDetailPanel(row) };
                                             return (
-                                                <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+                                                <TableRow key={row.id} hover role="checkbox" tabIndex={-1}>
                                                     {columns.map((column) => (
                                                         <TableCell align={column.align} style={{ minWidth: column.minWidth, width: column.width, fontSize: 15 }}>
                                                             {column.getValue(row)}
