@@ -3,14 +3,11 @@ import classNames from 'classnames/bind';
 
 import { CircularProgress, TextField, Backdrop, Snackbar, Alert } from '@mui/material';
 
-import axios from '~/services/api/axios';
 import accountApi from '~/services/api/accountApi';
 import { AuthContext } from '~/components/AuthenProvider'
 import { useState, useContext } from 'react';
 
 const cx = classNames.bind(styles);
-
-const ACCOUNT_API = '/accounts';
 
 export default function User() {
 
@@ -43,11 +40,7 @@ export default function User() {
             setErrorMessageCurrentPassword('Vui lòng nhập mật khẩu hiện tại');
             setErrorCur(true);
         }
-        else if (currentPassword !== auth.password) {
-            setErrorMessageCurrentPassword('Mật khẩu không đúng');
-            setErrorCur(true);
-        }
-        if (newPassword === '') {
+        else if (newPassword === '') {
             setErrorMessageNewPassword('Vui lòng nhập mật khẩu mới');
             setErrorNew(true);
         }
@@ -60,27 +53,28 @@ export default function User() {
             setErrorNew(true);
         }
 
-        if (currentPassword === auth.password && newPassword === confirmPassword) {
-            setAuth({ ...auth, password: newPassword });
-            // await axios.put(ACCOUNT_API + '/' + auth.id, {
-            //     ...auth,
-            //     password: newPassword
-            // });
-            await accountApi.changePassword(
-                auth.id,
-                newPassword,
-                auth
+        else {
+            // call api to change passwrod, waiting....
+            accountApi.changePassword(
+                auth.token,
+                currentPassword,
+                newPassword
             )
-            setSuccess(true);
-            setErrorCur(false);
-            setErrorNew(false);
-            setErrorMessageCurrentPassword('');
-            setErrorMessageNewPassword('');
-            setCurrentPassword('');
-            setNewPassword('');
-            setConfirmPassword('');
+                .then((res) => {
+                    //finish
+                    setSuccess(true);
+                    setErrorCur(false);
+                    setErrorNew(false);
+                    setErrorMessageCurrentPassword('');
+                    setErrorMessageNewPassword('');
+                    setCurrentPassword('');
+                    setNewPassword('');
+                    setConfirmPassword('');
+                }
+                )
+                .catch((err) => console.log('Error in change password'));
         }
-        setLoading(false);
+        setLoading(false)
     }
 
     const handleChangeInputCur = (e) => {
@@ -106,7 +100,7 @@ export default function User() {
             >
                 <CircularProgress color="inherit" />
             </Backdrop>
-            <Snackbar open={success} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+            <Snackbar open={success} autoHideDuration={3000} onClose={handleCloseSnackbar}>
                 <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%', fontSize: 15 }}>
                     Đổi mật khẩu thành công!
                 </Alert>
@@ -121,6 +115,7 @@ export default function User() {
                     InputLabelProps={{ style: { fontSize: 20 } }}
                     helperText={errorCur && errorMessageCurrentPassword}
                     error={errorCur}
+                    type='password'
                     variant="standard"
                 />
                 <TextField
@@ -132,6 +127,7 @@ export default function User() {
                     variant="standard"
                     error={errorNew}
                     value={newPassword}
+                    type='password'
                     onChange={handleChangeInputNew}
                 />
                 <TextField
@@ -142,18 +138,19 @@ export default function User() {
                     helperText={errorNew && errorMessageNewPassword}
                     variant="standard"
                     error={errorNew}
+                    type='password'
                     value={confirmPassword}
                     onChange={handleChangeInputConfirm}
                 />
+                <div>
+                    <button
+                        className={cx('btn-update')}
+                        onClick={handleUpdate}>
+                        Cập nhật
+                    </button>
+                </div>
+            </div>
 
-            </div>
-            <div>
-                <button
-                    className={cx('btn-update')}
-                    onClick={handleUpdate}>
-                    Cập nhật
-                </button>
-            </div>
         </div>
     )
 }

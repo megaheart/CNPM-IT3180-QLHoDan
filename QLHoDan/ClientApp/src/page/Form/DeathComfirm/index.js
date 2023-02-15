@@ -1,43 +1,79 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Fab, Box, TextField, Button, Backdrop, CircularProgress, checkboxClasses } from '@mui/material';
 
 import { Add, CloseOutlined } from '@mui/icons-material';
 import styles from './DeathConfirm.module.scss'
 import classNames from 'classnames/bind';
+import formEvidenceDeath from '~/services/api/confirmDeath';
+import useAuth from '~/hooks/useAuth';
 const cx = classNames.bind(styles);
 
 export default function DeathConfirm() {
-
+    const { auth } = useAuth();
     const [open, setOpen] = useState(false);
-    const handleClose = () => {
-        setOpen(false);
-    };
-    const handleToggle = () => {
-        setOpen(!open);
-    };
+
+    const [binaryDataArray, setBinaryDataArray] = useState([]);
+    const [selectedFiles, setSelectedFiles] = useState([]);
+
     const handleRequestFullScreen = useCallback((e) => {
         e.target.requestFullscreen();
     }, []);
+    const ResidentIdCodeRef = useRef(null);
 
-    const [arrImg, setArrImg] = useState([]);
+    const handleFileInput = (event) => {
+        const files = event.target.files;
 
-    const handleFileImage = useCallback((e) => {
-        let files = [...e.target.files].map((file) => {
-            file.preview = URL.createObjectURL(file);
-            return file;
-        })
-        setArrImg([...arrImg, ...files]);
-        e.target.value = null;
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const reader = new FileReader();
 
+            reader.addEventListener('load', function () {
+                setBinaryDataArray(prev => {
+                    return [...prev, reader.result]
+                });
+            });
+
+            reader.readAsDataURL(file);
+            setSelectedFiles(prev => {
+                return [...prev, file]
+            });
+        }
+    };
+
+    useEffect(() => {
         return () => {
-            arrImg && arrImg.forEach((file) => URL.revokeObjectURL(file.preview))
+            binaryDataArray && binaryDataArray.forEach((file) => URL.revokeObjectURL(file))
             //remvove the temporary url if avatar exists
         }
+    }, [binaryDataArray]);
 
-    }, [arrImg]);
-    const removeImageByClick = (index) => {
-        setArrImg(prev => prev.filter((item, i) => i !== index) || [])
+    const handleSendForm = async () => {
+        // const formFiles = convertBinaryToIFormFile(binaryDataArray);
+        const ResidentIdCode = ResidentIdCodeRef.current.value;
+
+        const formData = new FormData();
+        formData.append('ResidentIdCode', ResidentIdCode);
+
+        for (let i = 0; i < selectedFiles.length; i++) {
+            formData.append('Images', selectedFiles[i], selectedFiles[i].name);
+        }
+
+        console.log(Object.fromEntries(formData.entries()));
+        setOpen(true);
+        await formEvidenceDeath.sendFormEvidenceDeath(auth.token, formData).catch(
+            (error) => {
+                alert(error?.response?.data?.description || 'Có lỗi xảy ra');
+            }
+        ).finally(() => {
+            setOpen(false);
+        });
     }
+
+    const removeImageByClick = (index) => {
+        setBinaryDataArray(prev => prev.filter((item, i) => i !== index) || [])
+        setSelectedFiles(prev => prev.filter((item, i) => i !== index) || [])
+    }
+
     return (
         <div className={cx('container')}>
             <Box
@@ -49,7 +85,7 @@ export default function DeathConfirm() {
                     border: '1px solid #ccc',
                     borderRadius: '5px',
                     marginBottom: '5px',
-                    padding: 2
+                    padding: 2, backgroundColor: '#fff',
                 }}
                 noValidate
                 autoComplete="off"
@@ -57,13 +93,13 @@ export default function DeathConfirm() {
                 <Backdrop
                     sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                     open={open}
-                    onClick={handleClose}
                 >
                     <CircularProgress color="inherit" />
                 </Backdrop>
                 <h1>Đơn chứng tử</h1>
                 <div className={cx('line-form')}>
                     <TextField
+                        inputRef={ResidentIdCodeRef}
                         label="CMND/CCCD"
                         inputProps={{
                             style: { fontSize: 20 }
@@ -82,7 +118,7 @@ export default function DeathConfirm() {
                             name="upload-photo"
                             type="file"
                             multiple="multiple"
-                            onChange={handleFileImage}
+                            onChange={handleFileInput}
                         />
                         <Fab
                             color="secondary"
@@ -95,9 +131,9 @@ export default function DeathConfirm() {
                         </Fab>
 
                     </label>
-                    {(arrImg.length > 0) && <div className={cx('img-render')}>{arrImg.map((item, index) => (
+                    {(binaryDataArray.length > 0) && <div className={cx('img-render')}>{binaryDataArray.map((item, index) => (
                         <div key={"image" + index} style={{ position: 'relative', display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center', width: 'auto' }}>
-                            <img src={item.preview}
+                            <img src={binaryDataArray}
                                 style={{ width: 'auto', height: '150px', marginRight: 5, marginBottom: 5, cursor: 'pointer' }}
                                 alt="evidence"
                                 onClick={handleRequestFullScreen} />
@@ -116,8 +152,8 @@ export default function DeathConfirm() {
                     ))}
                     </div>}
                 </div>
+                <Button onClick={handleSendForm} style={{ margin: '0 auto', display: 'block' }} variant="contained">Gửi</Button>
             </Box>
-            <Button onClick={handleToggle} style={{ margin: '0 auto', display: 'block' }} variant="contained">Gửi</Button>
         </div>
     );
 }

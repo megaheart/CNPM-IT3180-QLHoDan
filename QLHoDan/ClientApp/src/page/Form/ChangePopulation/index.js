@@ -1,11 +1,11 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { MenuItem, Box, TextField, Button, Backdrop, CircularProgress, InputLabel, InputAdornment, Input, FormControl, Select } from '@mui/material';
 
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers';
 
-
+import formResidentChange from '~/services/api/changeResident';
 import styles from './NhanKhau.module.scss'
 import classNames from 'classnames/bind';
 
@@ -21,7 +21,32 @@ export default function ChangePopulation() {
         setOpen(!open);
     };
 
+    const householdIdRef = useRef(null);
+    const addressRef = useRef(null);
+    const scopeRef = useRef(null);
+
     const [value, setValue] = useState(null);
+    const [moveInDate, setMoveInDate] = useState(null);
+
+
+    const fullNameRef = useRef(null);
+    const aliasRef = useRef(null);
+    const dateOfBirthRef = useRef(null);
+    const isMaleRef = useRef(null);
+    const birthPlaceRef = useRef(null);
+    const nativeLandRef = useRef(null);
+    const ethnicRef = useRef(null);
+    const nationRef = useRef(null);
+    const jobRef = useRef(null);
+    const workplaceRef = useRef(null);
+    const identityCodeRef = useRef(null);
+    const relationShipRef = useRef(null);
+    const academicLevelRef = useRef(null);
+    const criminalRecordRef = useRef(null);
+    const moveInDateRef = useRef(null);
+    const moveInReasonRef = useRef(null);
+
+
     const [img, setImg] = useState();
     const handleFileImage = (e) => {
         const file = e.target.files[0];
@@ -52,7 +77,7 @@ export default function ChangePopulation() {
                     alignItems: 'stretch',
                     borderRadius: 5,
                     padding: 2,
-                    marginBottom: 1
+                    marginBottom: 1, backgroundColor: '#fff',
                 }}
                 noValidate
                 autoComplete="off"
@@ -73,6 +98,7 @@ export default function ChangePopulation() {
                         InputLabelProps={{
                             style: { fontSize: 20 }
                         }}
+                        inputRef={fullNameRef}
                         variant="standard" />
                     <TextField sx={{ m: 1, width: 270 }} label="Bí danh" inputProps={{
                         style: { fontSize: 20 }
@@ -80,7 +106,9 @@ export default function ChangePopulation() {
                         InputLabelProps={{
                             style: { fontSize: 20 }
                         }}
-                        variant="standard" />
+                        variant="standard"
+                        inputRef={aliasRef}
+                    />
 
 
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -111,14 +139,14 @@ export default function ChangePopulation() {
                     </LocalizationProvider>
                 </div>
                 <div className={cx('line-form')} >
-                    <TextField sx={{ m: 1, width: 270 }} label="Nơi sinh" inputProps={{
+                    <TextField sx={{ m: 1, width: 270 }} inputRef={birthPlaceRef} label="Nơi sinh" inputProps={{
                         style: { fontSize: 20 }
                     }}
                         InputLabelProps={{
                             style: { fontSize: 20 }
                         }}
                         variant="standard" />
-                    <TextField sx={{ m: 1, width: 270 }} label="Nguyên quán" inputProps={{
+                    <TextField sx={{ m: 1, width: 270 }} inputRef={nativeLandRef} label="Nguyên quán" inputProps={{
                         style: { fontSize: 20 }
                     }}
                         InputLabelProps={{
@@ -190,7 +218,7 @@ export default function ChangePopulation() {
                         }}
                         variant="standard" />
                 </div>
-                <div className={cx('line-start')}>
+                <div className={cx('line-form')}>
                     <TextField sx={{ m: 1, width: 270 }} label="Tiền án" inputProps={{
                         style: { fontSize: 20 }
                     }}
@@ -198,7 +226,7 @@ export default function ChangePopulation() {
                             style: { fontSize: 20 }
                         }}
                         variant="standard" />
-                    <TextField sx={{ m: 1, width: 270 }} label="Lý do thay đổi" inputProps={{
+                    <TextField sx={{ m: 1, flex: 0.79 }} label="Lý do thay đổi" inputProps={{
                         style: { fontSize: 20 }
                     }}
                         InputLabelProps={{

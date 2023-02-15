@@ -1,12 +1,19 @@
 import { createContext, useEffect, useState } from "react";
-
+import authenticationService from '~/services/account/authentication';
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
-    const [auth, setAuth] = useState(JSON.parse(localStorage.getItem('myUserNameReactApp')) || {});
-    useEffect(() => {
-        localStorage.setItem('myUserNameReactApp', JSON.stringify(auth));
-    }, [auth])
+    /* Setting the initial state of the auth context. */
+    const [auth, setAuth] = useState(
+        () => {
+            let a = authenticationService.isAuthenticated();
+            if (a) {
+                return authenticationService.user
+            }
+            else {
+                return {}
+            }
+        });
     return (
         <AuthContext.Provider value={{ auth, setAuth }}>
             {children}

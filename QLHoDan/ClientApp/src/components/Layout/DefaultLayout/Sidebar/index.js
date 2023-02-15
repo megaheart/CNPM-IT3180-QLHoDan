@@ -1,25 +1,39 @@
 import styles from './Sidebar.module.scss';
-import { useState, useContext, useCallback } from 'react';
+import { useState, useContext, useCallback, useMemo } from 'react';
 //icon
+//authentication
+import authenticationService from '~/services/account/authentication';
 // import MenuIcon from '@mui/icons-material/Menu';
 import { PushPinOutlined } from '@mui/icons-material'
-import buttons from './ButtonNav';
+import { navForResident, navForAdmin, navForEmplyee } from './ButtonNav';
 import classNames from 'classnames/bind';
 import { NavLink } from "react-router-dom";
 import CollapseButton from './Collapse';
 import { TitleContext } from '../';
-import { AuthContext } from '~/components/AuthenProvider'
-import accountService from '~/services/account';
+import { AuthContext } from '~/components/AuthenProvider';
 const cx = classNames.bind(styles);
 
 function Sidebar() {
     //authenticate management
     const changer = useContext(TitleContext);
-    const { setAuth } = useContext(AuthContext);
+    const { auth, setAuth } = useContext(AuthContext);
     const handleAuth = () => {
-        accountService.logout(setAuth);
-        localStorage.removeItem('myUserNameReactApp');
+        authenticationService.logOut();
+        setAuth({})
     }
+    const buttons = useMemo(
+        () => {
+            if (auth.role === "Household") {
+                return navForResident;
+            }
+            else if (auth.role === "Accountant" || auth.role === "ScopeLeader") {
+                return navForEmplyee;
+            }
+            else {
+                return navForAdmin;
+            }
+        }, [auth.role]
+    )
     //pin sidebar
     const [open, setOpen] = useState(true);
     const [pin, setPin] = useState(true);
@@ -37,7 +51,7 @@ function Sidebar() {
         <div className={cx('side-bar')} onMouseOver={(pin === true) ? fixedFunc : (open === false) ? toggle : fixedFunc} onMouseLeave={(pin === true) ? fixedFunc : (open === true) ? toggle : fixedFunc
         } >
             <NavLink className={cx('btn-menu')} onClick={pinToggle} >
-                <span><PushPinOutlined /></span>
+                <span ><PushPinOutlined className={cx('icon-collapse')} /></span>
                 <span className={open ? cx('normal-btn') : cx('hide-btn')} >{open && 'Ghim'}</span>
             </NavLink>
             <hr />
@@ -46,7 +60,7 @@ function Sidebar() {
                     if (button.isLogout) {
                         return (
                             <NavLink key={button.id} onClick={handleAuth} className={cx('btn-side')} to={button.link} >
-                                <span key={button.id + 'span1'} >{button.icon}</span>
+                                <span className={cx('icon-text')} key={button.id + 'span1'} >{button.icon}</span>
                                 <span key={button.id + 'span2'} className={open ? cx('normal-btn') : cx('hide-btn')}>{open && button.title}</span>
                             </NavLink>
                         )
@@ -61,7 +75,7 @@ function Sidebar() {
                                 return cx('btn-side');
                             }
                         }} to={button.link}  >
-                            <span key={button.id + 'span1'} >{button.icon}</span>
+                            <span className={cx('icon-text')} key={button.id + 'span1'} >{button.icon}</span>
                             <span key={button.id + 'span2'} className={open ? cx('normal-btn') : cx('hide-btn')}>{open && button.title}</span>
                         </NavLink>
                     )

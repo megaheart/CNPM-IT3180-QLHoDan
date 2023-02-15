@@ -42,7 +42,6 @@ export default function ChangeHousehold() {
 
     const [visible, setVisible] = useState(false);
     const [visibleDes, setVisibleDes] = useState(false);
-    // const [NK, setNK] = useState([]);
     const [open, setOpen] = useState(false);
     const handleClose = () => {
         setOpen(false);
@@ -53,17 +52,6 @@ export default function ChangeHousehold() {
 
     const [openImg, setOpenImg] = useState(false);
     const [birthday, setBirthday] = useState(null);
-    // const [name, setName] = useState('');
-    // const [alias, setAlias] = useState('');
-    // const [birthPlace, setBirthPlace] = useState('');
-    // const [domicile, setDomicile] = useState('');
-    // const [dantoc, setDantoc] = useState('');
-    // const [citizenship, setCitizenship] = useState('');
-    // const [career, setCareer] = useState('');
-    // const [workplace, setWorkplace] = useState('');
-    // const [identification, setIdentification] = useState('');
-    // const [relationship, setRelationship] = useState('');
-    // const [gender, setGender] = useState('');
     const nameRef = useRef();
     const aliasRef = useRef();
     const birthdayRef = useRef();
@@ -76,7 +64,6 @@ export default function ChangeHousehold() {
     const identificationRef = useRef();
     const relationshipRef = useRef();
     const genderRef = useRef();
-
 
     const handleNKFrom = useCallback(() => {
         setVisible(true);
@@ -94,7 +81,8 @@ export default function ChangeHousehold() {
             setVisible(false);
             setVisibleDes(false)
         }
-    }, [visible])
+    }, [visible]);
+
     const handleAddNK = () => {
         setRows(prev => [...prev, {
             id: prev.length + 1,
@@ -142,8 +130,8 @@ export default function ChangeHousehold() {
         e.target.value = null;
 
         return () => {
-            arrImg && arrImg.forEach((file) => URL.revokeObjectURL(file.preview))
             //remvove the temporary url if avatar exists
+            arrImg && arrImg.forEach((file) => URL.revokeObjectURL(file.preview))
         }
 
     }, [arrImg]);
@@ -168,12 +156,12 @@ export default function ChangeHousehold() {
                     alignItems: 'stretch',
                     borderRadius: 5,
                     padding: 2,
-                    marginBottom: 1
+                    marginBottom: 1, backgroundColor: '#fff',
                 }}
                 noValidate
                 autoComplete="off"
             >
-                <h1>Đơn đăng ký hộ khẩu</h1>
+                <h1>Đơn thay đổi hộ khẩu</h1>
                 <div className={cx('input-text-area')}>
                     <TextField helperText='' required label="Số hộ khẩu" inputProps={{
                         style: { fontSize: 20 }

@@ -1,7 +1,13 @@
-import { useState, forwardRef, useCallback } from 'react';
+import { useState, useCallback } from 'react';
+
 import { styled } from '@mui/material/styles';
 import { tableCellClasses } from '@mui/material/TableCell';
-import { Button, Paper, TableRow, TableHead, TableContainer, TableCell, TableBody, Table, TextField, Slide, Collapse, Box, Dialog } from '@mui/material';
+import {
+    Button, Paper, TableRow, TableHead, TableContainer, Snackbar, Alert,
+    TableCell, TableBody, Table, Backdrop, CircularProgress
+} from '@mui/material';
+
+import UpdateResidentDialog from '../DiaLog/ChangeResidentInfo';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -23,243 +29,107 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     },
 }));
 
-const Transition = forwardRef(function Transition(props, ref) {
-    return <Slide direction="up" ref={ref} {...props} />;
-});
 
-function createData(idenftification, name, birthday, gender, relationship, soHoKhau, toPhuTrach) {
-    return { idenftification, name, birthday, gender, relationship, soHoKhau, toPhuTrach };
-}
-const rowData = [
-    { idenftification: '123466769', name: 'Nguyễn Văn D', birthday: '01/01/1990', gender: 'Nam', relationship: 'Chủ hộ', soHoKhau: '123456789', toPhuTrach: '1' },
-    { idenftification: '123454785', name: 'Nguyễn Văn C', birthday: '01/01/1990', gender: 'Nam', relationship: 'Vợ', soHoKhau: '123456789', toPhuTrach: '1' },
-    { idenftification: '123456789', name: 'Nguyễn Văn A', birthday: '01/01/2002', gender: 'Nam', relationship: 'Con trai', soHoKhau: '123456789', toPhuTrach: '1' },
-    { idenftification: '123456767', name: 'Nguyễn Văn B', birthday: '01/01/2002', gender: 'Nam', relationship: 'Con gái', soHoKhau: '123456789', toPhuTrach: '1' },
-]
-const Rows = [
-    ...rowData.map((item, index) => {
-        return {
-            ...createData(...Object.values(item)),
-            id: index
-        }
-    }
-    )
-];
 
-export default function Population({ editMode }) {
-    //những id của nhân khẩu sẽ bị xóa
-    const [deleteIds, setDeleteIds] = useState([]);
+export default function Population({ editMode, data }) {
 
+    const [updateResident, setUpdateResident] = useState(false);
+    const [updateDataId, setUpdateDataId] = useState(null);
     //
-    const [open, setOpen] = useState(false);
-    const handleClose = useCallback(() => setOpen(false), []);
+    // const [open, setOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-    const [editRow, setEditRow] = useState({});
+    const [success, setSuccess] = useState(false);
 
-    const [identification, setIdentification] = useState('');
-    const [name, setName] = useState('');
-    const [birthday, setBirthday] = useState('');
-    const [gender, setGender] = useState('');
-    const [relationship, setRelationship] = useState('');
-    const [soHoKhau, setSoHoKhau] = useState('');
-    const [toPhuTrach, setToPhuTrach] = useState('');
-
-
-    //dữ liệu nhân khẩu
-    const [rows, setRows] = useState(Rows);
-
-    const handleDeleteRowsData = (id) => {
-        setRows(
-            prev => prev.filter(item => item.id !== id)
-        );
-        setDeleteIds(
-            prev => [...prev, id]
-        );
+    const startUpdate = (id) => {
+        setUpdateDataId(id);
+        setUpdateResident(true);
     }
-
-    const handleEditRowData = (id) => {
-        setOpen(true);
-        setEditRow(rows.find(item => item.id === id));
-    }
-
-    const handleEditField = useCallback((identification, name, birthday, gender, relationship, soHoKhau, toPhuTrach) => {
-        setIdentification(identification);
-        setName(name);
-        setBirthday(birthday);
-        setGender(gender);
-        setRelationship(relationship);
-        setSoHoKhau(soHoKhau);
-        setToPhuTrach(toPhuTrach);
+    const handleLoading = useCallback(() => {
+        setLoading(false);
+        setSuccess(true);
     }, []);
 
-    const handleSave = () => {
-        setRows(
-            prev => prev.map(item => {
-                if (item.id === editRow.id) {
-                    return {
-                        id: item.id,
-                        identification,
-                        name,
-                        birthday,
-                        gender,
-                        relationship,
-                        soHoKhau,
-                        toPhuTrach
-                    }
-                }
-                return item;
-            })
-        );
-        setOpen(false);
+    const closeUpdate = () => {
+        setUpdateResident(false);
+        setUpdateDataId(null)
     }
-
+    const handleSuccess = () => {
+        setSuccess(false);
+    };
     return (
         <div style={{ display: 'flex', alignItem: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+            <Snackbar open={success} autoHideDuration={3000} onClose={handleSuccess} >
+                <Alert onClose={handleSuccess} severity="success" sx={{ width: '100%', fontSize: 15 }}>
+                    Cập nhật nhân khẩu thành công !
+                </Alert>
+            </Snackbar>
+            <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1000 }}
+                open={loading}
+            >
+                <CircularProgress color="inherit" />
+            </Backdrop>
             <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 1000 }} aria-label="customized table">
                     <TableHead>
                         <TableRow>
-                            <TableCell sx={{ fontSize: 20 }} align="left" colSpan={9}>
+                            <TableCell align="left" colSpan={9}>
                                 Thông tin thành viên trong hộ khẩu
                             </TableCell>
                         </TableRow>
                         <TableRow>
-                            <StyledTableCell sx={{ fontSize: 20 }} align="center">CCCD/CMND</StyledTableCell>
-                            <StyledTableCell sx={{ fontSize: 20 }} align="center">Họ và tên</StyledTableCell>
-                            <StyledTableCell sx={{ fontSize: 20 }} align="center">Ngày sinh</StyledTableCell>
-                            <StyledTableCell sx={{ fontSize: 20 }} align="center">Giới tính</StyledTableCell>
-                            <StyledTableCell sx={{ fontSize: 20 }} align="center">Quan hệ với chủ hộ</StyledTableCell>
-                            <StyledTableCell sx={{ fontSize: 20 }} align="center">Sổ hộ khẩu</StyledTableCell>
-                            <StyledTableCell sx={{ fontSize: 20 }} align="center">Tổ phụ trách</StyledTableCell>
-                            <StyledTableCell sx={{ fontSize: 20 }} align="center">Edit</StyledTableCell>
+                            <StyledTableCell align="center">CCCD/CMND</StyledTableCell>
+                            <StyledTableCell align="center">Họ và tên</StyledTableCell>
+                            <StyledTableCell align="center">Ngày sinh</StyledTableCell>
+                            <StyledTableCell align="center">Giới tính</StyledTableCell>
+                            <StyledTableCell align="center">Quan hệ với chủ hộ</StyledTableCell>
+                            <StyledTableCell align="center">Sổ hộ khẩu</StyledTableCell>
+                            <StyledTableCell align="center">Tổ phụ trách</StyledTableCell>
+                            <StyledTableCell align="center"></StyledTableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {rows.map((row) => (
-                            <StyledTableRow key={row.idenftification}>
-                                {Object.keys(row).map((key) => {
-                                    if (key !== 'id') {
-                                        return (
-                                            <StyledTableCell align="center" component="th" scope="row">
-                                                {row[key]}
-                                            </StyledTableCell>
-                                        )
-                                    }
-                                    return null;
-                                })}
-                                <StyledTableCell align="center" component="th" scope="row">
-                                    <Button disabled={!editMode}
+                        {data.map((row, index) => (
+                            <StyledTableRow key={index}>
+                                <StyledTableCell key={index + '-1'} align="center">{row.identityCode}</StyledTableCell>
+                                <StyledTableCell key={index + '-2'} align="center">{row.fullName}</StyledTableCell>
+                                <StyledTableCell key={index + '-3'} align="center">{
+                                    new Date(row.dateOfBirth).toLocaleDateString(
+                                        'vi-VN',
+                                        { day: '2-digit', month: '2-digit', year: 'numeric' }
+                                    )}</StyledTableCell>
+                                <StyledTableCell key={index + '-4'} align="center">{row.isMale ? 'Nam' : 'Nữ'}</StyledTableCell>
+                                <StyledTableCell key={index + '-5'} align="center">{row.relationShip}</StyledTableCell>
+                                <StyledTableCell key={index + '-6'} align="center">{row.householdId}</StyledTableCell>
+                                <StyledTableCell key={index + '-7'} align="center">{row.scope}</StyledTableCell>
+                                <StyledTableCell key={row.identityCode + index} align="center" component="th" scope="row">
+                                    <Button
+                                        variant='contained'
                                         onClick={() => {
-                                            handleEditRowData(row.id);
-                                            handleEditField(row.idenftification, row.name, row.birthday, row.gender, row.relationship, row.soHoKhau, row.toPhuTrach);
+                                            startUpdate(row.identityCode)
                                         }
                                         }
                                     >
-                                        Sửa
+                                        Chi tiết
                                     </Button>
-                                    <Button disabled={!editMode} onClick={() => { handleDeleteRowsData(row.id) }}>Xóa</Button>
+                                    {/* <Button
+                                        key={row.identityCode + 'delete'}
+                                        disabled={!editMode} onClick={() => { handleDelete(row.identityCode) }}>Xóa</Button> */}
                                 </StyledTableCell>
                             </StyledTableRow>
                         ))}
                     </TableBody>
                 </Table>
             </TableContainer>
-            <Dialog
-                open={open}
-                onClose={handleClose}
-                TransitionComponent={Transition}
-            >
-                <Box
-                    component="form"
-                    sx={{
-                        '& .MuiTextField-root': { m: 1, width: '25ch' },
-                    }}
-                    noValidate
-                    autoComplete="off"
-                >
-                    <div >
-                        <TextField
-                            sx={{ width: '600px' }}
-                            inputProps={{ style: { fontSize: 15 } }}
-                            InputLabelProps={{ style: { fontSize: 20 } }}
-                            required
-                            label="CCCD/CMND"
-                            value={identification}
-                            onChange={(e) => setIdentification(e.target.value)}
-                            variant="standard"
-                        />
-                        <TextField
-                            sx={{ width: '600px' }}
-                            inputProps={{ style: { fontSize: 15 } }}
-                            InputLabelProps={{ style: { fontSize: 20 } }}
-                            required
-                            label="Họ và tên"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            variant="standard"
-                        />
-                    </div>
-                    <div>
-                        <TextField
-                            sx={{ width: '600px' }}
-                            inputProps={{ style: { fontSize: 15 } }}
-                            InputLabelProps={{ style: { fontSize: 20 } }}
-                            required
-                            label="Ngày sinh"
-                            value={birthday}
-                            onChange={(e) => setBirthday(e.target.value)}
-                            variant="standard"
-                        />
-                        <TextField
-                            sx={{ width: '400px' }}
-                            inputProps={{ style: { fontSize: 15 } }}
-                            InputLabelProps={{ style: { fontSize: 20 } }}
-                            required
-                            label="Giới tính"
-                            value={gender}
-                            onChange={(e) => setGender(e.target.value)}
-                            variant="standard"
-                        />
-                    </div>
-                    <div>
-                        <TextField
-                            sx={{ width: '400px' }}
-                            inputProps={{ style: { fontSize: 15 } }}
-                            InputLabelProps={{ style: { fontSize: 20 } }}
-                            required
-                            label="Quan hệ với chủ hộ"
-                            value={relationship}
-                            onChange={(e) => setRelationship(e.target.value)}
-                            variant="standard"
-                        />
-                        <TextField
-                            sx={{ width: '400px' }}
-                            inputProps={{ style: { fontSize: 15 } }}
-                            InputLabelProps={{ style: { fontSize: 20 } }}
-                            required
-                            label="Sổ hộ khẩu"
-                            value={soHoKhau}
-                            onChange={(e) => setSoHoKhau(e.target.value)}
-                            variant="standard"
-                        />
-                    </div>
-                    <div>
-                        <TextField
-                            sx={{ width: '400px' }}
-                            inputProps={{ style: { fontSize: 15 } }}
-                            InputLabelProps={{ style: { fontSize: 20 } }}
-                            required
-                            label="Tổ phụ trách"
-                            value={toPhuTrach}
-                            onChange={(e) => setToPhuTrach(e.target.value)}
-                            variant="standard"
-                        />
-                    </div>
-                    <div>
-                        <Button sx={{ fontSize: 20, margin: '0 auto', display: 'block' }} color="primary" onClick={handleSave}>Lưu</Button>
-                    </div>
-                </Box>
-            </Dialog>
+            {updateDataId &&
+                <UpdateResidentDialog
+                    key={updateDataId}
+                    open={updateResident}
+                    onClose={closeUpdate}
+                    dataId={updateDataId}
+                    setSuccess={handleLoading}
+                />}
             {/* <div>
                 <Button sx={{ fontSize: 20, margin: '0 auto', display: 'block' }} color="primary" >Lưu</Button>
             </div> */}

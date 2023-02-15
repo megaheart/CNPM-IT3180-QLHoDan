@@ -1,46 +1,84 @@
 import { useState, useRef, useContext, useEffect } from 'react';
-import { AuthContext } from '~/components/AuthenProvider';
+import useAuth from '~/hooks/useAuth';
 
+import { deepOrange } from '@mui/material/colors';
 import styles from './Header.module.scss';
 import classNames from 'classnames/bind';
 import { NavLink } from "react-router-dom";
-import fuhua from '~/assets/avatars/fuhua.png';
 import Tippy from '@tippyjs/react/headless';
 import { Wrapper as PopperWrapper } from '~/components/Popper';
-//services
-import accountService from '~/services/account';
+import ActionItem from '~/components/component/Action';
+
 //icons
 import HomeIcon from '@mui/icons-material/Home';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMagnifyingGlass, faUser, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { faCircleXmark, faMagnifyingGlass, faUser, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { Avatar, Badge, Alert, Stack } from '@mui/material';
 import MailIcon from '@mui/icons-material/Mail';
+//authentication
+import authenticationService from '~/services/account/authentication';
+import notificationManager from '~/services/api/notificationManager';
+//search
+import { FormsAction, filterByTitle } from '~/components/component/Action/SearchResult';
+
+import accountApi from '~/services/api/accountApi';
+import { useQuery } from '@tanstack/react-query';
 
 const cx = classNames.bind(styles);
 
+function getLastName(string) {
+    if (typeof string === 'string') {
+        const arr = string.split(' ');
+        return arr[arr.length - 1];
+    }
+    return '';
+};
 
 function Header({ text }) {
-    const { setAuth } = useContext(AuthContext);
+    const { auth, setAuth } = useAuth();
 
+    const { data, isLoading } = useQuery(
+        ['user'],
+        async () => accountApi.getProfile(auth.token),
+    );
+    // const queryNotificationCount = useQuery(
+    //     ['notification'],
+    //     async () => notificationManager.getNumberOfUnreadNotification(auth.token),
+    // );
+    //tippy for avatar button
     const tippy = useRef();
     const [tippyAvatar, setTippyAvatar] = useState(null);
-    const turnOnTippy = (e) => {
+    const turnOnTippy = () => {
         setTippyAvatar(true);
     }
-
+    //tippy for message button
     const tippyMessage = useRef();
     const [messageVisible, setMessageVisible] = useState(null);
-    const turnOnTippyMessage = (e) => {
+    const turnOnTippyMessage = () => {
         setMessageVisible(true);
     }
-
-    const handleLogout = () => {
-        accountService.logout(setAuth);
+    //tippy and event for search bar
+    const tippySearch = useRef();
+    const searchBar = useRef();
+    const [search, setSearch] = useState('');
+    const handleSearch = (e) => {
+        setSearch(e.target.value);
     }
-
+    const clearSearch = () => {
+        setSearch('');
+    }
+    useEffect(() => {
+        searchBar.current.focus();
+    }, [search])
+    //logout
+    const handleLogout = () => {
+        authenticationService.logOut();
+        setAuth({});
+    }
+    //count number of message
     const [count, setCount] = useState(4);
-
+    //handle click outside tippy
     useEffect(() => {
         function handleClickOutside(event) {
             if (tippy.current && !tippy.current.contains(event.target)) {
@@ -49,6 +87,9 @@ function Header({ text }) {
             if (tippyMessage.current && !tippyMessage.current.contains(event.target)) {
                 setMessageVisible(false);
             }
+            if (tippySearch.current && !tippySearch.current.contains(event.target) && searchBar.current && !searchBar.current.contains(event.target)) {
+                setSearch('');
+            }
         }
         document.addEventListener("mousedown", handleClickOutside);
         return () => {
@@ -56,23 +97,50 @@ function Header({ text }) {
         };
     }, []);
     return (
-        <header >
+        <header className={cx('header-default')} >
             <div className={cx('header-head')}>
                 <div className={cx('header-1')}>
                     <div className={cx('header-1-2')}>
-                        <span><NavLink className={cx('nav-item')} to='/dashboard'><HomeIcon /></NavLink></span>
+                        <span><NavLink className={cx('nav-item')} to='/profile'><HomeIcon /></NavLink></span>
                         <span><KeyboardArrowRightIcon className={cx('nav-item')} /></span>
                         <span>{text}</span>
                     </div>
                     <h3>{text}</h3>
                 </div>
             </div>
-            <div className={cx('search')}>
-                <input placeholder='Tìm kiếm' spellCheck={false} />
-                <button className={cx('search-btn')}>
-                    <FontAwesomeIcon icon={faMagnifyingGlass} />
-                </button>
-            </div>
+            <Tippy
+                interactive
+                visible={filterByTitle(FormsAction, search).length > 0 && search.length > 0}
+                render={attrs => (
+                    <div ref={tippySearch} className={cx('search-result')} tabIndex="-1" {...attrs}>
+                        <PopperWrapper>
+                            <h4 className={cx('search-title')}>Kết quả tìm kiếm</h4>
+                            {
+                                filterByTitle(FormsAction, search).map(
+                                    item => {
+                                        return <ActionItem onClick={() => setSearch('')} key={item.link} item={item} />
+                                    }
+                                )
+                            }
+                        </PopperWrapper>
+                    </div>
+                )}
+            >
+                <div className={cx('search')}>
+                    <input ref={searchBar} value={search} onChange={handleSearch} placeholder='Tìm kiếm' spellCheck={false} />
+                    <div className={cx('clear')}>
+                        {search.length > 0 &&
+                            <button onClick={clearSearch} >
+                                <FontAwesomeIcon icon={faCircleXmark} />
+                            </button>
+                        }
+                    </div>
+                    <button className={cx('search-btn')}>
+                        <FontAwesomeIcon icon={faMagnifyingGlass} />
+                    </button>
+                </div>
+            </Tippy>
+
             <div className={cx('actions')} >
                 <Tippy
                     interactive
@@ -97,7 +165,10 @@ function Header({ text }) {
                         </div>
                     )}
                 >
-                    <Badge color="secondary" badgeContent={count}  >
+                    <Badge color="secondary" badgeContent={
+                        // queryNotificationCount.isLoading ? 0 : queryNotificationCount.data
+                        count
+                    }  >
                         <MailIcon sx={{ fontSize: 30, cursor: 'pointer' }} onClick={turnOnTippyMessage} />
                     </Badge>
                 </Tippy>
@@ -116,7 +187,7 @@ function Header({ text }) {
                                     </NavLink>
                                 </div>
                                 <div className={cx('btn')}>
-                                    <NavLink className={cx('btn-avatar-expand')} to='/' onClick={handleLogout}>
+                                    <NavLink className={cx('btn-avatar-expand')} to='/login' onClick={handleLogout}>
                                         <span className={cx('icon-avatar-btn')}><FontAwesomeIcon icon={faRightFromBracket} /> </span>
                                         <span className={cx('avatar-text-btn')}>Đăng xuất</span>
                                     </NavLink>
@@ -125,7 +196,11 @@ function Header({ text }) {
                         </div>
                     )}
                 >
-                    <Avatar sx={{ cursor: 'pointer' }} src={fuhua} onClick={turnOnTippy} />
+                    <Avatar sx={{ fontSize: 10, cursor: 'pointer', border: '2px solid transparent', '&:hover': { borderColor: 'green' }, bgcolor: deepOrange[500] }}
+                        onClick={turnOnTippy} >
+                        <span>{isLoading ? 'Loading...' : getLastName(data.fullName)}</span>
+                    </Avatar>
+                    {/* <Avatar sx={{ cursor: 'pointer', border: '2px solid transparent', '&:hover': { borderColor: 'green' } }} src={fuhua} onClick={turnOnTippy} /> */}
                 </Tippy>
             </div>
         </ header>

@@ -1,28 +1,31 @@
 //hooks
-import { useCallback, useState, useEffect, useRef, useContext } from 'react'
+import { useCallback, useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom';
+import useAuth from "~/hooks/useAuth";
 //material-ui
-import { Button, CircularProgress, FormHelperText, InputLabel, InputAdornment, IconButton, Input, FormControl } from '@mui/material'
+import { Button, CircularProgress, FormHelperText, InputLabel, InputAdornment, IconButton, Input, FormControl } from '@mui/material';
+//router
+import { Link } from 'react-router-dom'
 //icons
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
-
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 //validation
 import validation from '~/services/validate';
-
-//api
-import { AuthContext } from '../../../components/AuthenProvider'
-import accountApi from '../../../services/api/accountApi'
+//
+import { PasswordTooltip, UsernameTooltip } from '~/components/component/Tooltip';
+//
+import authenticationService from '~/services/account/authentication';
 //sass
 import styles from './Login.module.scss'
 import classNames from 'classnames/bind'
 const cx = classNames.bind(styles);
 
-export default function Login({ act }) {
+export default function Login() {
     //auth context
-    const { setAuth } = useContext(AuthContext);
+    const { auth, setAuth } = useAuth();
     //user state
     const [username, setUserName] = useState('');
     const [password, setPassword] = useState('');
@@ -43,7 +46,14 @@ export default function Login({ act }) {
     }, [])
     useEffect(() => {
         setErrMsg('');
-    }, [username, password])
+        setUsernameError('');
+        setStart(false);
+    }, [username])
+    useEffect(() => {
+        setErrMsg('');
+        setPasswordError('');
+        setStart(false);
+    }, [password])
     //effect
     //handle login
     const handleSubmit = async (e) => {
@@ -53,36 +63,53 @@ export default function Login({ act }) {
         try {
             const checkUser = validation.checkUsername(username);
             const checkPass = validation.checkPassword(password);
-            console.log(checkUser, checkPass)
             if (!checkUser.isValid) {
                 setUsernameError(checkUser.message);
+                setPasswordError(checkPass.message);
                 userRef.current.focus();
                 setStart(true);
+                setLoading(false);
             }
             else if (!checkPass.isValid) {
                 setUsernameError('');
                 setPasswordError(checkPass.message);
                 passRef.current.focus();
                 setStart(true);
+                setLoading(false);
             }
             else {
+                setUsernameError('');
                 setPasswordError('');
-                const user = await accountApi.checkLogin({ username });
-                console.log(user)
-                if (user.length === 0) {
-                    setStart(true);
-                    setErrMsg('Tài khoản không tồn tại');
-                    userRef.current.focus();
-                }
-                else if (user[0].password !== password) {
-                    setStart(true);
-                    setErrMsg('Mật khẩu không đúng');
-                    userRef.current.focus();
-                }
-                else {
-                    setAuth(user[0]);
-                    navigate('/profile');
-                }
+                authenticationService.signIn(username, password).then(() => {
+                    if (authenticationService.isAuthenticated()) {
+                        const userData = authenticationService.User;
+                        setAuth(userData);
+                        console.log(auth)
+                    }
+                    //setAuth(userData);
+                    let token = localStorage.getItem('AuthenticationToken');
+                    if (token) {
+                        const user = authenticationService.getUserFromToken(token);
+                        console.log(user)
+                        if (user.role === 'Household') {
+                            navigate('/dashboard_residentOrGuest');
+                        }
+                        else {
+                            navigate('/dashboard');
+                        }
+                    }
+
+
+                }).catch(
+                    (e) => {
+                        setStart(true);
+                        setErrMsg('Tài khoản hoặc mật khẩu không đúng');
+                    }
+                ).finally(
+                    () => {
+                        setLoading(false);
+                    }
+                );
             }
         }
         catch (err) {
@@ -98,9 +125,11 @@ export default function Login({ act }) {
             else {
                 setErrMsg('Something went wrong');
             }
-            errRef.current.focus();
         }
-        setLoading(false);
+    }
+
+    const handleForgetPassword = () => {
+        navigate('/forgetpassword');
     }
 
     const handleKeyDown = (e) => {
@@ -124,16 +153,19 @@ export default function Login({ act }) {
     const handleClickShowPassword = useCallback(() => setShowPassword((show) => !show), []);
     const handleMouseDownPassword = useCallback((event) => {
         event.preventDefault();
-    }, [])
+    }, []);
 
     //render
     return (
         <div className={cx('login')}>
             <div className={cx('login-form')}>
                 <div className={cx('login-form__input')} >
-                    <FormControl sx={{ margin: '10px 0' }} className={cx('input-login')} variant="standard">
+                    <FormControl error={usernameError.length > 0} sx={{ margin: '10px 0' }} className={cx('input-login')} variant="standard">
                         <InputLabel sx={{ fontSize: 20 }} htmlFor="input_login_account">
                             Tên đăng nhập
+                            <UsernameTooltip>
+                                <span className={cx('icon-label')}><ErrorOutlineIcon /></span>
+                            </UsernameTooltip>
                         </InputLabel>
                         <Input
                             inputRef={userRef}
@@ -151,9 +183,12 @@ export default function Login({ act }) {
                         />
                         {start && <FormHelperText sx={{ fontSize: 10, color: 'red' }}>{usernameError}</FormHelperText>}
                     </FormControl>
-                    <FormControl sx={{ margin: '10px 0' }} variant="standard">
+                    <FormControl error={passwordError.length > 0} sx={{ margin: '10px 0' }} variant="standard">
                         <InputLabel sx={{ fontSize: 20 }} htmlFor="input_login_password">
                             Mật khẩu
+                            <PasswordTooltip>
+                                <span className={cx('icon-label')}><ErrorOutlineIcon /></span>
+                            </PasswordTooltip>
                         </InputLabel>
                         <Input
                             inputRef={passRef}
@@ -184,7 +219,16 @@ export default function Login({ act }) {
                         />
                         {start && <FormHelperText sx={{ fontSize: 10, color: 'red' }}>{passwordError}</FormHelperText>}
                     </FormControl>
-                    <span className={cx('btn-text')}>Quên mật khẩu?</span>
+                    <span onClick={handleForgetPassword} className={cx('btn-text')}>Quên mật khẩu?</span>
+                    {/* {<div style={{ margin: '0 auto' }}>
+                        <Reaptcha sitekey={REACT_APP_SITE_KEY} onVerify={verify} ref={captchaRef} />
+                    </div> || <CircularProgress
+                            sx={{
+                                marginTop: 1,
+                                animationDuration: '550ms',
+                            }}
+                            size={20}
+                            thickness={4} />} */}
                 </div>
                 <Button
                     variant="contained"
@@ -203,7 +247,7 @@ export default function Login({ act }) {
                         thickness={4} />}
                 {start && <p ref={errRef} style={{ marginTop: 10, color: 'red' }}>{errMsg}</p>}
                 <hr className={cx('hr-login')} />
-                <p style={{ fontSize: 18 }}>Chưa có tài khoản? <span onClick={() => act('2')} className={cx('signup-btn')}>Đăng ký</span></p>
+                <p style={{ fontSize: 18 }}>Chưa có tài khoản? <Link to='/register'><span className={cx('signup-btn')}>Đăng ký</span></Link></p>
                 <div>
                     <span></span>
                 </div>

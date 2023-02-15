@@ -361,7 +361,9 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-QLHoDan/app.db-shm
+
+QLHoDan/ClientApp/src/index.js
+QLHoDan/ClientApp/build
 QLHoDan/app.db-wal
 QLHoDan/app.db-shm
 QLHoDan/app.db

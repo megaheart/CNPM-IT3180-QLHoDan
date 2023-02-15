@@ -32,10 +32,11 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     },
 }));
 
+const cx = classNames.bind(styles);
+
 const rowData =
     { idenftification: '123466769234', name: 'Nguyễn Văn D', birthday: '01/01/1990', gender: 'Nam', relationship: 'Chủ hộ', soHoKhau: '123456789', toPhuTrach: '1' };
 
-const cx = classNames.bind(styles);
 
 function makeid(length) {
     var result = '';
@@ -82,7 +83,7 @@ export default function SeparateHousehold() {
     const handleToggle = () => {
         setOpen(!open);
     };
-
+    //them thanh vien vao ho khau bang CMND/CCCD, chỉnh sửa sau
     const addIdentification = () => {
         const check = validation.checkIdentifi(valueInput);
         if (check.isValid) {
@@ -101,6 +102,7 @@ export default function SeparateHousehold() {
             setErrorMessage(check.message);
         }
     };
+    //them chu ho vao ho khau bang CMND/CCCD, chỉnh sửa sau
     const addMainIdentification = () => {
         const check = validation.checkIdentifi(valueInput);
         if (check.isValid) {
@@ -148,7 +150,7 @@ export default function SeparateHousehold() {
                     justifyContent: 'flex-start',
                     border: '1px solid #ccc',
                     borderRadius: '5px',
-                    marginBottom: '5px'
+                    marginBottom: '5px', backgroundColor: '#fff',
                 }}
                 noValidate
                 autoComplete="off"

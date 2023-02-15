@@ -1,20 +1,69 @@
-import axiosClient from "./axios";
-
-const url = '/accounts';
+import axios from 'axios';
+import config from './configHeader';
+import {
+    API_ACCOUNT_CHANGEPASSWORD_URL,
+    API_ACCOUNT_PROFILE_URL,
+    API_URL
+} from '~/AppConstant';
 class AccountApi {
-    addAccount = (params) => {
-        return axiosClient.post(url, { params });
+    changePassword = async (token, oldPassword, newPassword) => {
+        return axios.post(
+            API_ACCOUNT_CHANGEPASSWORD_URL,
+            {
+                oldPassword,
+                newPassword
+            },
+            config(token)
+        );
     };
-    checkLogin = (params) => {
-        return axiosClient.get(url, { params });
-    };
-    getAllAccount = () => {
-        return axiosClient.get(url);
-    };
-    changePassword = (id, newPassword, oldAccount) => {
-        return axiosClient.put(url + '/' + id, { ...oldAccount, password: newPassword });
+    async getProfile(token) {
+        const res = await axios.get(
+            API_ACCOUNT_PROFILE_URL,
+            config(token)
+        )
+        return res.data
+    }
+    async updateAvatar(token, file) {
+        const response = await axios.post(
+            `${API_URL}/changeAvatar`,
+            file,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        )
+
+        if (response && response.data) {
+            return response.data;
+        }
+        else {
+            return response;
+        }
+    }
+
+    async updateWallpaper(token, file) {
+        const response = await axios.post(
+            `${API_URL}/changeWallpaper`,
+            file,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        )
+
+        if (response && response.data) {
+            return response.data;
+        }
+        else {
+            return response;
+        }
     }
 }
 
 const accountApi = new AccountApi();
 export default accountApi;
+

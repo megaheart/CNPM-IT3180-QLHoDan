@@ -1,0 +1,22 @@
+.container {
+    width: 70%;
+    margin: 0 auto;
+    padding: 5px;
+}
+
+.line-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+h1 {
+    text-align: center;
+}
+.img-render {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: flex-start;
+    padding: 10px;
+}
