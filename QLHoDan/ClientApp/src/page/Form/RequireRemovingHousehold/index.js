@@ -41,14 +41,10 @@ export default function RequireRemoving() {
                 if (res.status === 200) {
                     alert('Gửi đơn thành công')
                 }
-            }).catch(
-                err => {
-                    console.log(err)
-                    alert(err?.response?.data?.description || 'Gửi đơn thất bại')
-                }
-            ).finally(() => {
-                setOpen(false);
-            });
+            })
+                .finally(() => {
+                    setOpen(false);
+                });
         }
 
     };

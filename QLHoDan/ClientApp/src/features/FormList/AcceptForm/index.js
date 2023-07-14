@@ -60,9 +60,9 @@ function AcceptForm({ open, action, actionCancel }) {
                 </DialogContent>
                 <h4>{warningMessage}</h4>
                 <DialogActions>
-                    <Button sx={{ fontSize: 20 }} onClick={actionCancel}>Duyệt sau</Button>
-                    <Button sx={{ fontSize: 20 }} onClick={handleNotAccept}>Từ chối đơn</Button>
-                    <Button sx={{ fontSize: 20 }} onClick={handleAccept}>Duyệt đơn</Button>
+                    <Button variant='contained' onClick={actionCancel}>Duyệt sau</Button>
+                    <Button variant='contained' color='warning' onClick={handleNotAccept}>Từ chối đơn</Button>
+                    <Button variant='contained' color='success' onClick={handleAccept}>Duyệt đơn</Button>
                 </DialogActions>
             </Dialog>
         </div>

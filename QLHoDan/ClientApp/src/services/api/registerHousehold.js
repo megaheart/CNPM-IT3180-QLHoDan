@@ -62,7 +62,7 @@ class FormHouseholdRegister {
     }
 
     async acceptFormHouseholdRegister(token, id, data) {
-
+        console.log(data)
         const response = await axios.post(
             `${API_HOUSEHOLD_REGISTER_FORM}/accept/${id}`,
             data,

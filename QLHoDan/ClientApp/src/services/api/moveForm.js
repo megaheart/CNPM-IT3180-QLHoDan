@@ -1,27 +1,21 @@
 // form xin chuyen di
 
-import axios from 'axios';
+import axios from './axios';
 import { API_MOVEMENT_FORM } from '~/AppConstant'; // API_MOVEMENT_FORM = /api/forms/MovingOut
 import config from './configHeader';
 
 
 class FormMovement {
-
-
-    async getAllFormMovement(token) {  // tên hàm cùng với các tham số, token bắt buộc 
-        const response = await axios.get(  // phương thức get, post, put, delete, patch
-            API_MOVEMENT_FORM, // đường dẫn api, có thể có các query param
-            //  data,      request body nếu có
+    async getAllFormMovement(token) {
+        const response = await axios.get(
+            API_MOVEMENT_FORM,
             config(token)
         );
-
-
-        // hàm nào cũng có phần này
-        if (response && response.data) {
-            return response.data;
+        if (response.data) {
+            return response.data
         }
         else {
-            return [];  // trả về nếu request lỗi, có thể là null hay bất cứ cái j
+            return []
         }
     }
 
@@ -30,12 +24,7 @@ class FormMovement {
             `${API_MOVEMENT_FORM}?isChecked=${isChecked}`,
             config(token)
         );
-        if (response && response.data) {
-            return response.data;
-        }
-        else {
-            return response;
-        }
+        return response.data
     }
 
     async getDetailFormMovementById(token, id) {
@@ -43,12 +32,7 @@ class FormMovement {
             `${API_MOVEMENT_FORM}/${id}`,
             config(token)
         );
-        if (response && response.data) {
-            return response.data;
-        }
-        else {
-            return response;
-        }
+        return response.data
     }
 
     async sendFormMovement(token, data) {
@@ -59,31 +43,17 @@ class FormMovement {
                 'Content-Type': 'multipart/form-data',
                 'Authorization': `Bearer ${token}`
             }
-        }
-        )
-
-        if (response && response.data) {
-            return response.data;
-        }
-        else {
-            return response;
-        }
+        })
+        return response.data
     }
 
     async acceptFormMovement(token, id, data) {
-
         const response = await axios.post(
             `${API_MOVEMENT_FORM}/accept/${id}`,
             data,
             config(token)
         )
-
-        if (response && response.data) {
-            return response.data;
-        }
-        else {
-            return response;
-        }
+        return response.data
     }
 
     async undoFormMovement(token, id) {
@@ -91,15 +61,8 @@ class FormMovement {
             `${API_MOVEMENT_FORM}/${id}`,
             config(token)
         )
-
-        if (response && response.data) {
-            return response.data;
-        }
-        else {
-            return response;
-        }
+        return response.data
     }
-
 }
 
 const formMovement = new FormMovement();

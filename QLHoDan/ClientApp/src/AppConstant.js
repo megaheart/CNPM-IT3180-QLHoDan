@@ -35,7 +35,6 @@ export const API_ACCOUNT_SPECIAL = `${API_ACCOUNT_URL}/special`;
 export const API_NOTIFICATION = `${API_URL}/Notification`;
 
 export const API_ENVIDENCE_AWARD = `${API_URL}/forms/AchievementEvidence`;
-
 export const API_CHOOSE_AWARD = `${API_URL}/forms/ChoosingPresents`;
 
 export const API_MANAGE_AWARD_HISTORY = `${API_URL}/RewardRecords`;
@@ -45,7 +44,5 @@ export const API_BASEMENT_MODULE = `${API_URL}/static/img`;
 export const API_HOUSEHOLD_REGISTER_FORM = `${API_URL}/forms/Household`;
 
 export const API_MOVEMENT_FORM = `${API_URL}/forms/MovingOut`;
-
 export const API_EVIDENCE_DEATH = `${API_URL}/forms/Dead`;
-
 export const API_RESIDENT_CHANGE = `${API_URL}/forms/ChangingResidentInfo`;

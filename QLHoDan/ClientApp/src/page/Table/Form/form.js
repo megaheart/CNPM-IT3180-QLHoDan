@@ -7,6 +7,7 @@ import { buttonUnstyledClasses } from '@mui/base/ButtonUnstyled';
 import TabUnstyled, { tabUnstyledClasses } from '@mui/base/TabUnstyled';
 
 import HouseholdFormManager from './HouseholdForm';
+import MoveResident from './MoveResident';
 
 const blue = {
   50: '#F0F7FF',
@@ -93,8 +94,8 @@ export default function UnstyledTabsCustomized() {
   return (
     <TabsUnstyled defaultValue={0}>
       <TabsList>
-        <Tab>Nhân khẩu</Tab>
         <Tab>Hộ khẩu</Tab>
+        <Tab>Chuyển nhân khẩu</Tab>
         <Tab>Khai tử</Tab>
         <Tab>Tạm trú</Tab>
       </TabsList>
@@ -102,7 +103,7 @@ export default function UnstyledTabsCustomized() {
         <HouseholdFormManager />
       </TabPanel>
       <TabPanel value={1}>
-        <HouseholdFormManager />
+        <MoveResident />
       </TabPanel>
       <TabPanel value={2}>
         <HouseholdFormManager />

@@ -18,13 +18,15 @@ import {
 
 import ActionForm from '~/components/DialogAcceptForm'
 
-import formHouseholdRegister from '~/services/api/registerHousehold';
+import formMovement from '~/services/api/moveForm';
 
 const columns = [
-    { id: 'formType', label: 'Loại đơn', width: 200 },
-    { id: 'isAccepted', label: 'Trạng thái ', width: 200 },
-    { id: 'createdTime', label: 'Ngày gửi ', width: 200 },
+    { id: 'formType', label: 'Loại', width: 300 },
+    { id: 'title', label: 'Tên đơn', width: 200 },
+    { id: 'isAccepted', label: 'Trạng thái', width: 200 },
+    { id: 'createdTime', label: 'Ngày gửi', width: 200 },
     { id: 'notAcceptedReason', label: 'Lý do không duyệt (nếu có) ', width: 300 },
+    { id: 'account', label: 'Tài khoản', width: 300 },
 ];
 
 
@@ -49,14 +51,14 @@ export default function HouseholdFormManager() {
 
     const { data, isLoading, error } = useQuery(
         {
-            queryKey: ['householdForms'],
-            queryFn: async () => await formHouseholdRegister.getAllFormHouseholdRegister(auth.token),
+            queryKey: ['moveForms'],
+            queryFn: async () => await formMovement.getAllFormMovement(auth.token),
             retry: 0
         }
     );
 
     const mutationActionForm = useMutation({
-        mutationFn: (data) => formHouseholdRegister.acceptFormHouseholdRegister(auth.token, data.id, data.body),
+        mutationFn: (data) => formMovement.acceptFormMovement(auth.token, data.id, data.body),
         onMutate: () => {
             setOpenBackdrop(true);
         },
@@ -70,7 +72,7 @@ export default function HouseholdFormManager() {
                     setOpenBackdrop(false);
                 }, 1000
             )
-            queryClient.invalidateQueries({ queryKey: ['householdForms'] });
+            queryClient.invalidateQueries({ queryKey: ['moveForms'] });
             setSuccess(true);
         },
         onSettled: () => {

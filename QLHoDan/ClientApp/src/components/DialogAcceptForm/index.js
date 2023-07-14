@@ -9,7 +9,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 import MultilineTextfield from '~/components/component/MultilineInput';
 
-function AcceptForm({ open, action, actionCancel }) {
+function ActionForm({ open, action, actionCancel }) {
 
     const [notAcceptReason, setNotAcceptReason] = useState('');
 
@@ -24,8 +24,7 @@ function AcceptForm({ open, action, actionCancel }) {
     const handleAccept = () => {
         action({
             accept: true,
-            notAcceptReason: null,
-            achievementType: 1
+            notAcceptReason: null
         });
     }
 
@@ -37,8 +36,7 @@ function AcceptForm({ open, action, actionCancel }) {
         else {
             action({
                 accept: false,
-                notAcceptReason: notAcceptReason,
-                achievementType: null
+                notAcceptReason: notAcceptReason
             });
         }
 
@@ -60,13 +58,13 @@ function AcceptForm({ open, action, actionCancel }) {
                 </DialogContent>
                 <h4>{warningMessage}</h4>
                 <DialogActions>
-                    <Button sx={{ fontSize: 20 }} onClick={actionCancel}>Duyệt sau</Button>
-                    <Button sx={{ fontSize: 20 }} onClick={handleNotAccept}>Từ chối đơn</Button>
-                    <Button sx={{ fontSize: 20 }} onClick={handleAccept}>Duyệt đơn</Button>
+                    <Button variant='contained' onClick={actionCancel}>Duyệt sau</Button>
+                    <Button variant='contained' color='warning' onClick={handleNotAccept}>Từ chối đơn</Button>
+                    <Button variant='contained' color='success' onClick={handleAccept}>Duyệt đơn</Button>
                 </DialogActions>
             </Dialog>
         </div>
     );
 }
 
-export default memo(AcceptForm);
+export default memo(ActionForm);
