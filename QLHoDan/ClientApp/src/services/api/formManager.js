@@ -1,36 +1,22 @@
-
-
-
-
-
-
-
-
-
 // form xin thay doi ho khau
 import axios from 'axios';
 import { API_HOUSEHOLD_CHANGE } from '~/AppConstant'; // API_HOUSEHOLD_CHANGE = /api/forms/ChangingHouseholdInfo
 import config from './configHeader';
 
 
+// form chuyen ho khau
+import { API_HOUSEHOLD_MOVEMENT } from '~/AppConstant'; // API_HOUSEHOLD_MOVEMENT = /api/forms/ChangingHousehold 
+
+
 class formHouseholdChange {
-
-
     async getAllFormHouseholdChange(token) {  // tên hàm cùng với các tham số, token bắt buộc 
         const response = await axios.get(  // phương thức get, post, put, delete, patch
             API_HOUSEHOLD_CHANGE, // đường dẫn api, có thể có các query param
             //  data,      request body nếu có
             config(token)
         );
-
-
         // hàm nào cũng có phần này
-        if (response && response.data) {
-            return response.data;
-        }
-        else {
-            return [];  // trả về nếu request lỗi, có thể là null hay bất cứ cái j
-        }
+        return response.data
     }
 
     async getAllCheckFormHouseholdChange(token, isChecked) {
@@ -38,12 +24,8 @@ class formHouseholdChange {
             `${API_HOUSEHOLD_CHANGE}?isChecked=${isChecked}`,
             config(token)
         );
-        if (response && response.data) {
-            return response.data;
-        }
-        else {
-            return response;
-        }
+        return response.data;
+
     }
 
     async getDetailFormHouseholdChangeById(token, id) {
@@ -51,12 +33,7 @@ class formHouseholdChange {
             `${API_HOUSEHOLD_CHANGE}/${id}`,
             config(token)
         );
-        if (response && response.data) {
-            return response.data;
-        }
-        else {
-            return response;
-        }
+        return response;
     }
 
     async sendFormHouseholdChange(token, data) {
@@ -69,13 +46,7 @@ class formHouseholdChange {
             }
         }
         )
-
-        if (response && response.data) {
-            return response.data;
-        }
-        else {
-            return response;
-        }
+        return response;
     }
 
     async acceptFormHouseholdChange(token, id, data) {
@@ -86,12 +57,7 @@ class formHouseholdChange {
             config(token)
         )
 
-        if (response && response.data) {
-            return response.data;
-        }
-        else {
-            return response;
-        }
+        return response;
     }
 
     async undoFormHouseholdChange(token, id) {
@@ -100,35 +66,17 @@ class formHouseholdChange {
             config(token)
         )
 
-        if (response && response.data) {
-            return response.data;
-        }
-        else {
-            return response;
-        }
+        return response;
     }
 }
 
-
-
-
-// form chuyen ho khau
-import axios from 'axios';
-import { API_HOUSEHOLD_MOVEMENT } from '~/AppConstant'; // API_HOUSEHOLD_MOVEMENT = /api/forms/ChangingHousehold 
-import config from './configHeader';
-
-
 class formHouseholdMovement {
-
-
     async getAllFormHouseholdMovement(token) {  // tên hàm cùng với các tham số, token bắt buộc 
         const response = await axios.get(  // phương thức get, post, put, delete, patch
             API_HOUSEHOLD_MOVEMENT, // đường dẫn api, có thể có các query param
             //  data,      request body nếu có
             config(token)
         );
-
-
         // hàm nào cũng có phần này
         if (response && response.data) {
             return response.data;
@@ -212,5 +160,13 @@ class formHouseholdMovement {
             return response;
         }
     }
+}
 
+
+const formHouseholdChangeService = new formHouseholdChange();
+const formHouseholdMovementService = new formHouseholdMovement();
+
+export {
+    formHouseholdChangeService,
+    formHouseholdMovementService
 }

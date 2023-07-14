@@ -73,7 +73,6 @@ export default function FullScreenDialog({ open, onClose, idHousehold, resetIfoI
             setLoading(true);
         },
         onError: () => {
-            alert('Bạn không thể cập nhật hộ khẩu này');
             setLoading(false);
         },
         onSuccess: async () => {

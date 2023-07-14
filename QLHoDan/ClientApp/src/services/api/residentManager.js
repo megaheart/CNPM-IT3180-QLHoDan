@@ -2,7 +2,7 @@ import {
     API_GET_ALL_RESIDENT
 } from '~/AppConstant';
 import config from './configHeader'
-import axios from 'axios';
+import axios from './axios';
 
 class ResidentManager {
     async getAllResident(token) {

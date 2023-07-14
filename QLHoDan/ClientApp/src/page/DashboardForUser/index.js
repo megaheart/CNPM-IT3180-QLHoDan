@@ -36,11 +36,6 @@ export default function DashboardForUser() {
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink to='/addnew/don_xac_nhan_thanh_tich'>
-                            Viết đơn xác nhận thành tích
-                        </NavLink>
-                    </li>
-                    <li>
                         <NavLink to='/addnew/don_sua_so_ho_khau'>
                             Viết đơn sửa sổ hộ khẩu
                         </NavLink>

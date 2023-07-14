@@ -47,7 +47,8 @@ export default function ManagerSpecialAccount() {
     const { data, isLoading, error } = useQuery(
         {
             queryKey: ['specialAccount'],
-            queryFn: async () => await specialAccount.getAllSpecialAccount(auth.token)
+            queryFn: async () => await specialAccount.getAllSpecialAccount(auth.token),
+            retry: 0
         }
     );
 
@@ -141,7 +142,7 @@ export default function ManagerSpecialAccount() {
                     {message + ' '} tài khoản thành công !
                 </Alert>
             </Snackbar>
-            {error ? <ErrorData /> : isLoading ? <TableSkeleton /> :
+            {error ? <ErrorData /> : isLoading ? <TableSkeleton /> : !data ? <div>No data</div> :
                 <Fragment>
                     <TableContainer sx={{ height: 400 }}>
                         <Table stickyHeader aria-label="sticky table">

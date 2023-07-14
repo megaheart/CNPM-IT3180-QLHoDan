@@ -1,5 +1,5 @@
 // form dang ki ho khau, nhan khau
-import axios from 'axios';
+import axios from './axios';
 import { API_HOUSEHOLD_REGISTER_FORM } from '~/AppConstant'; // API_HOUSEHOLD_REGISTER_FORM = /api/forms/Household
 import config from './configHeader';
 
@@ -12,15 +12,8 @@ class FormHouseholdRegister {
             //  data,      request body nếu có
             config(token)
         );
-
-
-        // hàm nào cũng có phần này
-        if (response && response.data) {
-            return response.data;
-        }
-        else {
-            return [];  // trả về nếu request lỗi, có thể là null hay bất cứ cái j
-        }
+        console.log(response)
+        return response.data;
     }
 
     async getAllCheckFormHouseholdRegister(token, isChecked) {
@@ -75,13 +68,7 @@ class FormHouseholdRegister {
             data,
             config(token)
         )
-
-        if (response && response.data) {
-            return response.data;
-        }
-        else {
-            return response;
-        }
+        return response;
     }
 
 }

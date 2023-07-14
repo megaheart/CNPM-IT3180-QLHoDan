@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, Fragment } from 'react';
 import useAuth from '~/hooks/useAuth';
 
 import {
@@ -61,13 +61,15 @@ export default function TableNhanKhau({ action, typeTable }) {
     const [type, setType] = useState();
 
     //datas from database
-    const { data, isLoading, error } = useQuery(['residents', typeTable], () => action(auth.token));
+    const { data, isLoading, error } = useQuery(['residents', typeTable], () => action(auth.token), {
+        retry: 0
+    });
 
     const queryClient = useQueryClient();
 
     const mutationAdd = useMutation({
         mutationFn: async (resident) => residentManager.createResident(auth.token, resident),
-        onSuccess: async () => {
+        onSuccess: async (data) => {
             queryClient.invalidateQueries(['residents', typeTable]);
         }
     });
@@ -75,7 +77,7 @@ export default function TableNhanKhau({ action, typeTable }) {
     const mutationUpdate = useMutation(
         {
             mutationFn: async (resident) => residentManager.updateResident(auth.token, resident),
-            onSuccess: async () => {
+            onSuccess: async (data) => {
                 queryClient.invalidateQueries(['residents', typeTable]);
             }
         }
@@ -84,7 +86,7 @@ export default function TableNhanKhau({ action, typeTable }) {
     const mutationDelete = useMutation(
         {
             mutationFn: async (id) => residentManager.deleteResident(auth.token, id),
-            onSuccess: async () => {
+            onSuccess: async (data) => {
                 queryClient.invalidateQueries(['residents', typeTable]);
             }
         }
@@ -124,6 +126,9 @@ export default function TableNhanKhau({ action, typeTable }) {
         setSuccess(true);
         setOpenBackdrop(false);
     }
+
+
+    console.log(data)
 
     //chuyển trang
     const handleChangePage = (event, newPage) => {
@@ -208,74 +213,77 @@ export default function TableNhanKhau({ action, typeTable }) {
                 </DialogActions>
             </Dialog>
 
-            {error ? <ErrorData /> : isLoading ? <TableSkeleton /> : <TableContainer sx={{ height: 395, backgroundColor: '#fff' }}>
-                <Table stickyHeader aria-label="sticky table">
-                    <TableHead >
-                        <TableRow>
-                            {columsInit.map((column) => (
-                                <TableCell
-                                    key={column.id}
-                                    align={column.align}
-                                    style={{ width: column.width }}
-                                >
-                                    {column.label}
-                                </TableCell>
-                            ))}
-                            <TableCell align='right'>
-                                <Button variant='contained' sx={{ fontSize: 13 }} onClick={handleCreateResident}>Thêm nhân khẩu</Button>
-                            </TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody >
-                        {data
-                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            .map((row, index) => {
-                                return (
-                                    <TableRow key={index + 'tablerow'} hover role="checkbox" tabIndex={-1} >
-                                        {columsInit.map((column, i) => {
-                                            let value = row[column.id];
-                                            if (column.id === 'isMale') {
-                                                value = value ? 'Nam' : 'Nữ';
-                                            }
-                                            if (column.id === 'dateOfBirth') {
-                                                value = new Date(value).toLocaleDateString(
-                                                    'vi-VN',
-                                                    { day: '2-digit', month: '2-digit', year: 'numeric' }
-                                                );
-                                            }
-                                            return (
-                                                <TableCell key={`${value}-${i}-tablecell`} align={column.align}>
-
-                                                    {column.format && typeof value === 'number'
-                                                        ? column.format(value)
-                                                        : value}
-
-                                                </TableCell>
-                                            );
-                                        })}
-                                        <TableCell key={`${index}-button`} align="right">
-                                            <Button sx={{ marginRight: 1 }} variant='contained' onClick={() => {
-                                                viewResidentDetail(row.identityCode);
-                                            }} >Chi tiết</Button>
-                                            <Button variant='contained' color='error' onClick={() => handleClickOpen(row.identityCode)} >Xóa</Button>
+            {isLoading ? error ? <ErrorData /> : <TableSkeleton /> : !data ? <div>No data</div> :
+                <Fragment>
+                    <TableContainer sx={{ height: 395, backgroundColor: '#fff' }}>
+                        <Table stickyHeader aria-label="sticky table">
+                            <TableHead >
+                                <TableRow>
+                                    {columsInit.map((column) => (
+                                        <TableCell
+                                            key={column.id}
+                                            align={column.align}
+                                            style={{ width: column.width }}
+                                        >
+                                            {column.label}
                                         </TableCell>
-                                    </TableRow>
-                                );
-                            })}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                                    ))}
+                                    <TableCell align='right'>
+                                        <Button variant='contained' sx={{ fontSize: 13 }} onClick={handleCreateResident}>Thêm nhân khẩu</Button>
+                                    </TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody >
+                                {data
+                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                    .map((row, index) => {
+                                        return (
+                                            <TableRow key={index + 'tablerow'} hover role="checkbox" tabIndex={-1} >
+                                                {columsInit.map((column, i) => {
+                                                    let value = row[column.id];
+                                                    if (column.id === 'isMale') {
+                                                        value = value ? 'Nam' : 'Nữ';
+                                                    }
+                                                    if (column.id === 'dateOfBirth') {
+                                                        value = new Date(value).toLocaleDateString(
+                                                            'vi-VN',
+                                                            { day: '2-digit', month: '2-digit', year: 'numeric' }
+                                                        );
+                                                    }
+                                                    return (
+                                                        <TableCell key={`${value}-${i}-tablecell`} align={column.align}>
+
+                                                            {column.format && typeof value === 'number'
+                                                                ? column.format(value)
+                                                                : value}
+
+                                                        </TableCell>
+                                                    );
+                                                })}
+                                                <TableCell key={`${index}-button`} align="right">
+                                                    <Button sx={{ marginRight: 1 }} variant='contained' onClick={() => {
+                                                        viewResidentDetail(row.identityCode);
+                                                    }} >Chi tiết</Button>
+                                                    <Button variant='contained' color='error' onClick={() => handleClickOpen(row.identityCode)} >Xóa</Button>
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                    <TablePagination
+                        sx={{ backgroundColor: '#fff' }}
+                        rowsPerPageOptions={[5, 10, 20]}
+                        component="div"
+                        count={data.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                    />
+                </Fragment>
             }
-            {!isLoading && <TablePagination
-                sx={{ backgroundColor: '#fff' }}
-                rowsPerPageOptions={[5, 10, 20]}
-                component="div"
-                count={data.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-            />}
 
         </div >
     );

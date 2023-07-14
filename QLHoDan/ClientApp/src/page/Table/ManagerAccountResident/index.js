@@ -55,7 +55,11 @@ export default function ManagerAccountResident() {
     const queryClient = useQueryClient()
 
     // Queries
-    const { isLoading, isError, data, error } = useQuery({ queryKey: ['householdAccounts'], queryFn: async () => householdAccountManager.getAllAccounts(auth.token) });
+    const { isLoading, isError, data, error } = useQuery({
+        queryKey: ['householdAccounts'],
+        queryFn: async () => householdAccountManager.getAllAccounts(auth.token),
+        retry: 0
+    });
     // Mutations
     const mutation = useMutation({
         mutationFn: (account) => householdAccountManager.addAccount(auth.token, account),
@@ -80,6 +84,7 @@ export default function ManagerAccountResident() {
             // queryClient.invalidateQueries({ queryKey: ['householdAccounts'] })
         },
     });
+    console.log(data)
     const handleSuccess = () => {
         setSuccess(false);
     };
@@ -140,7 +145,7 @@ export default function ManagerAccountResident() {
                     {message + ' '} tài khoản thành công !
                 </Alert>
             </Snackbar>
-            {error ? <ErrorData /> : isLoading ? <TableSkeleton /> : <TableContainer sx={{ height: 400 }}>
+            {error ? <ErrorData /> : isLoading ? <TableSkeleton /> : !data ? <div>No data</div> : <TableContainer sx={{ height: 400 }}>
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead>
                         <TableRow>
@@ -185,7 +190,7 @@ export default function ManagerAccountResident() {
                 </Table>
             </TableContainer>
             }
-            {!isLoading && <TablePagination
+            {!isLoading && data && <TablePagination
                 rowsPerPageOptions={[5, 10, 20]}
                 component="div"
                 count={data.length}

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from './axios';
 import config from './configHeader';
 import {
     API_ACCOUNT_CHANGEPASSWORD_URL,

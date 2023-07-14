@@ -198,7 +198,7 @@ function Header({ text }) {
                 >
                     <Avatar sx={{ fontSize: 10, cursor: 'pointer', border: '2px solid transparent', '&:hover': { borderColor: 'green' }, bgcolor: deepOrange[500] }}
                         onClick={turnOnTippy} >
-                        <span>{isLoading ? 'Loading...' : getLastName(data.fullName)}</span>
+                        <span>{isLoading ? 'Loading...' : getLastName(data.fullName)[0]}</span>
                     </Avatar>
                     {/* <Avatar sx={{ cursor: 'pointer', border: '2px solid transparent', '&:hover': { borderColor: 'green' } }} src={fuhua} onClick={turnOnTippy} /> */}
                 </Tippy>

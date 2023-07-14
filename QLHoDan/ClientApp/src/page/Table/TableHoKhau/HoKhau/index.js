@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, Fragment } from 'react';
 
 //mui
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
@@ -82,7 +82,10 @@ export default function TableHoKhau({ action, typeTable }) {
 
     const allResidents = useQuery(
         ['residents', typeTable],
-        async () => residentManager.getAllResident(auth.token)
+        async () => residentManager.getAllResident(auth.token),
+        {
+            retry: 0
+        }
     );
 
     const queryDeleteHousehold = useMutation({
@@ -105,6 +108,8 @@ export default function TableHoKhau({ action, typeTable }) {
         }
     }
     )
+
+    console.log(data)
 
     const handleCloseSnackbar = (event, reason) => {
         if (reason === 'clickaway') {
@@ -180,60 +185,65 @@ export default function TableHoKhau({ action, typeTable }) {
                 />
             }
 
-            {error ? <ErrorData /> : (isLoading || allResidents.isLoading || !data) ? <TableSkeleton /> : <TableContainer sx={{ height: 395, backgroundColor: '#fff' }}>
-                <Table stickyHeader aria-label="sticky table">
-                    <TableHead >
-                        <TableRow>
-                            {columsInit.map((column) => (
-                                <TableCell
-                                    key={column.id}
-                                    align={column.align}
-                                    style={{ width: column.width, fontSize: 15 }}
-                                >
-                                    {column.label}
-                                </TableCell>
-                            ))}
-                            <TableCell align='right'>
-                                <Button sx={{ fontSize: 15 }} color='success' variant='contained' onClick={() => setIsCreateMode(true)}>Thêm hộ khẩu</Button>
-                            </TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody >
-                        {data
-                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            .map((row, index) => {
-                                return (
-                                    <TableRow key={index + 'tablerow'} hover role="checkbox" tabIndex={-1} >
-                                        {columsInit.map((column, i) => {
-                                            const value = row[column.id];
-                                            return (
-                                                <TableCell key={`${value}-${i}-tablecell`} align={column.align} style={{ fontSize: 15 }}>
-                                                    {column.format && typeof value === 'number'
-                                                        ? column.format(value)
-                                                        : value}
-                                                </TableCell>
-                                            );
-                                        })}
-                                        <TableCell key={`${index}-button`} align="right">
-                                            <Button sx={{ marginRight: 1 }} variant='contained' onClick={() => handleViewHousehold(row.householdId)} >Chi tiết</Button>
-                                            <Button variant='contained' color='error' onClick={() => handleDelete(row.householdId)} >Xóa</Button>
+            {error ? <ErrorData /> : (isLoading || allResidents.isLoading) ? <TableSkeleton />
+                : !data ? <div>No data</div> :
+                    <Fragment>
+                        <TableContainer sx={{ height: 395, backgroundColor: '#fff' }}>
+
+                            <Table stickyHeader aria-label="sticky table">
+                                <TableHead >
+                                    <TableRow>
+                                        {columsInit.map((column) => (
+                                            <TableCell
+                                                key={column.id}
+                                                align={column.align}
+                                                style={{ width: column.width, fontSize: 15 }}
+                                            >
+                                                {column.label}
+                                            </TableCell>
+                                        ))}
+                                        <TableCell align='right'>
+                                            <Button sx={{ fontSize: 15 }} color='success' variant='contained' onClick={() => setIsCreateMode(true)}>Thêm hộ khẩu</Button>
                                         </TableCell>
                                     </TableRow>
-                                );
-                            })}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                                </TableHead>
+                                <TableBody >
+                                    {data
+                                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                        .map((row, index) => {
+                                            return (
+                                                <TableRow key={index + 'tablerow'} hover role="checkbox" tabIndex={-1} >
+                                                    {columsInit.map((column, i) => {
+                                                        const value = row[column.id];
+                                                        return (
+                                                            <TableCell key={`${value}-${i}-tablecell`} align={column.align} style={{ fontSize: 15 }}>
+                                                                {column.format && typeof value === 'number'
+                                                                    ? column.format(value)
+                                                                    : value}
+                                                            </TableCell>
+                                                        );
+                                                    })}
+                                                    <TableCell key={`${index}-button`} align="right">
+                                                        <Button sx={{ marginRight: 1 }} variant='contained' onClick={() => handleViewHousehold(row.householdId)} >Chi tiết</Button>
+                                                        <Button variant='contained' color='error' onClick={() => handleDelete(row.householdId)} >Xóa</Button>
+                                                    </TableCell>
+                                                </TableRow>
+                                            );
+                                        })}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                        <TablePagination
+                            rowsPerPageOptions={[5, 10, 20]}
+                            component="div"
+                            count={data.length}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            onPageChange={handleChangePage}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                        />
+                    </Fragment>
             }
-            {(!isLoading && allResidents.isSuccess) && <TablePagination
-                rowsPerPageOptions={[5, 10, 20]}
-                component="div"
-                count={data.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-            />}
 
             <Dialog
                 open={openAlert}
@@ -256,6 +266,6 @@ export default function TableHoKhau({ action, typeTable }) {
                     </Button>
                 </DialogActions>
             </Dialog>
-        </div>
+        </div >
     );
 }

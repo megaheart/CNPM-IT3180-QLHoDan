@@ -21,6 +21,8 @@ import AuthenticationLayout from '~/components/Layout/AuthenticationLayout'
 import GuestLayout from '~/components/Layout/GuestLayout';
 import FormChecking from '~/page/Form/FormChecking';
 
+import FormDetail from '~/page/Table/Form/form'
+
 const ROLES = {
     ADMIN: "CommitteeChairman",
     ACCOUNTANT: "Accountant",
@@ -58,7 +60,8 @@ const routes = [
             { subpath: '/table/nhan_khau', element: NKTable, id: 'tb2' },
             { subpath: '/table/lich_su_nhan_khau', element: ResidentHistory, id: 'tb3' },
             { subpath: '/table/danh_sach_tai_khoan_ho_dan', element: ManagerAccountResident, id: 'tb4' },
-            { subpath: '/table/danh_sach_tai_khoan_can_bo', element: ManagerSpecialAccount, id: 'tb5' }
+            { subpath: '/table/danh_sach_tai_khoan_can_bo', element: ManagerSpecialAccount, id: 'tb5' },
+            { subpath: '/table/form', element: FormDetail, id: 'tb6' },
         ],
         layout: DefaultLayout, id: 'add', role: [ROLES.ADMIN, ROLES.MANAGER, ROLES.ACCOUNTANT]
     },

@@ -1,6 +1,6 @@
 import { API_NOTIFICATION } from '~/AppConstant';
 import config from './configHeader';
-import axios from 'axios';
+import axios from './axios';
 
 class NotificationManager {
     async getNumberOfUnreadNotification(token) {

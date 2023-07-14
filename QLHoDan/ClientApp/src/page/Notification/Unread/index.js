@@ -18,7 +18,10 @@ export default function UnReadNotification() {
 
     const { data, isLoading, error } = useQuery(
         ['getUnReadNotification', auth.username],
-        () => notificationManager.getUnreadNotification(auth.token)
+        () => notificationManager.getUnreadNotification(auth.token),
+        {
+            retry: 0,
+        }
     );
 
     const queryClient = useQueryClient();
@@ -61,6 +64,7 @@ export default function UnReadNotification() {
         setSuccess(false);
     };
 
+    console.log(error)
 
     return (
         <Fragment>
@@ -75,7 +79,7 @@ export default function UnReadNotification() {
             >
                 <CircularProgress color="inherit" />
             </Backdrop>
-            {(isLoading || !data) ? <NotificationSkeleton /> :
+            {error ? <div>No data</div> : (isLoading || !data) ? <NotificationSkeleton /> :
                 <Stack sx={{ width: '60%', height: 500, fontSize: 15, margin: '0 auto', backgroundColor: '#fff' }} spacing={0}>
                     {
                         data.length > 0 ? data.sort((a, b) => {

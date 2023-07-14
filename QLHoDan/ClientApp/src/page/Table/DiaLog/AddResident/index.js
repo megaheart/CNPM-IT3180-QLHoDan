@@ -160,28 +160,12 @@ export default function AddResidentDialog({ open, onClose, type }) {
             householdId: householdIdRef.current.value || null,
         }
         console.log(currentData)
-        const identityCodeCheck = validation.checkIdentifi(currentData.identityCode);
-        if (identityCodeCheck.isValid) {
-            setErrorMessage(identityCodeCheck.message);
-            setLoading(false);
-            return;
-        }
-        else {
-            setErrorMessage('');
-            if (currentData.moveInDate === null) {
-                setErrorMessage('Ngày chuyển đến không được để trống');
-            }
-            else if (currentData.moveInDate > currentData.moveOutDate || currentData.moveInDate > new Date()) {
-                setErrorMessage('Ngày chuyển đến không hợp lệ');
-            }
-            if (type.type !== 'UPDATE') {
-                await type.mutation.mutate(currentData);
-                onClose(false);
-                setSuccess(true);
-                setLoading(false);
-            }
-        }
+
+        await type.mutation.mutate(currentData);
+        onClose(false);
+        setLoading(false);
     }
+
     const handleAdd = async () => {
         console.log('ADDING....')
         const currentData = {

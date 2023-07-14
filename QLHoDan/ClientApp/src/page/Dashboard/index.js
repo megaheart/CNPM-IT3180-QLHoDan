@@ -46,7 +46,7 @@ export default function DashboardComponent() {
                             <ImgMediaCard
                                 sx={{ margin: '0 auto' }}
                                 content='Tổng số hộ khẩu: '
-                                number={(queryAllHousehold.isLoading || queryHouseholdMove.isLoading) ? 'Loading...' : queryAllHousehold.data.length + queryHouseholdMove.data.length}
+                                number={(queryAllHousehold.isLoading || queryHouseholdMove.isLoading) ? 'Loading...' : (queryAllHousehold.data ? queryAllHousehold.data.length + queryHouseholdMove.data.length : 0)}
                                 imgLink={family}
                             />
                         </Grid>
@@ -54,7 +54,7 @@ export default function DashboardComponent() {
                             <ImgMediaCard
                                 sx={{ margin: '0 auto' }}
                                 content="Tổng số nhân khẩu: "
-                                number={(queryAllResident.isLoading) ? 'Loading...' : queryAllResident.data.length}
+                                number={(queryAllResident.isLoading) ? 'Loading...' : (queryAllResident.data ? queryAllResident.data.length : 0)}
                                 imgLink={person}
                             />
                         </Grid>
@@ -62,7 +62,7 @@ export default function DashboardComponent() {
                             <ImgMediaCard
                                 sx={{ margin: '0 auto' }}
                                 content="Số hộ thường trú: "
-                                number={(queryAllHousehold.isLoading) ? 'Loading...' : queryAllHousehold.data.length}
+                                number={(queryAllHousehold.isLoading) ? 'Loading...' : queryAllHousehold.data ? queryAllHousehold.data.length : 0}
                                 imgLink={door}
                             />
                         </Grid>
@@ -70,7 +70,7 @@ export default function DashboardComponent() {
                             <ImgMediaCard
                                 sx={{ margin: '0 auto' }}
                                 content="Số hộ tạm vắng: "
-                                number={(queryHouseholdMove.isLoading) ? 'Loading...' : queryHouseholdMove.data.length}
+                                number={(queryHouseholdMove.isLoading) ? 'Loading...' : queryHouseholdMove.data ? queryHouseholdMove.data.length : 0}
                                 imgLink={leave}
                             />
                         </Grid>

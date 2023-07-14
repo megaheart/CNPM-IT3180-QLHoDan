@@ -5,7 +5,7 @@ import {
     API_ACCOUNT_REGISTER_URL
 } from "~/AppConstant";
 import config from './configHeader';
-import axios from 'axios';
+import axios from './axios';
 class HouseholdAccountManager {
     async getAllAccounts(token) {
         const response = await axios.get(
@@ -33,12 +33,7 @@ class HouseholdAccountManager {
             info,
             config(token)
         );
-        if (response.status !== 200) {
-            return response.data;
-        }
-        else {
-            console.log("Lỗi xảy ra khi sửa tài khoản");
-        }
+        return response;
     }
     async registerAccountResident(newAccount) {
         const response = await axios.post(

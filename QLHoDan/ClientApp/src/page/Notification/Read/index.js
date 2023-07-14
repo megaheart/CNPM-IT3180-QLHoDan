@@ -11,13 +11,16 @@ import notificationManager from '~/services/api/notificationManager';
 import { NotificationSkeleton } from '~/components/Skeleton';
 export default function ReadNotification() {
     const { auth } = useAuth();
-    const { data, isLoading, error } = useQuery(
+    const { data, isLoading, isError } = useQuery(
         ['getReadNotification', auth.username],
-        () => notificationManager.getReadNotification(auth.token)
+        () => notificationManager.getReadNotification(auth.token),
+        {
+            retry: 0,
+        }
     );
     return (
         <Fragment>
-            {(isLoading || !data) ? <NotificationSkeleton /> :
+            {isLoading ? <NotificationSkeleton /> : !data ? <div>No data</div> :
                 <Stack sx={{ width: '60%', height: 500, fontSize: 15, margin: '0 auto', backgroundColor: '#fff' }} spacing={0}>
                     {
                         data.length > 0 ? data.sort((a, b) => {
