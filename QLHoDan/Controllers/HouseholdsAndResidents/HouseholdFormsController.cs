@@ -161,8 +161,11 @@ namespace QLHoDan.Controllers.HouseholdsAndResidents
             List<ResidentForm> member = null;
             try
             {
-                member = System.Text.Json.JsonSerializer.Deserialize<List<AddingResidentFormRequestModel>>(model.Members)
-                           .Select(f => new ResidentForm()
+                member = System.Text.Json.JsonSerializer.Deserialize<List<AddingResidentFormRequestModel>>(
+                    model.Members, new System.Text.Json.JsonSerializerOptions
+                    {
+                        PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
+                    }).Select(f => new ResidentForm()
                            {
                                FullName = f.FullName,
                                Alias = f.Alias,
